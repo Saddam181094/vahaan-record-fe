@@ -1,6 +1,6 @@
 // src/lib/auth.ts
 
-import type { Role, User } from "@/context/AuthContext";
+import type { UserRole, User } from "@/context/AuthContext";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -17,14 +17,19 @@ export async function login(email: string, password: string): Promise<{ user: Us
     throw new Error(errorMsg);
   }
 
-  const data = await response.json();
+  const responseData = await response.json();
 
   const user: User = {
-    email: data.email,
-    role: data.role as Role,
+    id: responseData.data.user.id,
+    name: responseData.data.user.name,
+    isVerified: responseData.data.user.isVerified,
+    email: responseData.data.user.email,
+    role: responseData.data.user.role as UserRole,
   };
 
-  return { user, token: data.token };
+  const token = responseData.data.access_token;
+
+  return { user, token};
 }
 
 export function storeUserAndToken(user: User, token: string): void {

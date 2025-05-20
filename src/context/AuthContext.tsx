@@ -3,18 +3,22 @@ import { useNavigate } from "react-router-dom";
 import type {ReactNode} from "react";
 import * as auth from "@/lib/auth";
 
-export const Role = {
-  ADMIN: "ADMIN",
-  User: "User",
-  Employee: "Employee",
+export const UserRole = {
+  SUPERADMIN: "superadmin",
+  CLIENT: "client",
+  EMPLOYEE: "employee",
 } as const;
 
-export type Role = typeof Role[keyof typeof Role];
+export type UserRole = typeof UserRole[keyof typeof UserRole];
 
 
 export interface User {
+  id: string;
+  name: string;
   email: string;
-  role: Role;
+  role: UserRole;
+  isVerified: boolean;
+
 }
 
 interface AuthContextProps {
@@ -60,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.clear();
+    auth.clearUserAndToken();
     navigate("/login");
   };
 
