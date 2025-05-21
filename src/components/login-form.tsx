@@ -17,23 +17,26 @@ export function LoginForm({
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       setError("");
       await login(email, password);
     } catch (err) {
-      setError("Invalid credentials. Please try again.");
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
     }
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden p-0">
-        <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8" onSubmit={handleSubmit}>
-          {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+      <Card className="overflow-hidden md:mx-30 sm:mx-0">
+        <CardContent className="grid px-0 md:grid-cols-1 sm:px-5">
+          <form className="p-6 md:p-5" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold pb-5">Welcome</h1>
@@ -41,7 +44,7 @@ export function LoginForm({
                   Login to your Adviz Portal account
                 </p>
               </div>
-                <div className="grid gap-3">
+              <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
@@ -50,10 +53,10 @@ export function LoginForm({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  onFocus={e => e.target.placeholder = ""}
-                  onBlur={e => e.target.placeholder = "m@example.com"}
+                  onFocus={(e) => (e.target.placeholder = "")}
+                  onBlur={(e) => (e.target.placeholder = "m@example.com")}
                 />
-                </div>
+              </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
@@ -72,14 +75,20 @@ export function LoginForm({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  onFocus={e => e.target.placeholder = ""}
-                  onBlur={e => e.target.placeholder = "••••••••"}
+                  onFocus={(e) => (e.target.placeholder = "")}
+                  onBlur={(e) => (e.target.placeholder = "••••••••")}
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Login
+              <Button type="submit" className="mx-40">
+                {loading ? (
+                  <div className="loader w-5 h-5 border-3 border-t-2 border-white rounded-full animate-spin"></div>
+                ) : (
+                  "Login"
+                )}
               </Button>
-
+              {error && (
+                <p className="text-red-600 underline text-sm mt-2">{error}</p>
+              )}
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <a href="#" className="underline underline-offset-4">
@@ -88,13 +97,13 @@ export function LoginForm({
               </div>
             </div>
           </form>
-          <div className="bg-muted relative hidden md:block">
+          {/* <div className="bg-muted relative hidden md:block">
             <img
               src="/vite.svg"
               alt="Image"
               className="absolute inset-0 h-full dark:brightness-[0.2] dark:grayscale"
             />
-          </div>
+          </div> */}
         </CardContent>
       </Card>
       {/* <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
