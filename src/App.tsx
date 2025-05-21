@@ -5,9 +5,11 @@ import LoginPage from "@/pages/Login";
 import AdminDashboard from "@/pages/AdminDash";
 import UserDashboard from "@/pages/UserDash";
 import EmployeeDashboard from "@/pages/EmployeeDash";
+import AddBranch from "@/pages/AdBranch";
 
 export default function App() {
   return (
+
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/superadmin" element={
@@ -26,6 +28,7 @@ export default function App() {
             </ProtectedRoute>
           } />
           <Route path="/unauthorized" element={<div className="p-4 text-center">Unauthorized</div>} />
+          <Route path="/superadmin/AddBranch" element={<AddBranch />} />
         </Routes>
   );
 }

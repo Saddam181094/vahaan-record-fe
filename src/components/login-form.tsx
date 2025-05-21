@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { ForgotPasswordModal } from "./forgotPass";
 
 import type { HTMLAttributes } from "react";
 
@@ -19,6 +20,7 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -79,6 +81,16 @@ export function LoginForm({
                   onBlur={(e) => (e.target.placeholder = "••••••••")}
                 />
               </div>
+              <div
+                className="underline cursor-pointer flex items-center gap-2"
+                onClick={() => setShowForgotModal(true)}
+              >
+                Forgot your password?
+              </div>
+              <ForgotPasswordModal
+                open={showForgotModal}
+                onOpenChange={setShowForgotModal}
+              />
               <Button type="submit" className="mx-40">
                 {loading ? (
                   <div className="loader w-5 h-5 border-3 border-t-2 border-white rounded-full animate-spin"></div>

@@ -43,7 +43,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(JSON.parse(storedUser));
       setToken(storedToken);
     }
-  }, []);
+  }, 
+  []);
 
   const login = async (email: string, password: string) => {
     const {user, token} = await auth.login(email, password);

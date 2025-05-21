@@ -4,6 +4,25 @@ import type { UserRole, User } from "@/context/AuthContext";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
+export async function forgotPassword(email: string): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}/auth/resend-credentials`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    const errorMsg = result?.errors?.message || result?.message || "Something went wrong.";
+    throw new Error(errorMsg);
+  }
+
+  return result.data?.message || "Password reset instructions sent.";
+}
+
+
+
 export async function login(email: string, password: string): Promise<{ user: User; token: string }> {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
