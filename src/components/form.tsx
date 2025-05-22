@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { createBranch, toggleBranch } from "@/lib/branch";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 
 interface Branch {
   id: number;
@@ -76,23 +77,38 @@ export default function AdminBranchForm() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-        {["name", "address1", "address2", "city", "state", "pincode"].map((field) => (
-          <Input
-            key={field}
-            name={field}
-            placeholder={field[0].toUpperCase() + field.slice(1)}
-            value={formData[field as keyof typeof formData]}
-            onChange={handleChange}
-            required
-          />
-        ))}
-        <Button type="submit">Add Branch</Button>
-        {message && <p className="text-green-600 text-sm">{message}</p>}
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-      </form>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button>Add Branch</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Branch</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+            {["name", "address1", "address2", "city", "state", "pincode"].map((field) => (
+              <Input
+                key={field}
+                name={field}
+                placeholder={field[0].toUpperCase() + field.slice(1)}
+                value={formData[field as keyof typeof formData]}
+                onChange={handleChange}
+                required
+              />
+            ))}
+            <div className="flex items-center gap-2">
+              <Button type="submit">Add Branch</Button>
+              <DialogClose asChild>
+                <Button type="button" variant="outline">Cancel</Button>
+              </DialogClose>
+            </div>
+            {message && <p className="text-green-600 text-sm">{message}</p>}
+            {error && <p className="text-red-600 text-sm">{error}</p>}
+          </form>
+        </DialogContent>
+      </Dialog>
 
-      <table className="w-full text-sm text-left border">
+      <table className="w-full text-sm text-left border mt-6">
         <thead>
           <tr className="bg-gray-100">
             <th>Name</th>
