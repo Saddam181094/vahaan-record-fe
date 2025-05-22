@@ -85,7 +85,7 @@ export default function AdminFirmForm() {
         <DialogTitle>Add New Firm</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
-        {["name", "address1", "address2", "city", "state", "pincode"].map((field) => (
+        {["name"].map((field) => (
           <div key={field}>
           <Input
             {...register(field as keyof Firm, { required: true })}
