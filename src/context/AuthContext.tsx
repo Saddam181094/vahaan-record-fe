@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type {ReactNode} from "react";
-import * as auth from "@/lib/auth";
+import * as auth from "@/service/auth.service";
 
 export const UserRole = {
   SUPERADMIN: "superadmin",

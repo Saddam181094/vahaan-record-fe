@@ -11,7 +11,7 @@ const AddBranch = () => {
     };  
     return(<>
     <SidebarProvider>
-                <AppSidebar />
+       <AppSidebar />
         <SidebarTrigger />
          <div className="flex flex-col w-full bg-white px-6 py-4 h-full min-h-screen">
           <div className="flex justify-end mb-4">

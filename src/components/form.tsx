@@ -1,138 +1,163 @@
-import { useState } from "react";
+import { set, useForm } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
+import { useState,useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
-import { createBranch, toggleBranch } from "@/lib/branch";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 
-interface Branch {
-  id: number;
+import { createBranch, getBranch, toggleBranch } from "@/service/branch.service";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+// import { Toaster } from "@/components/ui/sonner";
+
+export interface Branch {
+  branchCode?: string;
+  id?: string;
   name: string;
   address1: string;
   address2: string;
   city: string;
   state: string;
   pincode: string;
-  isActive: boolean;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export default function AdminBranchForm() {
-  const [formData, setFormData] = useState<Omit<Branch, "id" | "isActive">>({
-    name: "",
-    address1: "",
-    address2: "",
-    city: "",
-    state: "",
-    pincode: "",
-  });
+    const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Branch>({ defaultValues: {} as Branch });
 
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [refreshFlag, setRefreshFlag] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+ useEffect(() => {
+    setLoading(true);
+    getBranch()
+      .then((branches) => {
+      setBranches(branches);
+      })
+      .catch((err:any) => {
+      console.error("Error fetching branches:", err);
+      })
+      .finally(() => setLoading(false));
+  }, [refreshFlag]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage("");
-    setError("");
-
+  const onSubmit: SubmitHandler<Branch> = async (data: Branch) => {
+    setLoading(true);
     try {
-      const newBranch = await createBranch(formData);
-      if (typeof newBranch === "string") {
-        setError(newBranch);
-      } else {
-        setBranches([...branches, newBranch]);
-        setFormData({
-          name: "",
-          address1: "",
-          address2: "",
-          city: "",
-          state: "",
-          pincode: "",
-        });
-        setMessage("Branch created successfully");
-      }
+      const newBranch = await createBranch(data);
+      setBranches([...branches, newBranch]);
+      setDialogOpen(false);
+      setRefreshFlag((prev) => !prev); // Trigger a refresh
+      reset(); // Reset the form after successful submission
     } catch (err: any) {
-      setError(err.message);
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleToggle = async (branchId: number, index: number) => {
-    const previous = branches[index].isActive;
-
+  const handleToggle = async (branch: Branch) => {
     try {
-
-      const newStatus = await toggleBranch(branchId);
-      const updated = [...branches];
-      updated[index].isActive = newStatus;
-      setBranches(updated);
+      const isActive = await toggleBranch(branch.id!);
+      setBranches((prev) =>
+        prev.map((b) => (b.id === branch.id ? { ...b, isActive } : b))
+      );
+      console.log("Branch toggled successfully");
     } catch (err: any) {
-      setError(`Failed to toggle status: ${err.message}`);
-      // Optional: revert UI to previous state or show toast
+        console.error(err);
     }
   };
 
   return (
     <div>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button>Add Branch</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Branch</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-            {["name", "address1", "address2", "city", "state", "pincode"].map((field) => (
-              <Input
-                key={field}
-                name={field}
-                placeholder={field[0].toUpperCase() + field.slice(1)}
-                value={formData[field as keyof typeof formData]}
-                onChange={handleChange}
-                required
-              />
-            ))}
-            <div className="flex items-center gap-2">
-              <Button type="submit">Add Branch</Button>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">Cancel</Button>
-              </DialogClose>
-            </div>
-            {message && <p className="text-green-600 text-sm">{message}</p>}
-            {error && <p className="text-red-600 text-sm">{error}</p>}
-          </form>
-        </DialogContent>
+      <Button onClick={() => setDialogOpen(true)} className="mb-4">
+      Add Branch
+      </Button>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+        <DialogTitle>Add New Branch</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
+        {["name", "address1", "address2", "city", "state", "pincode"].map((field) => (
+          <div key={field}>
+          <Input
+            {...register(field as keyof Branch, { required: true })}
+            placeholder={field[0].toUpperCase() + field.slice(1)}
+          />
+          {errors[field as keyof Branch] && (
+            <p className="text-red-600 text-sm">{field} is required</p>
+          )}
+          </div>
+        ))}
+
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+          Cancel
+          </Button>
+          <Button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Create Branch"}
+          </Button>
+        </div>
+        </form>
+      </DialogContent>
       </Dialog>
 
-      <table className="w-full text-sm text-left border mt-6">
-        <thead>
-          <tr className="bg-gray-100">
-            <th>Name</th>
-            <th>Address</th>
-            <th>Pincode</th>
-            <th>Active</th>
-          </tr>
-        </thead>
-        <tbody>
-          {branches.map((branch, index) => (
-            <tr key={branch.id} className="border-t">
-              <td>{branch.name}</td>
-              <td>{`${branch.address1}, ${branch.address2}, ${branch.city}, ${branch.state}`}</td>
-              <td>{branch.pincode}</td>
-              <td>
-                <Switch
-                  checked={branch.isActive}
-                  onCheckedChange={() => handleToggle(branch.id, index)}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead>Address</TableHead>
+      <TableHead>Pincode</TableHead>
+      <TableHead>Created</TableHead>
+      <TableHead>Updated</TableHead>
+      <TableHead>Active</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {branches.length === 0 ? (
+      <TableRow>
+        <TableCell colSpan={6} className="text-center py-4">
+          No branches found.
+        </TableCell>
+      </TableRow>
+    ) : (
+      branches.map((branch) => (
+        <TableRow key={branch.branchCode}>
+          <TableCell>{branch.name}</TableCell>
+          <TableCell>
+            {branch.address1}, {branch.address2}, {branch.city}, {branch.state}
+          </TableCell>
+          <TableCell>{branch.pincode}</TableCell>
+          <TableCell>{branch.createdAt}</TableCell>
+          <TableCell>{branch.updatedAt}</TableCell>
+          <TableCell>
+            <Switch
+              checked={!!branch.isActive}
+              onCheckedChange={() => handleToggle(branch)}
+            />
+          </TableCell>
+        </TableRow>
+      ))
+    )}
+  </TableBody>
+</Table>
+
     </div>
   );
 }
