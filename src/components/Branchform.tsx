@@ -1,4 +1,4 @@
-import { set, useForm } from "react-hook-form";
+import {useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { useState,useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -14,12 +14,12 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 import { createBranch, getBranch, toggleBranch } from "@/service/branch.service";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog"
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Branch {
   branchCode?: string;
-  id?: string;
+  id: string;
   name: string;
   address1: string;
   address2: string;
@@ -47,8 +47,8 @@ export default function AdminBranchForm() {
  useEffect(() => {
     setLoading(true);
     getBranch()
-      .then((branches) => {
-      setBranches(branches);
+      .then((resp) => {
+      setBranches(resp?.data);
       })
       .catch((err:any) => {
       console.error("Error fetching branches:", err);
@@ -71,15 +71,15 @@ export default function AdminBranchForm() {
     }
   };
 
-  const handleToggle = async (branch: Branch) => {
+  const handleToggle = async (branch: string) => {
     try {
-      const isActive = await toggleBranch(branch.id!);
-      setBranches((prev) =>
-        prev.map((b) => (b.id === branch.id ? { ...b, isActive } : b))
-      );
+      console.log("Toggling branch:", branch);
+      await toggleBranch(branch);
       console.log("Branch toggled successfully");
     } catch (err: any) {
         console.error(err);
+    }finally{
+      setRefreshFlag((prev) => !prev); // Trigger a refresh
     }
   };
 
@@ -144,12 +144,10 @@ export default function AdminBranchForm() {
             {branch.address1}, {branch.address2}, {branch.city}, {branch.state}
           </TableCell>
           <TableCell>{branch.pincode}</TableCell>
-          <TableCell>{branch.createdAt}</TableCell>
-          <TableCell>{branch.updatedAt}</TableCell>
           <TableCell>
             <Switch
               checked={!!branch.isActive}
-              onCheckedChange={() => handleToggle(branch)}
+              onCheckedChange={() => handleToggle(branch?.branchCode ?? "")}
             />
           </TableCell>
         </TableRow>

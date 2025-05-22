@@ -6,7 +6,7 @@ import AdminDashboard from "@/pages/AdminDash";
 import UserDashboard from "@/pages/UserDash";
 import EmployeeDashboard from "@/pages/EmployeeDash";
 import AddBranch from "@/pages/AdBranch";
-
+import AddFirm from "@/pages/AdFirm";
 export default function App() {
   return (
 
@@ -29,6 +29,7 @@ export default function App() {
           } />
           <Route path="/unauthorized" element={<div className="p-4 text-center">Unauthorized</div>} />
           <Route path="/superadmin/AddBranch" element={<AddBranch />} />
+          <Route path="/superadmin/AddFirm" element={<AddFirm/>} />
         </Routes>
   );
 }

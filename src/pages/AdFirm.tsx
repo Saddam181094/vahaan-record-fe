@@ -1,4 +1,4 @@
-import AdminBranchForm from "@/components/Branchform";
+import FirmForm from "@/components/FirmForm";
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";  
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ const AddBranch = () => {
             </Button>
           </div>
           <div className="flex-grow">
-            <AdminBranchForm />
+            <FirmForm />
           </div>
         </div>
           </SidebarProvider>

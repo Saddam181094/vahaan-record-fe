@@ -40,7 +40,7 @@ const items1: Record<string, SidebarItem[]> = {
       title: "Utilities",
       icon: Settings,
       submenu: [
-        { title: "Firm", url: "/superadmin/firm", icon: Home },
+        { title: "Firm", url: "/superadmin/AddFirm", icon: Home },
         { title: "Branch", url: "/superadmin/AddBranch", icon: Home },
       ],
     },

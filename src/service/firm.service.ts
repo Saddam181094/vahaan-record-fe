@@ -1,11 +1,11 @@
 import axios, { AxiosError } from "axios";
 import { getConfig,url} from "@/service/auth.service";
-import type { Branch } from "@/components/Branchform";
+import type { Firm } from "@/components/FirmForm";
 
-export const getBranch = async () => {
+export const getFirm = async () => {
   const config = getConfig();
   return axios
-    .get(url + "/utils/branches/all", config)
+    .get(url + "/utils/firms/all", config)
     .then((response) => {
       return response.data;
     })
@@ -15,12 +15,12 @@ export const getBranch = async () => {
     });
 };
 
-export async function createBranch(branchData: any): Promise<Branch> {
+export async function createFirm(firmData: any): Promise<Firm> {
     const token = localStorage.getItem("token"); // Assuming user is logged in
     try {
         const response = await axios.post(
-            `${url}/utils/create-branch`,
-            branchData,
+            `${url}/utils/create-firm`,
+            firmData,
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -31,24 +31,24 @@ export async function createBranch(branchData: any): Promise<Branch> {
         const result = response.data;
 
         if (!response.status || !result.success) {
-            throw new Error(result.message || "Failed to create branch");
+            throw new Error(result.message || "Failed to create Firm");
         }
 
-        return result.data || "Branch created successfully";
+        return result.data || "Firm created successfully";
     } catch (error: any) {
-        throw new Error(error.response?.data?.message || error.message || "Failed to create branch");
+        throw new Error(error.response?.data?.message || error.message || "Failed to create Firm");
     }
 }
 
-export async function toggleBranch(branchId: string): Promise<boolean> {
-    if (branchId === undefined || branchId === null) {
-        throw new Error("branchId is required and was not provided.");
+export async function toggleFirm(firmId: string): Promise<boolean> {
+    if (firmId === undefined || firmId === null) {
+        throw new Error("firmId is required and was not provided.");
     }
     const token = localStorage.getItem("token");
     try {
         const response = await axios.post(
-            `${url}/utils/toggle-branch-visibility/${branchId}`,
-            { branchId },
+            `${url}/utils/toggle-firm-visibility/${firmId}`,
+            { firmId },
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -59,11 +59,11 @@ export async function toggleBranch(branchId: string): Promise<boolean> {
         const result = response.data;
 
         if (!response.status || !result.success) {
-            throw new Error(result?.errors?.message || result?.message || "Failed to create branch");
+            throw new Error(result?.errors?.message || result?.message || "Failed to create Firm");
         }
 
         return result.data?.isActive;
     } catch (error: any) {
-        throw new Error(error.response?.data?.message || error.message || "Failed to create branch");
+        throw new Error(error.response?.data?.message || error.message || "Failed to create Firm");
     }
 }
