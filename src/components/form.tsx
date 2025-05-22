@@ -1,47 +1,78 @@
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { createBranch } from "@/lib/branch.ts"
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { createBranch, toggleBranch } from "@/lib/branch";
+
+interface Branch {
+  id: number;
+  name: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  pincode: string;
+  isActive: boolean;
+}
 
 export default function AdminBranchForm() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Omit<Branch, "id" | "isActive">>({
     name: "",
     address1: "",
     address2: "",
     city: "",
     state: "",
     pincode: "",
-  })
+  });
 
-  const [branches, setBranches] = useState<any[]>([])
-  const [message, setMessage] = useState("")
-  const [error, setError] = useState("")
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setMessage("")
-    setError("")
+    e.preventDefault();
+    setMessage("");
+    setError("");
 
     try {
-      const msg = await createBranch(formData)
-      setBranches([...branches, { ...formData, active: true }])
-      setFormData({ name: "", address1: "", address2: "", city: "", state: "", pincode: "" })
-      setMessage(msg)
+      const newBranch = await createBranch(formData);
+      if (typeof newBranch === "string") {
+        setError(newBranch);
+      } else {
+        setBranches([...branches, newBranch]);
+        setFormData({
+          name: "",
+          address1: "",
+          address2: "",
+          city: "",
+          state: "",
+          pincode: "",
+        });
+        setMessage("Branch created successfully");
+      }
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     }
-  }
+  };
 
-  const toggleActivation = (index: number) => {
-    const updated = [...branches]
-    updated[index].active = !updated[index].active
-    setBranches(updated)
-  }
+  const handleToggle = async (branchId: number, index: number) => {
+    const previous = branches[index].isActive;
+
+    try {
+
+      const newStatus = await toggleBranch(branchId);
+      const updated = [...branches];
+      updated[index].isActive = newStatus;
+      setBranches(updated);
+    } catch (err: any) {
+      setError(`Failed to toggle status: ${err.message}`);
+      // Optional: revert UI to previous state or show toast
+    }
+  };
 
   return (
     <div>
@@ -72,17 +103,20 @@ export default function AdminBranchForm() {
         </thead>
         <tbody>
           {branches.map((branch, index) => (
-            <tr key={index} className="border-t">
+            <tr key={branch.id} className="border-t">
               <td>{branch.name}</td>
               <td>{`${branch.address1}, ${branch.address2}, ${branch.city}, ${branch.state}`}</td>
               <td>{branch.pincode}</td>
               <td>
-                <Switch checked={branch.active} onCheckedChange={() => toggleActivation(index)} />
+                <Switch
+                  checked={branch.isActive}
+                  onCheckedChange={() => handleToggle(branch.id, index)}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-  )
+  );
 }
