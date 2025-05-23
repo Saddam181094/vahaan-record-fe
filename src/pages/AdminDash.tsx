@@ -18,37 +18,35 @@ const AdminDashboard = () => {
     logout();
   };
   return (
-    <>
-     <SidebarProvider>
-        <AppSidebar />
-        <SidebarTrigger />
-        <div className="flex flex-col w-full bg-white px-6 py-4 h-full min-h-screen">
-          <div className="flex justify-end mb-4">
-            <Button variant="destructive" onClick={() => setOpen(true)}>
-              Logout
-            </Button>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogContent>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarTrigger />
+      <div className="flex flex-col w-full bg-white px-6 py-4 h-full min-h-screen">
+        <div className="flex justify-end mb-4">
+          <Button variant="destructive" onClick={() => setOpen(true)}>
+            Logout
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
               <DialogHeader>
                 <DialogTitle>Confirm Logout</DialogTitle>
                 <DialogDescription>
-                Are you sure you want to logout?
+                  Are you sure you want to logout?
                 </DialogDescription>
               </DialogHeader>
               <div className="flex justify-end gap-2 mt-4">
                 <Button variant="outline" onClick={() => setOpen(false)}>
-                Cancel
+                  Cancel
                 </Button>
                 <Button variant="destructive" onClick={handleLogout}>
-                Logout
+                  Logout
                 </Button>
               </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+            </DialogContent>
+          </Dialog>
         </div>
-      </SidebarProvider>
-    </>
+      </div>
+    </SidebarProvider>
   );
 };
 

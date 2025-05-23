@@ -25,6 +25,7 @@ import {
 
 
 import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router-dom";
 
 type SidebarItem = {
   title: string;
@@ -66,9 +67,9 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) =>
+              {items.map((item, index) =>
                 item.submenu ? (
-                  <Collapsible>
+                  <Collapsible key={index + 1}>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuItem>
                         <SidebarMenuButton>
@@ -87,10 +88,10 @@ export function AppSidebar() {
                       {item.submenu.map((sub) => (
                         <SidebarMenuItem key={sub.title}>
                           <SidebarMenuButton asChild>
-                            <a href={sub.url}>
+                            <Link to={sub?.url ?? ''}>
                               <sub.icon />
                               <span>{sub.title}</span>
-                            </a>
+                            </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
                       ))}
@@ -99,10 +100,10 @@ export function AppSidebar() {
                 ) : (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url}>
+                      <Link to={item.url ?? ""}>
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )

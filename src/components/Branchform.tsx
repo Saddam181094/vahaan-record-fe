@@ -65,45 +65,45 @@ export default function AdminBranchForm() {
     formState: { errors },
   } = useForm<Branch>({ defaultValues: {} as Branch });
 
-const indianStates = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-  // Union Territories
-  "Andaman and Nicobar Islands",
-  "Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu",
-  "Delhi",
-  "Jammu and Kashmir",
-  "Ladakh",
-  "Lakshadweep",
-  "Puducherry",
-];
+  const indianStates = [
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+    // Union Territories
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi",
+    "Jammu and Kashmir",
+    "Ladakh",
+    "Lakshadweep",
+    "Puducherry",
+  ];
 
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(false);
@@ -113,6 +113,7 @@ const indianStates = [
 
   useEffect(() => {
     setLoading(true);
+    setLoading2(true);
     getBranch()
       .then((resp) => {
         setBranches(resp?.data);
@@ -120,7 +121,10 @@ const indianStates = [
       .catch((err: any) => {
         console.error("Error fetching branches:", err);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setLoading2(false);
+      });
   }, [refreshFlag]);
 
   const onSubmit: SubmitHandler<Branch> = async (data: Branch) => {
@@ -181,36 +185,36 @@ const indianStates = [
             <DialogTitle>Add New Branch</DialogTitle>
           </DialogHeader>
 
-<form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
-  {["name", "address1", "address2", "city", "state", "pincode"].map((field) => (
-    <div key={field}>
-      {field === "state" ? (
-        <Select
-          onValueChange={(value) => setValue("state", value)}
-          defaultValue={watch("state")}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a state" />
-          </SelectTrigger>
-          <SelectContent>
-            {indianStates.map((state) => (
-              <SelectItem key={state} value={state}>
-                {state}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ) : (
-        <Input
-          {...register(field as keyof Branch, { required: true })}
-          placeholder={field[0].toUpperCase() + field.slice(1)}
-        />
-      )}
-      {errors[field as keyof Branch] && (
-        <p className="text-red-600 text-sm">{field} is required</p>
-      )}
-    </div>
-              )
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
+            {["name", "address1", "address2", "city", "state", "pincode"].map((field) => (
+              <div key={field}>
+                {field === "state" ? (
+                  <Select
+                    onValueChange={(value) => setValue("state", value)}
+                    defaultValue={watch("state")}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {indianStates.map((state) => (
+                        <SelectItem key={state} value={state}>
+                          {state}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    {...register(field as keyof Branch, { required: true })}
+                    placeholder={field[0].toUpperCase() + field.slice(1)}
+                  />
+                )}
+                {errors[field as keyof Branch] && (
+                  <p className="text-red-600 text-sm">{field} is required</p>
+                )}
+              </div>
+            )
             )}
 
             <div className="flex justify-end gap-2">
@@ -226,7 +230,7 @@ const indianStates = [
       </Dialog>
       {loading2 && (
         <div>
-          <Loader isLoading/>
+          <Loader isLoading />
         </div>
       )}
       <Table>
@@ -254,8 +258,8 @@ const indianStates = [
                 </TableCell>
                 <TableCell>
                   <Switch
-                  checked={!!branch.isActive}
-                  onCheckedChange={() => handleToggle(branch?.branchCode ?? "")}
+                    checked={!!branch.isActive}
+                    onCheckedChange={() => handleToggle(branch?.branchCode ?? "")}
                   />
                 </TableCell>
               </TableRow>
