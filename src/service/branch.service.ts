@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { getConfig,url} from "@/service/auth.service";
 import type { Branch } from "@/components/Branchform";
 
@@ -67,3 +67,16 @@ export async function toggleBranch(branchId: string): Promise<boolean> {
         throw new Error(error.response?.data?.message || error.message || "Failed to create branch");
     }
 }
+
+export const getActiveBranch = async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/utils/branches/active", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};

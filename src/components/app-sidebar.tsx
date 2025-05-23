@@ -1,10 +1,10 @@
 import {
-  Calendar,
   Home,
-  Inbox,
-  Search,
+  CircleUser,
+  Building,
   Settings,
   ChevronDown,
+  Building2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,10 +40,11 @@ const items1: Record<string, SidebarItem[]> = {
       title: "Utilities",
       icon: Settings,
       submenu: [
-        { title: "Firm", url: "/superadmin/AddFirm", icon: Home },
-        { title: "Branch", url: "/superadmin/AddBranch", icon: Home },
+        { title: "Firm", url: "/superadmin/AddFirm", icon: Building2 },
+        { title: "Branch", url: "/superadmin/AddBranch", icon: Building },
       ],
     },
+    { title: "Employees", url: "/superadmin/AddEmployee", icon: CircleUser },
   ],
   client: [
     { title: "Home", url: "/client/home", icon: Home },

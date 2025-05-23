@@ -32,9 +32,6 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -46,18 +43,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, 
   []);
 
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const navigate = useNavigate();
+
   const login = async (email: string, password: string) => {
     const {user, token} = await auth.login(email, password);
+
+    setUser(user);
+    setToken(token);
+    auth.storeUserAndToken(user, token);
 
       if (!user?.role) {
     console.error("User role is missing. Cannot navigate.");
     return;
   }
-
-    setUser(user);
-    setToken(token);
-
-    auth.storeUserAndToken(user, token);
 
     navigate(`/${user.role}`);
     };
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setToken(null);
     auth.clearUserAndToken();
-    navigate("/login");
+    navigate("/");
   };
 
 useEffect(() => {

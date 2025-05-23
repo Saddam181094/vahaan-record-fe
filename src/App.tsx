@@ -7,11 +7,12 @@ import UserDashboard from "@/pages/UserDash";
 import EmployeeDashboard from "@/pages/EmployeeDash";
 import AddBranch from "@/pages/AdBranch";
 import AddFirm from "@/pages/AdFirm";
+import AddEmployee from "@/pages/AdEmp";
 export default function App() {
   return (
 
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<LoginPage />} />
           <Route path="/superadmin" element={
             <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
               <AdminDashboard />
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/unauthorized" element={<div className="p-4 text-center">Unauthorized</div>} />
           <Route path="/superadmin/AddBranch" element={<AddBranch />} />
           <Route path="/superadmin/AddFirm" element={<AddFirm/>} />
+          <Route path="/superadmin/AddEmployee" element={<AddEmployee/>} />
         </Routes>
   );
 }

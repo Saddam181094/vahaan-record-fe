@@ -3,6 +3,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { createEmployee } from "@/service/emp.service";
 import {
   Table,
   TableHeader,
@@ -18,7 +19,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Switch } from "@/components/ui/switch";
+// import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectTrigger,
@@ -29,9 +30,7 @@ import {
 
 import Loader from "@/components/Loader";
 import {
-  createBranch,
-  getBranch,
-  toggleBranch,
+  getActiveBranch
 } from "@/service/branch.service";
 import {
   Dialog,
@@ -39,23 +38,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { Branch } from "./Branchform";
+import { UserRole } from "@/context/AuthContext";
 // import { Toaster } from "@/components/ui/sonner";
 
-export interface Branch {
+export interface Employee {
   branchCode?: string;
-  id: string;
-  name: string;
-  address1: string;
-  address2: string;
-  city: string;
-  state: string;
-  pincode: string;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  role: string;
 }
 
-export default function AdminBranchForm() {
+export default function EmployeeForm() {
   const {
     register,
     handleSubmit,
@@ -63,49 +59,10 @@ export default function AdminBranchForm() {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<Branch>({ defaultValues: {} as Branch });
+  } = useForm<Employee>({ defaultValues: {} as Employee });
 
-const indianStates = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-  // Union Territories
-  "Andaman and Nicobar Islands",
-  "Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu",
-  "Delhi",
-  "Jammu and Kashmir",
-  "Ladakh",
-  "Lakshadweep",
-  "Puducherry",
-];
-
-  const [branches, setBranches] = useState<Branch[]>([]);
+  const [Employee, setEmployee] = useState<Employee[]>([]);
+  const [branch, setBranch] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -113,9 +70,9 @@ const indianStates = [
 
   useEffect(() => {
     setLoading(true);
-    getBranch()
+    getActiveBranch()
       .then((resp) => {
-        setBranches(resp?.data);
+        setBranch(resp?.data);
       })
       .catch((err: any) => {
         console.error("Error fetching branches:", err);
@@ -123,11 +80,11 @@ const indianStates = [
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
-  const onSubmit: SubmitHandler<Branch> = async (data: Branch) => {
+  const onSubmit: SubmitHandler<Employee> = async (data: Employee) => {
     setLoading(true);
     try {
-      const newBranch = await createBranch(data);
-      setBranches([...branches, newBranch]);
+      const newEmployee = await createEmployee(data);
+      setEmployee([...Employee, newEmployee]);
       setDialogOpen(false);
       setRefreshFlag((prev) => !prev); // Trigger a refresh
       reset(); // Reset the form after successful submission
@@ -143,24 +100,24 @@ const indianStates = [
     reset(); // Reset the form when dialog is closed
   };
 
-  const handleToggle = async (branch: string) => {
-    setLoading2(true);
-    try {
-      await toggleBranch(branch);
-    } catch (err: any) {
-      console.error(err);
-    } finally {
-      setRefreshFlag((prev) => !prev); // Trigger a refresh
-      setLoading2(false);
-    }
-  };
+//   const handleToggle = async (branch: string) => {
+//     setLoading2(true);
+//     try {
+
+//     } catch (err: any) {
+//       console.error(err);
+//     } finally {
+//       setRefreshFlag((prev) => !prev); // Trigger a refresh
+//       setLoading2(false);
+//     }
+//   };
 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  const totalPages = Math.ceil(branches.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(Employee.length / ITEMS_PER_PAGE);
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedBranches = branches.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const paginatedEmployee = Employee.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
   const handlePrev = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -173,40 +130,56 @@ const indianStates = [
   return (
     <div>
       <Button onClick={() => setDialogOpen(true)} className="mb-4">
-        Add Branch
+        Add Employee
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add New Branch</DialogTitle>
+            <DialogTitle>Add New Employee</DialogTitle>
           </DialogHeader>
 
 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
-  {["name", "address1", "address2", "city", "state", "pincode"].map((field) => (
+  {["firstname","lastname","email","role","phone","branchCode" ].map((field) => (
     <div key={field}>
-      {field === "state" ? (
+      {field === "branchCode" ? (
         <Select
-          onValueChange={(value) => setValue("state", value)}
-          defaultValue={watch("state")}
+          onValueChange={(value) => setValue("branchCode", value)}
+          defaultValue={watch("branchCode")}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select a state" />
+            <SelectValue placeholder="Select a Branch" />
           </SelectTrigger>
           <SelectContent>
-            {indianStates.map((state) => (
-              <SelectItem key={state} value={state}>
-                {state}
+            {branch.map((resp) => (
+              <SelectItem key={resp?.branchCode ?? ""} value={resp?.branchCode ?? ""}>
+                {resp.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : field === "role" ? (
+        <Select
+          onValueChange={(value) => setValue("role", value)}
+          defaultValue={watch("role")}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a Role" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.values(UserRole).map((role) => (
+              <SelectItem key={role} value={role}>
+                {role.charAt(0).toUpperCase() + role.slice(1)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       ) : (
         <Input
-          {...register(field as keyof Branch, { required: true })}
+          {...register(field as keyof Employee, { required: true })}
           placeholder={field[0].toUpperCase() + field.slice(1)}
         />
       )}
-      {errors[field as keyof Branch] && (
+      {errors[field as keyof Employee] && (
         <p className="text-red-600 text-sm">{field} is required</p>
       )}
     </div>
@@ -218,7 +191,7 @@ const indianStates = [
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Branch"}
+                {loading ? "Creating..." : "Create Employee"}
               </Button>
             </div>
           </form>
@@ -233,30 +206,31 @@ const indianStates = [
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>Address</TableHead>
-            <TableHead>State</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Phone No.</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>BranchCode</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {paginatedBranches.length === 0 ? (
+          {paginatedEmployee.length === 0 ? (
             <TableRow>
               <TableCell colSpan={6} className="text-center py-4">
-                No branches found.
+                No Employee found.
               </TableCell>
             </TableRow>
           ) : (
-            paginatedBranches.map((branch) => (
-              <TableRow key={branch.branchCode}>
-                <TableCell>{branch.name}</TableCell>
+            paginatedEmployee.map((Employee) => (
+              <TableRow key={Employee.branchCode}>
+                <TableCell>{Employee.firstname},{Employee.lastname}</TableCell>
                 <TableCell>
-                  {branch.address1}, {branch.address2}, {branch.city},{" "}
-                  {branch.state} , {branch.pincode}
+                  {Employee.email}
                 </TableCell>
                 <TableCell>
-                  <Switch
-                  checked={!!branch.isActive}
-                  onCheckedChange={() => handleToggle(branch?.branchCode ?? "")}
-                  />
+                  {Employee.phone}
+                </TableCell>
+                <TableCell>
+                  {Employee.role}
                 </TableCell>
               </TableRow>
             ))

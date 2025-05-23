@@ -15,11 +15,12 @@ export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) 
 
   if (!isAuthenticated) {
     // Not logged in - redirect to login
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   if (!user || !allowedRoles.includes(user.role)) {
     // Logged in but role not authorized
+    console.error("Unauthorized access attempt");
     return <Navigate to="/unauthorized" replace />;
   }
 

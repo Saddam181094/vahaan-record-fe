@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { getConfig,url} from "@/service/auth.service";
 import type { Firm } from "@/components/FirmForm";
 
