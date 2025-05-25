@@ -1,6 +1,6 @@
 import type { Employee } from "@/components/EmployeeForm";
 import axios from "axios";
-import { url } from "@/service/auth.service";
+import { url,getConfig } from "@/service/auth.service";
 
 export async function createEmployee(firmData: any): Promise<Employee> {
     const token = localStorage.getItem("token"); // Assuming user is logged in
@@ -26,3 +26,16 @@ export async function createEmployee(firmData: any): Promise<Employee> {
         throw new Error(error.response?.data?.message || error.message || "Failed to create Firm");
     }
 }
+
+export const getEmployee= async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/auth/getall-employees", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};

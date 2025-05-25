@@ -8,6 +8,8 @@ import EmployeeDashboard from "@/pages/EmployeeDash";
 import AddBranch from "@/pages/AdBranch";
 import AddFirm from "@/pages/AdFirm";
 import AddEmployee from "@/pages/AdEmp";
+import SignUpPage from "@/pages/Clientsignup";
+import Client from "@/pages/Client";
 export default function App() {
   return (
 
@@ -16,6 +18,7 @@ export default function App() {
       {/* General Routes */}
       <Route path="/" element={<LoginPage />} />
       <Route path="/unauthorized" element={<div className="p-4 text-center">Unauthorized</div>} />
+      <Route path="/signup" element={<SignUpPage />} />
 
       {/* Super Admin Routes */}
 
@@ -39,6 +42,11 @@ export default function App() {
       <Route path="/superadmin/AddEmployee" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <AddEmployee />
+        </ProtectedRoute>
+      } />
+      <Route path="/superadmin/UnverifiedClients" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <Client />
         </ProtectedRoute>
       } />
 

@@ -3,7 +3,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createEmployee } from "@/service/emp.service";
+import { createEmployee, getEmployee } from "@/service/emp.service";
 import {
   Table,
   TableHeader,
@@ -44,10 +44,10 @@ import { UserRole } from "@/context/AuthContext";
 
 export interface Employee {
   branchCode?: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  phone: string;
+  phoneNo: string;
   role: string;
 }
 
@@ -62,6 +62,7 @@ export default function EmployeeForm() {
   } = useForm<Employee>({ defaultValues: {} as Employee });
 
   const [Employee, setEmployee] = useState<Employee[]>([]);
+  const [Employee2, setEmployee2] = useState<Employee[]>([]);
   const [branch, setBranch] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
@@ -70,8 +71,17 @@ export default function EmployeeForm() {
 
   useEffect(() => {
     setLoading(true);
+    getEmployee()
+      .then((resp) => { 
+        setEmployee2(resp?.data);
+      })
+      .catch((err: any) => {
+        console.error("Error fetching branches:", err);
+      })
+      .finally(() => setLoading(false));
+
     getActiveBranch()
-      .then((resp) => {
+      .then((resp) => { 
         setBranch(resp?.data);
       })
       .catch((err: any) => {
@@ -115,9 +125,9 @@ export default function EmployeeForm() {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  const totalPages = Math.ceil(Employee.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(Employee2.length / ITEMS_PER_PAGE);
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedEmployee = Employee.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const paginatedEmployee = Employee2.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
   const handlePrev = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -208,7 +218,6 @@ export default function EmployeeForm() {
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone No.</TableHead>
-            <TableHead>Role</TableHead>
             <TableHead>BranchCode</TableHead>
           </TableRow>
         </TableHeader>
@@ -222,15 +231,15 @@ export default function EmployeeForm() {
           ) : (
             paginatedEmployee.map((Employee) => (
               <TableRow key={Employee.branchCode}>
-                <TableCell>{Employee.firstname},{Employee.lastname}</TableCell>
+                <TableCell>{Employee.firstName} {Employee.lastName}</TableCell>
                 <TableCell>
                   {Employee.email}
                 </TableCell>
                 <TableCell>
-                  {Employee.phone}
+                  {Employee.phoneNo}
                 </TableCell>
                 <TableCell>
-                  {Employee.role}
+                  {Employee.branchCode}
                 </TableCell>
               </TableRow>
             ))

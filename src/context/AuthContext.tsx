@@ -25,6 +25,7 @@ interface AuthContextProps {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isHydrated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -33,19 +34,22 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
-    }
-  }, 
-  []);
-
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+  const storedUser = auth.getStoredUser();
+  const storedToken = auth.getStoredToken();
+
+  if (storedUser && storedToken) {
+    setUser(storedUser);
+    setToken(storedToken);
+  }
+
+  setIsHydrated(true);
+}, []);
 
   const login = async (email: string, password: string) => {
     const {user, token} = await auth.login(email, password);
@@ -69,18 +73,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     navigate("/");
   };
 
-useEffect(() => {
-  const storedUser = auth.getStoredUser();
-  const storedToken = auth.getStoredToken();
 
-  if (storedUser && storedToken) {
-    setUser(storedUser);
-    setToken(storedToken);
-  }
-}, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout,isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, token, login, logout,isAuthenticated: !!user && !!token && isHydrated,isHydrated }}>
       {children}
     </AuthContext.Provider>
   );

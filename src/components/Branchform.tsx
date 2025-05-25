@@ -54,18 +54,7 @@ export interface Branch {
   createdAt?: string;
   updatedAt?: string;
 }
-
-export default function AdminBranchForm() {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<Branch>({ defaultValues: {} as Branch });
-
-  const indianStates = [
+export const indianStates = [
     "Andhra Pradesh",
     "Arunachal Pradesh",
     "Assam",
@@ -104,6 +93,15 @@ export default function AdminBranchForm() {
     "Lakshadweep",
     "Puducherry",
   ];
+export default function AdminBranchForm() {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<Branch>({ defaultValues: {} as Branch });
 
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(false);
@@ -238,7 +236,7 @@ export default function AdminBranchForm() {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Address</TableHead>
-            <TableHead>State</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

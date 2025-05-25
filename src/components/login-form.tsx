@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { ForgotPasswordModal } from "./forgotPass";
+import { Link } from "react-router-dom";
 
 import type { HTMLAttributes } from "react";
 
@@ -38,7 +39,7 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden md:mx-30 sm:mx-0">
         <CardContent className="grid px-0 md:grid-cols-1 sm:px-5">
-          <form className="p-6 md:p-5" onSubmit={handleSubmit}>
+          <form className="p-6 md:p-5 bg-stone-200 dark:bg-stone-100 rounded-xl" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold pb-5">Welcome</h1>
@@ -46,11 +47,12 @@ export function LoginForm({
                   Login to your Adviz Portal account
                 </p>
               </div>
-              <div className="grid gap-3">
+                <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
+                  className=""
                   placeholder="m@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -58,7 +60,7 @@ export function LoginForm({
                   onFocus={(e) => (e.target.placeholder = "")}
                   onBlur={(e) => (e.target.placeholder = "m@example.com")}
                 />
-              </div>
+                </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
@@ -103,9 +105,9 @@ export function LoginForm({
               )}
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <Link to="/signup" className="underline underline-offset-4">
                   Sign up
-                </a>
+                </Link>
               </div>
             </div>
           </form>

@@ -10,8 +10,12 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated,isHydrated } = useAuth();
   const location = useLocation();
+
+  if (!isHydrated) {
+  return <div className="text-center p-4">Loading...</div>;
+}
 
   if (!isAuthenticated) {
     // Not logged in - redirect to login
