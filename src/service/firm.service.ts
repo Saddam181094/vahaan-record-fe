@@ -14,6 +14,19 @@ export const getFirm = async () => {
       throw error;
     });
 };
+export const getActiveFirm = async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/utils/firms/active", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
 
 export async function createFirm(firmData: any): Promise<Firm> {
     const token = localStorage.getItem("token"); // Assuming user is logged in

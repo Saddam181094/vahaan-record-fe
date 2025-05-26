@@ -19,13 +19,13 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
+import { useForm,Controller } from "react-hook-form";
 import type { Branch } from "@/components/Branchform";
-import { getBranch } from "@/service/branch.service";
+import { getActiveBranch } from "@/service/branch.service";
 import type { Employee } from "@/components/EmployeeForm";
 import type { Firm } from "@/components/FirmForm";
 import { getbranchEmployee } from "@/service/emp.service";
-import { getFirm } from "@/service/firm.service";
+import { getActiveFirm } from "@/service/firm.service";
 
 // Interfaces
 export interface Case {
@@ -127,7 +127,7 @@ export default function CaseForm() {
         permitExpiry: "",
       },
       transactionDetail: {
-        to: undefined,
+        to: "" as unknown as TransactionTo,
         hptId: "",
         hpaId: "",
         fitness: false,
@@ -135,7 +135,7 @@ export default function CaseForm() {
         rma: false,
         alteration: false,
         conversion: false,
-        numberPlate: undefined,
+        numberPlate: "" as unknown as NumberPlate,
         addressChange: false,
         drc: false,
         remarks: "",
@@ -161,7 +161,7 @@ export default function CaseForm() {
   useEffect(() => {
     setLoading(true);
     setLoading2(true);
-    getBranch()
+    getActiveBranch()
       .then((resp) => {
         setBranches(resp?.data);
       })
@@ -177,6 +177,8 @@ export default function CaseForm() {
   useEffect(() => {
     setLoading(true);
     setLoading2(true);
+
+    if(b !== "") {
     getbranchEmployee(b)
       .then((resp) => {
         setbranchEmp(resp?.data);
@@ -188,11 +190,14 @@ export default function CaseForm() {
         setLoading(false);
         setLoading2(false);
       });
+      }
   }, [refreshFlag]);
+
+  
 
   useEffect(() => {
     setLoading(true);
-    getFirm()
+    getActiveFirm()
       .then((resp) => {
         setfirms(resp?.data);
       })
@@ -228,7 +233,9 @@ export default function CaseForm() {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select Branch" />
+                <SelectValue placeholder="Select Branch" >
+                    {watch("generalDetails.branchCodeId")}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {branches.map((branch) => (
@@ -410,7 +417,7 @@ export default function CaseForm() {
               <SelectContent>
                 {firms.map((firm) => (
                   <SelectItem key={firm.id} value={firm.id}>
-                    {firm.name} | ({firm.id})
+                    {firm.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -425,7 +432,7 @@ export default function CaseForm() {
               <SelectContent>
                 {firms.map((firm) => (
                   <SelectItem key={firm.id} value={firm.id}>
-                    {firm.name} | ({firm.id})
+                    {firm.name} 
                   </SelectItem>
                 ))}
               </SelectContent>
