@@ -39,3 +39,17 @@ export const getEmployee= async () => {
       throw error;
     });
 };
+
+export const getbranchEmployee= async (branchId:any) => {
+  const config = getConfig();
+  return axios
+    .get(`${url} + /auth/get-employees/${branchId}`, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+

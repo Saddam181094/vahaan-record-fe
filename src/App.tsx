@@ -10,6 +10,7 @@ import AddFirm from "@/pages/AdFirm";
 import AddEmployee from "@/pages/AdEmp";
 import SignUpPage from "@/pages/Clientsignup";
 import Client from "@/pages/Client";
+import CaseForm from "@/pages/Case";
 export default function App() {
   return (
 
@@ -68,7 +69,11 @@ export default function App() {
         </ProtectedRoute>
       } />
 
-
+        <Route path="/employee/CaseForm" element={
+        <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
+          <CaseForm />
+        </ProtectedRoute>
+      } />
 
 
 

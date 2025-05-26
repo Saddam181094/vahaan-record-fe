@@ -5,7 +5,8 @@ import {
   Settings,
   ChevronDown,
   Building2,
-  UserRoundPen
+  UserRoundPen,
+  Circle
 } from "lucide-react";
 import {
   Sidebar,
@@ -53,7 +54,8 @@ const items1: Record<string, SidebarItem[]> = {
     { title: "Home", url: "/client/home", icon: Home },
   ],
   employee: [
-    { title: "Home", url: "/employee/home", icon: Home },
+    { title: "Home", url: "/employee", icon: Home },
+     { title: "Case", url: "/employee/CaseForm", icon: CircleUser },
   ],
 };
 
