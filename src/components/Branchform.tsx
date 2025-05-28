@@ -228,7 +228,7 @@ export default function AdminBranchForm() {
       </Dialog>
       {loading2 && (
         <div>
-          <Loader isLoading />
+          <Loader />
         </div>
       )}
       <Table>

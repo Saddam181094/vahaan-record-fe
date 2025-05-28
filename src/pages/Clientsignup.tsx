@@ -77,47 +77,152 @@ return(
       </CardHeader>
       <CardContent>
         <form className="space-y-5" onSubmit={handleSubmit(onsubmit)}>
-          {["firstName", "lastName", "email", "mobileNo", "firmName", "address1", "address2", "city", "state", "pincode"].map((field) => (
-            <div key={field}>
-              <Label htmlFor={field} className="text-gray-700 font-medium">
-                {field[0].toUpperCase() + field.slice(1)}
-              </Label>
-              {field === "state" ? (
-                <Select
-                  onValueChange={(value) => setValue("state", value)}
-                  defaultValue={watch("state")}
-                >
-                  <SelectTrigger className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400">
-                    <SelectValue placeholder={`Select ${field}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {indianStates.map((state) => (
-                      <SelectItem key={state} value={state}>
-                        {state}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Input
-                  {...register(field as keyof NewClient, { required: true })}
-                  placeholder={field[0].toUpperCase() + field.slice(1)}
-                  className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
-                />
-              )}
-              {errors[field as keyof NewClient] && (
-                <p className="text-red-600 text-xs mt-1">{field[0].toUpperCase() + field.slice(1)} is required</p>
+          {/* Row 1: First Name, Last Name */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <Label htmlFor="firstName" className="text-gray-700 font-medium">First Name</Label>
+              <Input
+                {...register("firstName", { required: true })}
+                placeholder="First Name"
+                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+              />
+              {errors.firstName && (
+                <p className="text-red-600 text-xs mt-1">First Name is required</p>
               )}
             </div>
-          ))}
-
+            <div className="flex-1">
+              <Label htmlFor="lastName" className="text-gray-700 font-medium">Last Name</Label>
+              <Input
+                {...register("lastName", { required: true })}
+                placeholder="Last Name"
+                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+              />
+              {errors.lastName && (
+                <p className="text-red-600 text-xs mt-1">Last Name is required</p>
+              )}
+            </div>
+          </div>
+          {/* Row 2: Email, Mobile No */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+              <Input
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Enter a valid email address",
+                  },
+                })}
+                placeholder="Email"
+                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+              />
+              {errors.email && (
+                <p className="text-red-600 text-xs mt-1">{errors.email.message}</p>
+              )}
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="mobileNo" className="text-gray-700 font-medium">Mobile No</Label>
+              <Input
+                {...register("mobileNo", { required: true })}
+                placeholder="Mobile No"
+                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+              />
+              {errors.mobileNo && (
+                <p className="text-red-600 text-xs mt-1">Mobile No is required</p>
+              )}
+            </div>
+          </div>
+          {/* Row 3: Firm Name */}
+          <div>
+            <Label htmlFor="firmName" className="text-gray-700 font-medium">Firm Name</Label>
+            <Input
+              {...register("firmName", { required: true })}
+              placeholder="Firm Name"
+              className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+            />
+            {errors.firmName && (
+              <p className="text-red-600 text-xs mt-1">Firm Name is required</p>
+            )}
+          </div>
+          {/* Row 4: Address1, Address2 */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <Label htmlFor="address1" className="text-gray-700 font-medium">Address 1</Label>
+              <Input
+                {...register("address1", { required: true })}
+                placeholder="Address 1"
+                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+              />
+              {errors.address1 && (
+                <p className="text-red-600 text-xs mt-1">Address 1 is required</p>
+              )}
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="address2" className="text-gray-700 font-medium">Address 2</Label>
+              <Input
+                {...register("address2", { required: true })}
+                placeholder="Address 2"
+                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+              />
+              {errors.address2 && (
+                <p className="text-red-600 text-xs mt-1">Address 2 is required</p>
+              )}
+            </div>
+          </div>
+          {/* Row 5: City, State, Pincode */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <Label htmlFor="city" className="text-gray-700 font-medium">City</Label>
+              <Input
+                {...register("city", { required: true })}
+                placeholder="City"
+                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+              />
+              {errors.city && (
+                <p className="text-red-600 text-xs mt-1">City is required</p>
+              )}
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="state" className="text-gray-700 font-medium">State</Label>
+              <Select
+                onValueChange={(value) => setValue("state", value)}
+                defaultValue={watch("state")}
+              >
+                <SelectTrigger className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400">
+                  <SelectValue placeholder="Select State" />
+                </SelectTrigger>
+                <SelectContent>
+                  {indianStates.map((state) => (
+                    <SelectItem key={state} value={state}>
+                      {state}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.state && (
+                <p className="text-red-600 text-xs mt-1">State is required</p>
+              )}
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="pincode" className="text-gray-700 font-medium">Pincode</Label>
+              <Input
+                {...register("pincode", { required: true })}
+                placeholder="Pincode"
+                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+              />
+              {errors.pincode && (
+                <p className="text-red-600 text-xs mt-1">Pincode is required</p>
+              )}
+            </div>
+          </div>
           <Button
             type="submit"
             className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold py-2 rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all"
           >
             Sign Up
           </Button>
-          </form>
+        </form>
       </CardContent>
     </Card>
   </div>

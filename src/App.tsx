@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Suspense } from "react";
 import { UserRole } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import LoginPage from "@/pages/Login";
@@ -11,9 +12,11 @@ import AddEmployee from "@/pages/AdEmp";
 import SignUpPage from "@/pages/Clientsignup";
 import Client from "@/pages/Client";
 import CaseForm from "@/pages/Case";
+import { Loader } from "lucide-react";
 export default function App() {
   return (
 
+<Suspense fallback={<Loader/>}>
     <Routes>
 
       {/* General Routes */}
@@ -78,5 +81,6 @@ export default function App() {
 
 
     </Routes>
+    </Suspense>
   );
 }

@@ -111,13 +111,13 @@ export function LoginForm({
               </div>
             </div>
           </form>
-          {/* <div className="bg-muted relative hidden md:block">
+          <div className="bg-muted relative md:block">
             <img
               src="/vite.svg"
               alt="Image"
               className="absolute inset-0 h-full dark:brightness-[0.2] dark:grayscale"
             />
-          </div> */}
+          </div>
         </CardContent>
       </Card>
       {/* <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">

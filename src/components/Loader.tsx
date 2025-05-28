@@ -1,16 +1,9 @@
-import { Loader2 } from "lucide-react";
-import React from "react";
+import CircularProgress from "@/components/CircularProgress";
 
-interface LoaderProps {
-  isLoading: boolean;
-}
-
-const Loader: React.FC<LoaderProps> = ({ isLoading }) => {
-  if (!isLoading) return null;
-
+const Loader = ({color}:{color?:string}) => {
   return (
-    <div className="fixed inset-0 z-10 flex items-center justify-center bg-white bg-opacity-50">
-      <Loader2 className="animate-spin w-6 h-6 text-gray-500" />
+    <div className="absolute h-[80%] w-[75%] z-50 bg-neutral-700 opacity-25 flex justify-center items-center">
+      <CircularProgress color={`${color}`}/>
     </div>
   );
 };
