@@ -5,8 +5,7 @@ import {
   Settings,
   ChevronDown,
   Building2,
-  UserRoundPen,
-  Circle
+  UserRoundPen
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,7 +26,7 @@ import {
 
 
 import { useAuth } from "@/context/AuthContext";
-import { Link } from "react-router-dom";
+import { Link,useLocation } from "react-router-dom";
 
 type SidebarItem = {
   title: string;
@@ -55,7 +54,11 @@ const items1: Record<string, SidebarItem[]> = {
   ],
   employee: [
     { title: "Home", url: "/employee", icon: Home },
-     { title: "Case", url: "/employee/CaseForm", icon: CircleUser },
+     { title: "Case", url: "/employee", icon: UserRoundPen,
+       submenu: [
+        { title: "New Case", url: "/employee/CaseForm", icon: CircleUser },
+        { title: "Cases", url: "/employee", icon: CircleUser }]
+      },
   ],
 };
 
@@ -63,9 +66,11 @@ export function AppSidebar() {
   const { user } = useAuth();
   const role = user?.role;
   const items = role ? items1[role] || [] : [];
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   return (
-    <Sidebar>
+      <Sidebar>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -73,9 +78,18 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item, index) =>
                 item.submenu ? (
-                  <Collapsible key={index + 1}>
+                  <Collapsible
+                    key={index}
+                    defaultOpen={item.submenu.some((sub) => sub.url === currentPath)}
+                  >
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuItem>
+                      <SidebarMenuItem
+                        className={
+                          item.submenu.some((sub) => sub.url === currentPath)
+                            ? "bg-primary/10 rounded-lg m-2"
+                            : ""
+                        }
+                      >
                         <SidebarMenuButton>
                           <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-2">
@@ -90,9 +104,12 @@ export function AppSidebar() {
 
                     <CollapsibleContent className="pl-6">
                       {item.submenu.map((sub) => (
-                        <SidebarMenuItem key={sub.title}>
+                        <SidebarMenuItem
+                          key={sub.title}
+                          className={sub.url === currentPath ? "bg-primary/10 rounded-lg m-2" : ""}
+                        >
                           <SidebarMenuButton asChild>
-                            <Link to={sub?.url ?? ''}>
+                            <Link to={sub.url ?? ""}>
                               <sub.icon />
                               <span>{sub.title}</span>
                             </Link>
@@ -102,7 +119,10 @@ export function AppSidebar() {
                     </CollapsibleContent>
                   </Collapsible>
                 ) : (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem
+                    key={item.title}
+                    className={item.url === currentPath ? "bg-primary/10 rounded-lg m-2" : ""}
+                  >
                     <SidebarMenuButton asChild>
                       <Link to={item.url ?? ""}>
                         <item.icon className="h-4 w-4" />

@@ -228,36 +228,39 @@ export default function AdminBranchForm() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Address</TableHead>
-            <TableHead>Action</TableHead>
+        <TableHead>Name</TableHead>
+        <TableHead>Address</TableHead>
+        <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedBranches.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={3} className="text-center py-4">
-                No branches found.
-              </TableCell>
-            </TableRow>
+        <TableRow>
+          <TableCell colSpan={3} className="text-center py-4">
+            No branches found.
+          </TableCell>
+        </TableRow>
           ) : (
-            paginatedBranches.map((branch) => (
-              <TableRow key={branch.branchCode}>
-                <TableCell>{branch.name}</TableCell>
-                <TableCell>
-                  {branch.address1}, {branch.address2}, {branch.city},{" "}
-                  {branch.state}, {branch.pincode}
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    checked={!!branch.isActive}
-                    onCheckedChange={() =>
-                      handleToggle(branch?.branchCode ?? "")
-                    }
-                  />
-                </TableCell>
-              </TableRow>
-            ))
+        paginatedBranches.map((branch, idx) => (
+          <TableRow
+            key={branch.branchCode}
+            className={idx % 2 === 1 ? "bg-gray-100 dark:bg-gray-800" : ""}
+          >
+            <TableCell>{branch.name}</TableCell>
+            <TableCell>
+          {branch.address1}, {branch.address2}, {branch.city},{" "}
+          {branch.state}, {branch.pincode}
+            </TableCell>
+            <TableCell>
+          <Switch
+            checked={!!branch.isActive}
+            onCheckedChange={() =>
+              handleToggle(branch?.branchCode ?? "")
+            }
+          />
+            </TableCell>
+          </TableRow>
+        ))
           )}
         </TableBody>
       </Table>

@@ -160,17 +160,29 @@ export default function AdminFirmForm() {
               </TableCell>
             </TableRow>
           ) : (
-            paginatedFirms.map((Firm) => (
-              <TableRow>
-                <TableCell>{Firm.name}</TableCell>
+            paginatedFirms.map((Firm,idx) => (
+                <TableRow
+                key={Firm.id}
+                className={
+                  (idx % 2 === 1 ? "bg-gray-400 dark:bg-gray-900 " : "") +
+                  "rounded-xl overflow-hidden"
+                }
+                style={{
+                  borderRadius: "0.75rem",
+                  overflow: "hidden",
+                }}
+                >
+                <TableCell className="first:rounded-l-xl last:rounded-l-xl">
+                  {Firm.name}
+                </TableCell>
                 <TableCell>{Firm.id}</TableCell>
                 <TableCell>
                   <Switch
-                    checked={!!Firm.isActive}
-                    onCheckedChange={() => handleToggle(Firm?.id ?? "")}
+                  checked={!!Firm.isActive}
+                  onCheckedChange={() => handleToggle(Firm?.id ?? "")}
                   />
                 </TableCell>
-              </TableRow>
+                </TableRow>
             ))
           )}
         </TableBody>

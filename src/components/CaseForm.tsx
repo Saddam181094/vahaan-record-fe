@@ -4,12 +4,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
+import {toast} from "sonner";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { format,parseISO } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +28,6 @@ import { useLoading } from "./LoadingContext";
 import type { Firm } from "@/components/FirmForm";
 import { getbranchEmployee } from "@/service/emp.service";
 import { getActiveFirm } from "@/service/firm.service";
-// import { createClient } from "@/service/client.service";
 import { createCase } from "@/service/case.service";
 
 // Interfaces
@@ -79,10 +79,10 @@ export interface TransactionDetail {
 }
 
 export interface ExpenseDetail {
-  pucCharges: number;
-  insuranceCharges: number;
-  otherCharges: number;
-  adminCharges: number;
+  pucCharges: string;
+  insuranceCharges: string;
+  otherCharges: string;
+  adminCharges: string;
 }
 
 export const TransactionTo = {
@@ -105,7 +105,8 @@ export default function CaseForm() {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    reset,
+    formState: {},
   } = useForm<Case>({
     defaultValues: {
       generalDetails: {
@@ -144,10 +145,10 @@ export default function CaseForm() {
         remarks: "",
       },
       expenseDetail: {
-        pucCharges: 0,
-        insuranceCharges: 0,
-        otherCharges: 0,
-        adminCharges: 0,
+        pucCharges: "",
+        insuranceCharges: "",
+        otherCharges: "",
+        adminCharges: "",
       },
     },
   });
@@ -163,9 +164,9 @@ export default function CaseForm() {
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
 
-  const [confirm, setConfirm] = useState<string>("");
 
-  const [refreshFlag, setRefreshFlag] = useState(false);
+
+  const [refreshFlag] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -218,10 +219,18 @@ setLoading(false);
     setLoading(true);
     createCase(data)
       .then((resp) => {
-        console.log("Case successfully created", resp);
+
+        if(resp)
+        toast.success("Case Has been Created.");
+
+        else
+        toast.error("Case Not created Due to error");
       })
-      .finally(() => setLoading(false));
-    console.log(data);
+      .finally(() => 
+      {
+      setLoading(false);
+      reset();
+      });
   };
 
   return (
@@ -229,11 +238,11 @@ setLoading(false);
       {/* General Details */}
       <Card>
         <CardContent className="grid gap-4">
-          <div className="text-xl font-semibold">General Details</div>
+          <div className="text-xl font-semibold border-b-2">General Details</div>
           <div className="flex gap-5 flex-col md:flex-row">
             <Input
               placeholder="Firm Name"
-              className="w-[50%]"
+              className="w-[35%]"
               {...register("generalDetails.firmName")}
             />
             <Select
@@ -299,7 +308,7 @@ setLoading(false);
 
       <Card>
         <CardContent className="grid gap-4 p-6">
-          <div className="text-xl font-semibold">Vehicle Detail</div>
+          <div className="text-xl font-semibold border-b-2">Vehicle Detail</div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="flex flex-col gap-1">
               <Label htmlFor="vehicleNo" className="pb-2">
@@ -356,51 +365,64 @@ setLoading(false);
       </Card>
 
       <Card>
-        <CardContent className="grid gap-4 p-6">
-          <div className="text-xl font-semibold">Expire Detail</div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {Object.entries(watch("expireDetail")).map(([key, value]) => {
-              const date = value ? new Date(value as string) : undefined;
-              return (
-                <div key={key} className="flex flex-col gap-1">
-                  <label className="text-sm font-medium capitalize">
-                    {key.replace(/([A-Z])/g, " $1")}
-                  </label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal"
-                      >
-                        {date ? format(date, "yyyy-MM-dd") : `Pick a date`}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={(selectedDate) => {
-                          if (selectedDate) {
-                            setValue(
-                              `expireDetail.${key}` as any,
-                              selectedDate.toISOString().split("T")[0]
-                            );
-                          }
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              );
-            })}
+  <CardContent className="grid gap-4 p-6">
+    <div className="text-xl font-semibold border-b-2">Expire Detail</div>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {Object.entries(watch("expireDetail")).map(([key, value]) => {
+        const date = value ? parseISO(value as string) : undefined;
+        return (
+          <div key={key} className="flex flex-col gap-1">
+            <label className="text-sm font-medium capitalize">
+              {key.replace(/([A-Z])/g, " $1")}
+            </label>
+            <div className="relative flex items-center w-full">
+              {/* Display date in input-like button */}
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal pr-10"
+                disabled
+              >
+                {date ? format(date, "yyyy-MM-dd") : `Pick a date`}
+              </Button>
+
+              {/* Calendar icon trigger */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="absolute right-0 mr-1 p-1 h-8 w-8"
+                  >
+                    📅
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(selectedDate) => {
+                      if (selectedDate) {
+                        setValue(
+                          `expireDetail.${key}` as any,
+                          format(selectedDate, "yyyy-MM-dd")
+                        );
+                      }
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        );
+      })}
+    </div>
+  </CardContent>
+</Card>
+
 
       <Card>
-        <CardContent className="grid gap-4 p-6">
-          <div className="text-xl font-semibold">Transaction Detail</div>
+        <CardContent className="grid gap-4 p-6 space-y-3">
+          <div className="text-xl font-semibold border-b-2">Transaction Detail</div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Select
               value={watch("transactionDetail.to")}
@@ -489,7 +511,7 @@ setLoading(false);
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {(
-              ["conversion", "addressChange", "drc"] as Array<
+              ["conversion", "address Change", "drc"] as Array<
                 keyof Pick<
                   TransactionDetail,
                   "conversion" | "addressChange" | "drc"
@@ -517,7 +539,7 @@ setLoading(false);
 
       <Card>
         <CardContent className="grid gap-4 p-6">
-          <div className="text-xl font-semibold">Expense Detail</div>
+          <div className="text-xl font-semibold border-b-2">Expense Detail</div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {(
               [
@@ -531,7 +553,10 @@ setLoading(false);
                 key={key}
                 type="number"
                 placeholder={key}
-                {...register(`expenseDetail.${key}`, { valueAsNumber: true })}
+                {...register(`expenseDetail.${key}`, {
+                  valueAsNumber: true,
+                  setValueAs: (v) => (v === "" || v === null ? 0 : Number(v)),
+                })}
               />
             ))}
           </div>

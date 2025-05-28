@@ -2,7 +2,7 @@ import axios from "axios";
 import { url } from "@/service/auth.service";
 import { type Case } from "@/components/CaseForm";
 
-export async function createCase(CaseData: any): Promise<Case> {
+export async function createCase(CaseData: any){
     const token = localStorage.getItem("token"); // Assuming user is logged in
     try {
         const response = await axios.post(
@@ -21,7 +21,7 @@ export async function createCase(CaseData: any): Promise<Case> {
             throw new Error(result.message || "Failed to create Case");
         }
 
-        return result.data || "Case created successfully";
+        return result || "Case created successfully";
     } catch (error: any) {
         throw new Error(error.response?.data?.message || error.message || "Failed to create Case");
     }
