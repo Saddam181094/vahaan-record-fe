@@ -19,7 +19,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm,Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import type { Branch } from "@/components/Branchform";
 import { getActiveBranch } from "@/service/branch.service";
 import type { Employee } from "@/components/EmployeeForm";
@@ -149,9 +149,14 @@ export default function CaseForm() {
     },
   });
 
+  type BranchEmployee = {
+    id: string
+    name: string
+  }
+
   const [branches, setBranches] = useState<Branch[]>([]);
   const [b, setB] = useState<string>("");
-  const [branchEmp, setbranchEmp] = useState<Employee[]>([]);
+  const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
@@ -178,22 +183,22 @@ export default function CaseForm() {
     setLoading(true);
     setLoading2(true);
 
-    if(b !== "") {
-    getbranchEmployee(b)
-      .then((resp) => {
-        setbranchEmp(resp?.data);
-      })
-      .catch((err: any) => {
-        console.error("Error fetching branches:", err);
-      })
-      .finally(() => {
-        setLoading(false);
-        setLoading2(false);
-      });
-      }
-  }, [refreshFlag]);
+    if (b !== "") {
+      getbranchEmployee(b)
+        .then((resp) => {
+          setbranchEmp(resp?.data);
+        })
+        .catch((err: any) => {
+          console.error("Error fetching branches:", err);
+        })
+        .finally(() => {
+          setLoading(false);
+          setLoading2(false);
+        });
+    }
+  }, [refreshFlag, b]);
 
-  
+
 
   useEffect(() => {
     setLoading(true);
@@ -233,14 +238,15 @@ export default function CaseForm() {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select Branch" >
-                    {watch("generalDetails.branchCodeId")}
+                <SelectValue placeholder="Select Branch">
+                  {watch("generalDetails.branchCodeId")}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {branches.map((branch) => (
-                  <SelectItem key={branch?.id} value={branch?.id}>
-                    {branch.name}
+                  <SelectItem key={branch?.branchCode} value={branch?.branchCode || 'default'}>
+                    {branch.name} -
+                    {branch?.branchCode}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -257,10 +263,10 @@ export default function CaseForm() {
               <SelectContent>
                 {branchEmp.map((emp) => (
                   <SelectItem
-                    key={emp?.branchCode ?? ""}
-                    value={emp?.branchCode ?? ""}
+                    key={emp?.id ?? ""}
+                    value={emp?.id ?? ""}
                   >
-                    {emp.firstName} {emp.lastName} | ({emp.branchCode})
+                    {emp?.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -432,7 +438,7 @@ export default function CaseForm() {
               <SelectContent>
                 {firms.map((firm) => (
                   <SelectItem key={firm.id} value={firm.id}>
-                    {firm.name} 
+                    {firm.name}
                   </SelectItem>
                 ))}
               </SelectContent>

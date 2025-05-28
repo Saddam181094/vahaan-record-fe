@@ -43,6 +43,7 @@ import { UserRole } from "@/context/AuthContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Employee {
+  id?: string;
   branchCode?: string;
   firstName: string;
   lastName: string;
@@ -72,7 +73,7 @@ export default function EmployeeForm() {
   useEffect(() => {
     setLoading(true);
     getEmployee()
-      .then((resp) => { 
+      .then((resp) => {
         setEmployee2(resp?.data);
       })
       .catch((err: any) => {
@@ -81,7 +82,7 @@ export default function EmployeeForm() {
       .finally(() => setLoading(false));
 
     getActiveBranch()
-      .then((resp) => { 
+      .then((resp) => {
         setBranch(resp?.data);
       })
       .catch((err: any) => {
@@ -110,17 +111,17 @@ export default function EmployeeForm() {
     reset(); // Reset the form when dialog is closed
   };
 
-//   const handleToggle = async (branch: string) => {
-//     setLoading2(true);
-//     try {
+  //   const handleToggle = async (branch: string) => {
+  //     setLoading2(true);
+  //     try {
 
-//     } catch (err: any) {
-//       console.error(err);
-//     } finally {
-//       setRefreshFlag((prev) => !prev); // Trigger a refresh
-//       setLoading2(false);
-//     }
-//   };
+  //     } catch (err: any) {
+  //       console.error(err);
+  //     } finally {
+  //       setRefreshFlag((prev) => !prev); // Trigger a refresh
+  //       setLoading2(false);
+  //     }
+  //   };
 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
@@ -148,52 +149,52 @@ export default function EmployeeForm() {
             <DialogTitle>Add New Employee</DialogTitle>
           </DialogHeader>
 
-<form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
-  {["firstname","lastname","email","role","phone","branchCode" ].map((field) => (
-    <div key={field}>
-      {field === "branchCode" ? (
-        <Select
-          onValueChange={(value) => setValue("branchCode", value)}
-          defaultValue={watch("branchCode")}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a Branch" />
-          </SelectTrigger>
-          <SelectContent>
-            {branch.map((resp) => (
-              <SelectItem key={resp?.branchCode ?? ""} value={resp?.branchCode ?? ""}>
-                {resp.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ) : field === "role" ? (
-        <Select
-          onValueChange={(value) => setValue("role", value)}
-          defaultValue={watch("role")}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a Role" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.values(UserRole).map((role) => (
-              <SelectItem key={role} value={role}>
-                {role.charAt(0).toUpperCase() + role.slice(1)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ) : (
-        <Input
-          {...register(field as keyof Employee, { required: true })}
-          placeholder={field[0].toUpperCase() + field.slice(1)}
-        />
-      )}
-      {errors[field as keyof Employee] && (
-        <p className="text-red-600 text-sm">{field} is required</p>
-      )}
-    </div>
-              )
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
+            {["firstname", "lastname", "email", "role", "phone", "branchCode"].map((field) => (
+              <div key={field}>
+                {field === "branchCode" ? (
+                  <Select
+                    onValueChange={(value) => setValue("branchCode", value)}
+                    defaultValue={watch("branchCode")}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a Branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {branch.map((resp) => (
+                        <SelectItem key={resp?.branchCode ?? ""} value={resp?.branchCode ?? ""}>
+                          {resp.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : field === "role" ? (
+                  <Select
+                    onValueChange={(value) => setValue("role", value)}
+                    defaultValue={watch("role")}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(UserRole).map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    {...register(field as keyof Employee, { required: true })}
+                    placeholder={field[0].toUpperCase() + field.slice(1)}
+                  />
+                )}
+                {errors[field as keyof Employee] && (
+                  <p className="text-red-600 text-sm">{field} is required</p>
+                )}
+              </div>
+            )
             )}
 
             <div className="flex justify-end gap-2">
@@ -209,7 +210,7 @@ export default function EmployeeForm() {
       </Dialog>
       {loading2 && (
         <div>
-          <Loader isLoading/>
+          <Loader isLoading />
         </div>
       )}
       <Table>

@@ -43,7 +43,7 @@ export const getEmployee= async () => {
 export const getbranchEmployee= async (branchId:any) => {
   const config = getConfig();
   return axios
-    .get(`${url} + /auth/get-employees/${branchId}`, config)
+    .get(`${url}/auth/get-employees/${branchId}`, config)
     .then((response) => {
       return response.data;
     })
