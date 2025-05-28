@@ -1,10 +1,13 @@
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import CaseForm  from "@/components/CaseForm";
 
-const AddBranch = () => { 
+const AddBranch = () => {
+ const [open, setOpen] = useState(false);
   const { logout } = useAuth();
   const handleLogout = () => {
     logout();
@@ -13,23 +16,39 @@ const AddBranch = () => {
   return (
     <>
       <SidebarProvider>
-        <div className="flex w-full">
-          <AppSidebar />
-          <div className="flex-1 flex flex-col min-h-screen bg-white">
-            <div className="flex items-center justify-between px-6 sticky top-0 bg-white z-10 border-b">
-              <SidebarTrigger />
-              <Button variant="destructive" onClick={handleLogout}>
-                Logout
-              </Button>
-            </div>
+        <AppSidebar />
+        <SidebarTrigger />
+        <div className="flex flex-col w-full bg-white px-6 py-4 h-full min-h-screen">
+          <div className="flex justify-end mb-4">
+            <Button variant="destructive" onClick={() => setOpen(true)}>
+            Logout
+          </Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Confirm Logout</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to logout?
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex justify-end gap-2">
+                   <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button variant="destructive" onClick={handleLogout}>
+                  Logout
+                </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
             <div className="flex-grow">
               <CaseForm />
             </div>
-          </div>
         </div>
       </SidebarProvider>
     </>
-  );
+    );
 };
 
 export default AddBranch;

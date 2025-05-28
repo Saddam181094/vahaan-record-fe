@@ -12,11 +12,10 @@ import AddEmployee from "@/pages/AdEmp";
 import SignUpPage from "@/pages/Clientsignup";
 import Client from "@/pages/Client";
 import CaseForm from "@/pages/Case";
-import { Loader } from "lucide-react";
+// import { Loader } from "lucide-react";
 export default function App() {
   return (
 
-<Suspense fallback={<Loader/>}>
     <Routes>
 
       {/* General Routes */}
@@ -81,6 +80,5 @@ export default function App() {
 
 
     </Routes>
-    </Suspense>
   );
 }

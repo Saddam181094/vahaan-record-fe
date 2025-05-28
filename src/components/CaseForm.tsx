@@ -19,13 +19,16 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import type { Branch } from "@/components/Branchform";
 import { getActiveBranch } from "@/service/branch.service";
-import type { Employee } from "@/components/EmployeeForm";
+// import type { Employee } from "@/components/EmployeeForm";
+import { useLoading } from "./LoadingContext";
 import type { Firm } from "@/components/FirmForm";
 import { getbranchEmployee } from "@/service/emp.service";
 import { getActiveFirm } from "@/service/firm.service";
+// import { createClient } from "@/service/client.service";
+import { createCase } from "@/service/case.service";
 
 // Interfaces
 export interface Case {
@@ -156,16 +159,16 @@ export default function CaseForm() {
 
   const [branches, setBranches] = useState<Branch[]>([]);
   const [b, setB] = useState<string>("");
+  const {setLoading} = useLoading();
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loading2, setLoading2] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const [confirm, setConfirm] = useState<string>("");
+
   const [refreshFlag, setRefreshFlag] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    setLoading2(true);
     getActiveBranch()
       .then((resp) => {
         setBranches(resp?.data);
@@ -174,14 +177,12 @@ export default function CaseForm() {
         console.error("Error fetching branches:", err);
       })
       .finally(() => {
-        setLoading(false);
-        setLoading2(false);
+setLoading(false);
       });
   }, [refreshFlag]);
 
   useEffect(() => {
     setLoading(true);
-    setLoading2(true);
 
     if (b !== "") {
       getbranchEmployee(b)
@@ -193,7 +194,6 @@ export default function CaseForm() {
         })
         .finally(() => {
           setLoading(false);
-          setLoading2(false);
         });
     }
   }, [refreshFlag, b]);
@@ -213,8 +213,14 @@ export default function CaseForm() {
   }, [refreshFlag]);
 
   // Add a submit handler function
-  const onSubmit = (data: Case) => {
+  const onSubmit = (data: any) => {
     // handle form submission, e.g., send data to API
+    setLoading(true);
+    createCase(data)
+      .then((resp) => {
+        console.log("Case successfully created", resp);
+      })
+      .finally(() => setLoading(false));
     console.log(data);
   };
 

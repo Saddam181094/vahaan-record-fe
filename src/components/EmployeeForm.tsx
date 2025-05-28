@@ -28,7 +28,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-import Loader from "@/components/Loader";
+import Loader from "@/components/GlobalLoader";
 import {
   getActiveBranch
 } from "@/service/branch.service";

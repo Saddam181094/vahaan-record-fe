@@ -27,7 +27,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-import Loader from "@/components/Loader";
+import { useLoading } from "@/components/LoadingContext";
 import {
   createBranch,
   getBranch,
@@ -39,7 +39,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-// import { Toaster } from "@/components/ui/sonner";
 
 export interface Branch {
   branchCode?: string;
@@ -54,45 +53,46 @@ export interface Branch {
   createdAt?: string;
   updatedAt?: string;
 }
+
 export const indianStates = [
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal",
-    // Union Territories
-    "Andaman and Nicobar Islands",
-    "Chandigarh",
-    "Dadra and Nagar Haveli and Daman and Diu",
-    "Delhi",
-    "Jammu and Kashmir",
-    "Ladakh",
-    "Lakshadweep",
-    "Puducherry",
-  ];
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry",
+];
+
 export default function AdminBranchForm() {
   const {
     register,
@@ -104,14 +104,13 @@ export default function AdminBranchForm() {
   } = useForm<Branch>({ defaultValues: {} as Branch });
 
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loading2, setLoading2] = useState(false);
+  const { setLoading } = useLoading();
+  const [formLoading, setFormLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    setLoading2(true);
     getBranch()
       .then((resp) => {
         setBranches(resp?.data);
@@ -121,62 +120,57 @@ export default function AdminBranchForm() {
       })
       .finally(() => {
         setLoading(false);
-        setLoading2(false);
       });
   }, [refreshFlag]);
 
   const onSubmit: SubmitHandler<Branch> = async (data: Branch) => {
-    setLoading(true);
+    setFormLoading(true);
     try {
       const newBranch = await createBranch(data);
       setBranches([...branches, newBranch]);
       setDialogOpen(false);
-      setRefreshFlag((prev) => !prev); // Trigger a refresh
-      reset(); // Reset the form after successful submission
+      setRefreshFlag((prev) => !prev);
+      reset();
     } catch (err: any) {
       console.error(err);
     } finally {
-      setLoading(false);
+      setFormLoading(false);
     }
   };
 
   const handleDiagClick = () => {
     setDialogOpen(false);
-    reset(); // Reset the form when dialog is closed
+    reset();
   };
 
   const handleToggle = async (branch: string) => {
-    setLoading2(true);
+    setLoading(true);
     try {
       await toggleBranch(branch);
     } catch (err: any) {
       console.error(err);
     } finally {
-      setRefreshFlag((prev) => !prev); // Trigger a refresh
-      setLoading2(false);
+      setRefreshFlag((prev) => !prev);
+      setLoading(false);
     }
   };
 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
-
   const totalPages = Math.ceil(branches.length / ITEMS_PER_PAGE);
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedBranches = branches.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
-  const handlePrev = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  const handleNext = () => {
+  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () =>
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
 
   return (
     <div>
       <Button onClick={() => setDialogOpen(true)} className="mb-4">
         Add Branch
       </Button>
+
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -184,53 +178,53 @@ export default function AdminBranchForm() {
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
-            {["name", "address1", "address2", "city", "state", "pincode"].map((field) => (
-              <div key={field}>
-                {field === "state" ? (
-                  <Select
-                    onValueChange={(value) => setValue("state", value)}
-                    defaultValue={watch("state")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a state" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {indianStates.map((state) => (
-                        <SelectItem key={state} value={state}>
-                          {state}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
+            {["name", "address1", "address2", "city", "pincode"].map(
+              (field) => (
+                <div key={field}>
                   <Input
                     {...register(field as keyof Branch, { required: true })}
                     placeholder={field[0].toUpperCase() + field.slice(1)}
                   />
-                )}
-                {errors[field as keyof Branch] && (
-                  <p className="text-red-600 text-sm">{field} is required</p>
-                )}
-              </div>
-            )
+                  {errors[field as keyof Branch] && (
+                    <p className="text-red-600 text-sm">{field} is required</p>
+                  )}
+                </div>
+              )
             )}
+
+            <div>
+              <Select
+                value={watch("state")}
+                onValueChange={(value) => setValue("state", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a state" />
+                </SelectTrigger>
+                <SelectContent>
+                  {indianStates.map((state) => (
+                    <SelectItem key={state} value={state}>
+                      {state}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.state && (
+                <p className="text-red-600 text-sm">State is required</p>
+              )}
+            </div>
 
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={handleDiagClick}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Branch"}
+              <Button type="submit" disabled={formLoading}>
+                {formLoading ? "Creating..." : "Create Branch"}
               </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
-      {loading2 && (
-        <div>
-          <Loader />
-        </div>
-      )}
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -242,7 +236,7 @@ export default function AdminBranchForm() {
         <TableBody>
           {paginatedBranches.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-center py-4">
+              <TableCell colSpan={3} className="text-center py-4">
                 No branches found.
               </TableCell>
             </TableRow>
@@ -252,12 +246,14 @@ export default function AdminBranchForm() {
                 <TableCell>{branch.name}</TableCell>
                 <TableCell>
                   {branch.address1}, {branch.address2}, {branch.city},{" "}
-                  {branch.state} , {branch.pincode}
+                  {branch.state}, {branch.pincode}
                 </TableCell>
                 <TableCell>
                   <Switch
                     checked={!!branch.isActive}
-                    onCheckedChange={() => handleToggle(branch?.branchCode ?? "")}
+                    onCheckedChange={() =>
+                      handleToggle(branch?.branchCode ?? "")
+                    }
                   />
                 </TableCell>
               </TableRow>
@@ -265,6 +261,7 @@ export default function AdminBranchForm() {
           )}
         </TableBody>
       </Table>
+
       <Pagination className="mt-4">
         <PaginationContent>
           <PaginationItem>

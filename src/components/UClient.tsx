@@ -1,7 +1,7 @@
 import { useState, useEffect,type FormEvent } from "react";
 import type { NewClient } from "../pages/Clientsignup";
 import { getUClient, verifyClient } from "@/service/client.service";
-import Loader from "@/components/Loader";
+import Loader from "@/components/GlobalLoader";
 import {
   Table,
   TableHeader,
