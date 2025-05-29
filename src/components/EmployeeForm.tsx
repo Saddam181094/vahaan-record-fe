@@ -27,8 +27,6 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
-import Loader from "@/components/GlobalLoader";
 import {
   getActiveBranch
 } from "@/service/branch.service";
@@ -40,6 +38,7 @@ import {
 } from "@/components/ui/dialog";
 import type { Branch } from "./Branchform";
 import { UserRole } from "@/context/AuthContext";
+import { useLoading } from "./LoadingContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Employee {
@@ -65,8 +64,7 @@ export default function EmployeeForm() {
   const [Employee, setEmployee] = useState<Employee[]>([]);
   const [Employee2, setEmployee2] = useState<Employee[]>([]);
   const [branch, setBranch] = useState<Branch[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loading2, setLoading2] = useState(false);
+  const {setLoading} = useLoading();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
 
@@ -78,9 +76,9 @@ export default function EmployeeForm() {
       })
       .catch((err: any) => {
         console.error("Error fetching branches:", err);
-      })
-      .finally(() => setLoading(false));
-
+      }).finally(()=> setLoading(false));
+  
+    setLoading(true);
     getActiveBranch()
       .then((resp) => {
         setBranch(resp?.data);
@@ -201,18 +199,14 @@ export default function EmployeeForm() {
               <Button type="button" variant="outline" onClick={handleDiagClick}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Employee"}
+              <Button type="submit">
+                Create Employee
               </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
-      {loading2 && (
-        <div>
-          <Loader isLoading />
-        </div>
-      )}
+
       <Table>
         <TableHeader>
           <TableRow>

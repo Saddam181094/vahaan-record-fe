@@ -26,6 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useLoading } from "./LoadingContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Firm {
@@ -43,7 +44,7 @@ export default function AdminFirmForm() {
   } = useForm<Firm>({ defaultValues: {} as Firm });
 
   const [firms, setfirms] = useState<Firm[]>([]);
-  const [loading, setLoading] = useState(false);
+const {setLoading} = useLoading();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
 
@@ -75,6 +76,7 @@ export default function AdminFirmForm() {
   };
 
   const handleToggle = async (Firm: string) => {
+    setLoading(true);
     try {
       console.log("Toggling Firm:", Firm);
       await toggleFirm(Firm);
@@ -83,6 +85,7 @@ export default function AdminFirmForm() {
       console.error(err);
     } finally {
       setRefreshFlag((prev) => !prev); // Trigger a refresh
+      setLoading(false);
     }
   };
     const handleDiagClick = () => {
@@ -136,8 +139,8 @@ export default function AdminFirmForm() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Firm"}
+              <Button type="submit">
+               Create
               </Button>
             </div>
           </form>
@@ -148,8 +151,7 @@ export default function AdminFirmForm() {
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>Firm ID</TableHead>
-            <TableHead>Active</TableHead>
+             <TableHead>Active</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -164,7 +166,7 @@ export default function AdminFirmForm() {
                 <TableRow
                 key={Firm.id}
                 className={
-                  (idx % 2 === 1 ? "bg-gray-400 dark:bg-gray-900 " : "") +
+                  (idx % 2 === 1 ? "bg-gray-200 dark:bg-gray-900 " : "") +
                   "rounded-xl overflow-hidden"
                 }
                 style={{
@@ -175,7 +177,6 @@ export default function AdminFirmForm() {
                 <TableCell className="first:rounded-l-xl last:rounded-l-xl">
                   {Firm.name}
                 </TableCell>
-                <TableCell>{Firm.id}</TableCell>
                 <TableCell>
                   <Switch
                   checked={!!Firm.isActive}

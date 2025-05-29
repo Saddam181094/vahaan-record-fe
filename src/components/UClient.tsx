@@ -28,10 +28,11 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useLoading } from "./LoadingContext";
 
 export default function UClient() {
   const [clients, setClients] = useState<NewClient[]>([]);
-  const [loading, setLoading] = useState(true);
+const {setLoading} = useLoading();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<NewClient | null>(null);
   const [refreshFlag, setRefreshFlag] = useState(false);
@@ -51,6 +52,7 @@ export default function UClient() {
   }, [refreshFlag]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const creditLimit = Number(formData.get("creditLimit"));
@@ -61,14 +63,12 @@ export default function UClient() {
       setDialogOpen(false);
       setSelectedClient(null);
       setRefreshFlag((prev) => !prev);
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col w-full bg-white px-6 py-4 min-h-screen">
-      {loading ? (
-        <Loader isLoading />
-      ) : (
         <>
           <Table>
             <TableHeader>
@@ -179,7 +179,6 @@ export default function UClient() {
             </DialogContent>
           </Dialog>
         </>
-      )}
     </div>
   );
 }

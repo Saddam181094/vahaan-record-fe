@@ -203,6 +203,7 @@ setLoading(false);
 
   useEffect(() => {
     setLoading(true);
+
     getActiveFirm()
       .then((resp) => {
         setfirms(resp?.data);
@@ -238,11 +239,12 @@ setLoading(false);
       {/* General Details */}
       <Card>
         <CardContent className="grid gap-4">
-          <div className="text-xl font-semibold border-b-2">General Details</div>
+          <div className="text-xl font-semibold">General Details</div>
+          <hr></hr>
           <div className="flex gap-5 flex-col md:flex-row">
             <Input
               placeholder="Firm Name"
-              className="w-[35%]"
+              className="w-[25%]"
               {...register("generalDetails.firmName")}
             />
             <Select
@@ -308,7 +310,8 @@ setLoading(false);
 
       <Card>
         <CardContent className="grid gap-4 p-6">
-          <div className="text-xl font-semibold border-b-2">Vehicle Detail</div>
+          <div className="text-xl font-semibold">Vehicle Detail</div>
+          <hr></hr>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="flex flex-col gap-1">
               <Label htmlFor="vehicleNo" className="pb-2">
@@ -366,7 +369,8 @@ setLoading(false);
 
       <Card>
   <CardContent className="grid gap-4 p-6">
-    <div className="text-xl font-semibold border-b-2">Expire Detail</div>
+    <div className="text-xl font-semibold">Expire Detail</div>
+    <hr></hr>
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       {Object.entries(watch("expireDetail")).map(([key, value]) => {
         const date = value ? parseISO(value as string) : undefined;
@@ -375,22 +379,21 @@ setLoading(false);
             <label className="text-sm font-medium capitalize">
               {key.replace(/([A-Z])/g, " $1")}
             </label>
-            <div className="relative flex items-center w-full">
+            <div className="relative flex items-center w-full text-black">
               {/* Display date in input-like button */}
-              <Button
-                variant="outline"
-                className="w-full justify-start text-left font-normal pr-10"
-                disabled
-              >
+                <div
+                className="w-full justify-start text-left font-normal pr-10 border rounded-md h-10 flex items-center px-3"
+                style={{ cursor: "default" }}
+                >
                 {date ? format(date, "yyyy-MM-dd") : `Pick a date`}
-              </Button>
+                </div>
 
               {/* Calendar icon trigger */}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="absolute right-0 mr-1 p-1 h-8 w-8"
+                    className="absolute right-0 mr-1 p-1 h-8 w-8 text-black"
                   >
                     📅
                   </Button>
@@ -399,6 +402,7 @@ setLoading(false);
                   <Calendar
                     mode="single"
                     selected={date}
+                    className="rounded-md border"
                     onSelect={(selectedDate) => {
                       if (selectedDate) {
                         setValue(
@@ -407,7 +411,6 @@ setLoading(false);
                         );
                       }
                     }}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
@@ -421,73 +424,86 @@ setLoading(false);
 
 
       <Card>
-        <CardContent className="grid gap-4 p-6 space-y-3">
-          <div className="text-xl font-semibold border-b-2">Transaction Detail</div>
+        <CardContent className="grid gap-4 p-6 space-y-2">
+          <div className="text-xl font-semibold">Transaction Detail</div>
+          <hr></hr>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Select
-              value={watch("transactionDetail.to")}
-              onValueChange={(val) =>
-                setValue("transactionDetail.to", val as any)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="To" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.values(TransactionTo).map((val) => (
-                  <SelectItem key={val} value={val}>
-                    {val}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select
-              value={watch("transactionDetail.hptId")}
-              onValueChange={(val) => setValue("transactionDetail.hptId", val)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select HPT ID" />
-              </SelectTrigger>
-              <SelectContent>
-                {firms.map((firm) => (
-                  <SelectItem key={firm.id} value={firm.id}>
-                    {firm.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select
-              value={watch("transactionDetail.hpaId")}
-              onValueChange={(val) => setValue("transactionDetail.hpaId", val)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select HPA ID" />
-              </SelectTrigger>
-              <SelectContent>
-                {firms.map((firm) => (
-                  <SelectItem key={firm.id} value={firm.id}>
-                    {firm.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select
-              value={watch("transactionDetail.numberPlate")}
-              onValueChange={(val) =>
-                setValue("transactionDetail.numberPlate", val as any)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Number Plate" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.values(NumberPlate).map((val) => (
-                  <SelectItem key={val} value={val}>
-                    {val}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col gap-1">
+              <Label className="py-2">To</Label>
+              <Select
+                value={watch("transactionDetail.to")}
+                onValueChange={(val) =>
+                  setValue("transactionDetail.to", val as any)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(TransactionTo).map((val) => (
+                    <SelectItem key={val} value={val}>
+                      {val}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <Label className="py-2">HPT ID</Label>
+              <Select
+                value={watch("transactionDetail.hptId")}
+                onValueChange={(val) => setValue("transactionDetail.hptId", val)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {firms.map((firm) => (
+                    <SelectItem key={firm.id} value={firm.id}>
+                      {firm.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <Label className="py-2">HPA ID</Label>
+              <Select
+                value={watch("transactionDetail.hpaId")}
+                onValueChange={(val) => setValue("transactionDetail.hpaId", val)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {firms.map((firm) => (
+                    <SelectItem key={firm.id} value={firm.id}>
+                      {firm.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <Label className="py-2">Number Plate</Label>
+              <Select
+                value={watch("transactionDetail.numberPlate")}
+                onValueChange={(val) =>
+                  setValue("transactionDetail.numberPlate", val as any)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(NumberPlate).map((val) => (
+                    <SelectItem key={val} value={val}>
+                      {val}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {(
@@ -541,24 +557,31 @@ setLoading(false);
         <CardContent className="grid gap-4 p-6">
           <div className="text-xl font-semibold border-b-2">Expense Detail</div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {(
-              [
-                "pucCharges",
-                "insuranceCharges",
-                "otherCharges",
-                "adminCharges",
-              ] as const
-            ).map((key) => (
-              <Input
-                key={key}
-                type="number"
-                placeholder={key}
-                {...register(`expenseDetail.${key}`, {
-                  valueAsNumber: true,
-                  setValueAs: (v) => (v === "" || v === null ? 0 : Number(v)),
-                })}
-              />
-            ))}
+        {(
+          [
+        "pucCharges",
+        "insuranceCharges",
+        "otherCharges",
+        "adminCharges",
+          ] as const
+        ).map((key) => (
+          <div key={key} className="flex flex-col gap-1">
+        <Label className="py-3" htmlFor={key}>
+          {key
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (str) => str.toUpperCase())}
+        </Label>
+        <Input
+          id={key}
+          type="number"
+          placeholder="Enter a value"
+          {...register(`expenseDetail.${key}`, {
+        valueAsNumber: true,
+        setValueAs: (v) => (v === "" || v === null ? 0 : Number(v)),
+          })}
+        />
+          </div>
+        ))}
           </div>
         </CardContent>
       </Card>
