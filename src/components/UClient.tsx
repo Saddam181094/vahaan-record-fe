@@ -1,7 +1,7 @@
 import { useState, useEffect,type FormEvent } from "react";
 import type { NewClient } from "../pages/Clientsignup";
 import { getUClient, verifyClient } from "@/service/client.service";
-import Loader from "@/components/GlobalLoader";
+// import Loader from "@/components/GlobalLoader";
 import {
   Table,
   TableHeader,
@@ -24,7 +24,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -97,12 +96,27 @@ const {setLoading} = useLoading();
                     <TableCell>{client.email} | {client.mobileNo}</TableCell>
                     <TableCell>{client.firmName}</TableCell>
                     <TableCell>
-                      <Switch
-                        onCheckedChange={() => {
-                          setSelectedClient(client);
-                          setDialogOpen(true);
+                      <div className="flex gap-2">
+                      <Button
+                        variant="default"
+                        size="icon"
+                        onClick={() => {
+                        setSelectedClient(client);
+                        setDialogOpen(true);
                         }}
-                      />
+                      >
+                        ✔
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => {
+                        // Optionally handle "Not Approve" logic here
+                        }}
+                      >
+                        ✖
+                      </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import CaseForm  from "@/components/CaseForm";
 
-const AddBranch = () => {
+const AddCase= () => {
  const [open, setOpen] = useState(false);
   const { logout } = useAuth();
   const handleLogout = () => {
@@ -51,4 +51,4 @@ const AddBranch = () => {
     );
 };
 
-export default AddBranch;
+export default AddCase;

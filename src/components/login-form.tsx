@@ -81,7 +81,7 @@ export function LoginForm({
           />
           </div>
             <div
-            className="underline cursor-pointer flex items-center gap-2 text-[#584ff7] hover:text-[#3e36b0] transition-colors duration-150 w-max"
+            className="underline cursor-pointer flex items-center gap-2 text-gray hover:text-[#3e36b0] transition-colors duration-150 w-max"
             onClick={() => setShowForgotModal(true)}
             >
             Forgot your password?
