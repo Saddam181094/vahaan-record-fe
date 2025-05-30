@@ -1,4 +1,4 @@
-import CaseDesAdmin from "@/components/CaseDesAdmin"
+import CaseDesEmployee from "@/components/CaseDesEmployee"
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";  
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,7 @@ const Allcases = () => {
             </Dialog>
           </div>
           <div className="flex-grow">
-            <CaseDesAdmin/>
+            <CaseDesEmployee/>
           </div>
         </div>
       </SidebarProvider>

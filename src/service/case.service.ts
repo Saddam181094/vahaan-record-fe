@@ -40,6 +40,19 @@ export const getAllCases= async () => {
     });
 };
 
+export const getAllCasesE= async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/case/employee", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
 export const getCaseID= async (Id:any) => {
   const config = getConfig();
   return axios

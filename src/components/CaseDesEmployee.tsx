@@ -1,7 +1,8 @@
 import { useState,useEffect } from "react";
 import { useLoading } from "./LoadingContext";
-import { getAllCases } from "@/service/case.service";
+import { getAllCasesE } from "@/service/case.service";
 import { useNavigate } from "react-router-dom";
+import {type CaseDetails} from "@/components/CaseDesAdmin"
 import {
   Table,
   TableHeader,
@@ -19,23 +20,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export interface CaseDetails{
-    id:string,
-    CaseNo : string,
-    vehicleDetail : vehicleDetail,
-    createdBy : createdBy,
-    status : string,
-    
-}
-export interface createdBy{
-    firstName : string,
-    lastName : string,
-    employeeCode: string
-}
 
-export interface vehicleDetail{
-    vehicleNo : string,
-}
 export default function CaseDes() {
   useForm<CaseDetails>();
   const navigate = useNavigate(); // ✅ Add this
@@ -47,7 +32,7 @@ export default function CaseDes() {
 
   useEffect(() => {
     setLoading(true);
-    getAllCases()
+    getAllCasesE()
       .then((resp) => setCases(resp?.data))
       .catch((err: any) => console.error("Error fetching cases:", err))
       .finally(() => setLoading(false));
@@ -67,7 +52,6 @@ export default function CaseDes() {
           <TableRow>
             <TableHead>No.</TableHead>
             <TableHead>Vehicle No.</TableHead>
-            <TableHead>Created By</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
@@ -87,16 +71,12 @@ export default function CaseDes() {
               >
                 <TableCell># {Case.CaseNo}</TableCell>
                 <TableCell>{Case?.vehicleDetail?.vehicleNo}</TableCell>
-                <TableCell>
-                  {Case.createdBy.firstName} {Case.createdBy.lastName} |{" "}
-                  {Case.createdBy.employeeCode}
-                </TableCell>
                 <TableCell>{Case.status}</TableCell>
                 <TableCell>
                   <button
                     type="button"
                     onClick={() =>
-                      navigate("/superadmin/CaseDetails", {
+                      navigate("/employee/CaseDetailsEmployee", {
                         state: { id: Case.id }, // ✅ Pass CaseNo through state
                       })
                     }

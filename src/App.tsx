@@ -13,7 +13,9 @@ import SignUpPage from "@/pages/Clientsignup";
 import Client from "@/pages/Client";
 import CaseForm from "@/pages/Case";
 import Allcases from "@/pages/AlCase";
-import CaseDetails from "@/components/CaseDetails"
+import AllCaseE from "@/pages/AlCaseE"
+import CaseDetails from "@/components/CaseDetailsAdmin"
+import CaseDetailsEmployee from "@/components/CaseDetailsEmployee"
 // import { Loader } from "lucide-react";
 export default function App() {
   return (
@@ -60,7 +62,7 @@ export default function App() {
           <Allcases />
         </ProtectedRoute>
       } />
-              <Route path="/superadmin/CaseDetails" element={
+              <Route path="/superadmin/CaseDetailsAdmin" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <CaseDetails/>
         </ProtectedRoute>
@@ -90,7 +92,17 @@ export default function App() {
         </ProtectedRoute>
       } />
 
+      <Route path="/employee/AllCasesE" element={
+        <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
+          < AllCaseE/>
+        </ProtectedRoute>
+      } />
 
+      <Route path="/employee/CaseDetailsEmployee" element={
+        <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
+          <CaseDetailsEmployee/>
+        </ProtectedRoute>
+      } />
 
     </Routes>
   );

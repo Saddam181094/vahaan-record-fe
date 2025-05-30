@@ -61,6 +61,7 @@ const items1: Record<string, SidebarItem[]> = {
         { title: "New Case", url: "/employee/CaseForm", icon: CircleUser },
         { title: "Cases", url: "/employee", icon: CircleUser }]
       },
+    { title: "All-Cases", url: "/employee/AllCasesE", icon: PcCase },
   ],
 };
 
