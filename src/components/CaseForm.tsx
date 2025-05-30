@@ -3,14 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
 import {toast} from "sonner";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format,parseISO } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +13,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
+import { useForm,Controller } from "react-hook-form";
 import type { Branch } from "@/components/Branchform";
 import { getActiveBranch } from "@/service/branch.service";
 // import type { Employee } from "@/components/EmployeeForm";
@@ -101,6 +94,7 @@ export type NumberPlate = (typeof NumberPlate)[keyof typeof NumberPlate];
 
 export default function CaseForm() {
   const {
+    control,
     register,
     handleSubmit,
     setValue,
@@ -151,6 +145,8 @@ export default function CaseForm() {
         adminCharges: "",
       },
     },
+
+    mode:'onSubmit',
   });
 
   type BranchEmployee = {
@@ -164,7 +160,7 @@ export default function CaseForm() {
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
 
-
+  // const expireDetail = watch("expireDetail");
 
   const [refreshFlag] = useState(false);
 
@@ -316,122 +312,233 @@ setLoading(false);
         <div className="text-xl font-semibold">Vehicle Detail</div>
         <hr></hr>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Controller
+          name="vehicleDetail.vehicleNo"
+          control={control}
+          rules={{ required: "Vehicle No. is required" }}
+          render={({ field, fieldState }) => (
         <div className="flex flex-col gap-1">
           <Label htmlFor="vehicleNo" className="pb-2">
-          Vehicle No
+            Vehicle No
           </Label>
           <Input
-          required
-          id="vehicleNo"
-          placeholder="Vehicle No"
-          {...register("vehicleDetail.vehicleNo", { required: true })}
+            id="vehicleNo"
+            placeholder="Vehicle No"
+            {...field}
           />
+          {fieldState.error && (
+            <p className="text-red-600 text-xs mt-1">{fieldState.error.message}</p>
+          )}
         </div>
+          )}
+        />
+        <Controller
+          name="vehicleDetail.fromRTO"
+          control={control}
+          rules={{ required: "From RTO is required" }}
+          render={({ field, fieldState }) => (
         <div className="flex flex-col gap-1">
           <Label htmlFor="fromRTO" className="pb-2">
-          From RTO
+            From RTO
           </Label>
           <Input
-          required
-          id="fromRTO"
-          placeholder="From RTO"
-          {...register("vehicleDetail.fromRTO", { required: true })}
+            id="fromRTO"
+            placeholder="From RTO"
+            {...field}
           />
+          {fieldState.error && (
+            <p className="text-red-600 text-xs mt-1">{fieldState.error.message}</p>
+          )}
         </div>
+          )}
+        />
+        <Controller
+          name="vehicleDetail.toRTO"
+          control={control}
+          rules={{ required: "To RTO is required" }}
+          render={({ field, fieldState }) => (
         <div className="flex flex-col gap-1">
           <Label htmlFor="toRTO" className="pb-2">
-          To RTO
+            To RTO
           </Label>
           <Input
-          required
-          id="toRTO"
-          placeholder="To RTO"
-          {...register("vehicleDetail.toRTO", { required: true })}
+            id="toRTO"
+            placeholder="To RTO"
+            {...field}
           />
+          {fieldState.error && (
+            <p className="text-red-600 text-xs mt-1">{fieldState.error.message}</p>
+          )}
         </div>
+          )}
+        />
+        <Controller
+          name="vehicleDetail.chassisNo"
+          control={control}
+          rules={{ required: "Chassis No is required" }}
+          render={({ field, fieldState }) => (
         <div className="flex flex-col gap-1">
           <Label htmlFor="chassisNo" className="pb-2">
-          Chassis No
+            Chassis No
           </Label>
           <Input
-          required
-          id="chassisNo"
-          placeholder="Chassis No"
-          {...register("vehicleDetail.chassisNo", { required: true })}
+            id="chassisNo"
+            placeholder="Chassis No"
+            {...field}
           />
+          {fieldState.error && (
+            <p className="text-red-600 text-xs mt-1">{fieldState.error.message}</p>
+          )}
         </div>
+          )}
+        />
+        <Controller
+          name="vehicleDetail.engineNo"
+          control={control}
+          rules={{ required: "Engine No is required" }}
+          render={({ field, fieldState }) => (
         <div className="flex flex-col gap-1">
           <Label htmlFor="engineNo" className="pb-2">
-          Engine No
+            Engine No
           </Label>
           <Input
-          required
-          id="engineNo"
-          placeholder="Engine No"
-          {...register("vehicleDetail.engineNo", { required: true })}
+            id="engineNo"
+            placeholder="Engine No"
+            {...field}
           />
+          {fieldState.error && (
+            <p className="text-red-600 text-xs mt-1">{fieldState.error.message}</p>
+          )}
         </div>
+          )}
+        />
         </div>
       </CardContent>
       </Card>
 
-      <Card>
-      <CardContent className="grid gap-4 p-6">
-        <div className="text-xl font-semibold">Expire Detail</div>
-        <hr></hr>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {Object.entries(watch("expireDetail")).map(([key, value]) => {
-          const date = value ? parseISO(value as string) : undefined;
-          return (
-          <div key={key} className="flex flex-col gap-1">
-            <label className="text-sm font-medium capitalize">
-            {key.replace(/([A-Z])/g, " $1")}
-            </label>
-            <div className="relative flex items-center w-full text-black">
-            {/* Display date in input-like button */}
-            <div
-              className="w-full justify-start text-left font-normal pr-10 border rounded-md h-10 flex items-center px-3"
-              style={{ cursor: "default" }}
-              
-            >
-              {date ? format(date, "yyyy-MM-dd") : `Pick a date`}
-            </div>
-
-            {/* Calendar icon trigger */}
-            <Popover>
-              <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                className="absolute right-0 mr-1 p-1 h-8 w-8 text-black"
-              >
-                📅
-              </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-              <Calendar
-                required
-                mode="single"
-                selected={date}
-                className="rounded-md border"
-                onSelect={(selectedDate) => {
-                if (selectedDate) {
-                  setValue(
-                  `expireDetail.${key}` as any,
-                  format(selectedDate, "yyyy-MM-dd"),
-                  { shouldValidate: true }
-                  );
-                }
-                }}
-              />
-              </PopoverContent>
-            </Popover>
-            </div>
-          </div>
-          );
-        })}
+          <Card>
+  <CardContent className="grid gap-4 p-6">
+    <div className="text-xl font-semibold">Expire Detail</div>
+    <hr />
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <Controller
+      name="expireDetail.insuranceExpiry"
+      control={control}
+      rules={{ required: 'Parameter is required.' }}
+      render={({ field, fieldState }) => (
+        <div className="flex flex-col gap-1">
+        <Label htmlFor="insuranceExpiry" className="text-sm font-medium capitalize">
+          Insurance Expiry
+        </Label>
+        <Input
+          id="insuranceExpiry"
+          type="date"
+          className={`input input-bordered ${fieldState.error ? 'input-error' : ''}`}
+          {...field}
+        />
+        {fieldState.error && (
+          <p className="text-red-500 text-xs mt-1">
+          {fieldState.error.message}
+          </p>
+        )}
         </div>
-      </CardContent>
-      </Card>
+      )}
+      />
+      <Controller
+      name="expireDetail.pucExpiry"
+      control={control}
+      rules={{ required: 'Parameter is required.' }}
+      render={({ field, fieldState }) => (
+        <div className="flex flex-col gap-1">
+        <Label htmlFor="pucExpiry" className="text-sm font-medium capitalize">
+          PUC Expiry
+        </Label>
+        <Input
+          id="pucExpiry"
+          type="date"
+          className={`input input-bordered ${fieldState.error ? 'input-error' : ''}`}
+          {...field}
+        />
+        {fieldState.error && (
+          <p className="text-red-500 text-xs mt-1">
+          {fieldState.error.message}
+          </p>
+        )}
+        </div>
+      )}
+      />
+      <Controller
+      name="expireDetail.fitnessExpiry"
+      control={control}
+      rules={{ required: 'Parameter is required.' }}
+      render={({ field, fieldState }) => (
+        <div className="flex flex-col gap-1">
+        <Label htmlFor="fitnessExpiry" className="text-sm font-medium capitalize">
+          Fitness Expiry
+        </Label>
+        <Input
+          id="fitnessExpiry"
+          type="date"
+          className={`input input-bordered ${fieldState.error ? 'input-error' : ''}`}
+          {...field}
+        />
+        {fieldState.error && (
+          <p className="text-red-500 text-xs mt-1">
+          {fieldState.error.message}
+          </p>
+        )}
+        </div>
+      )}
+      />
+      <Controller
+      name="expireDetail.taxExpiry"
+      control={control}
+      rules={{ required: 'Parameter is required.' }}
+      render={({ field, fieldState }) => (
+        <div className="flex flex-col gap-1">
+        <Label htmlFor="taxExpiry" className="text-sm font-medium capitalize">
+          Tax Expiry
+        </Label>
+        <Input
+          id="taxExpiry"
+          type="date"
+          className={`input input-bordered ${fieldState.error ? 'input-error' : ''}`}
+          {...field}
+        />
+        {fieldState.error && (
+          <p className="text-red-500 text-xs mt-1">
+          {fieldState.error.message}
+          </p>
+        )}
+        </div>
+      )}
+      />
+      <Controller
+      name="expireDetail.permitExpiry"
+      control={control}
+      rules={{ required: 'Parameter is required.' }}
+      render={({ field, fieldState }) => (
+        <div className="flex flex-col gap-1">
+        <Label htmlFor="permitExpiry" className="text-sm font-medium capitalize">
+          Permit Expiry
+        </Label>
+        <Input
+          id="permitExpiry"
+          type="date"
+          className={`input input-bordered ${fieldState.error ? 'input-error' : ''}`}
+          {...field}
+        />
+        {fieldState.error && (
+          <p className="text-red-500 text-xs mt-1">
+          {fieldState.error.message}
+          </p>
+        )}
+        </div>
+      )}
+      />
+    </div>
+  </CardContent>
+</Card>
 
       <Card>
       <CardContent className="grid gap-4 p-6 space-y-2">

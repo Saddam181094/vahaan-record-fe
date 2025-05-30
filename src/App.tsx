@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Suspense } from "react";
+import { Routes, Route } from "react-router-dom";
+// import { Suspense } from "react";
 import { UserRole } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import LoginPage from "@/pages/Login";
@@ -12,6 +12,8 @@ import AddEmployee from "@/pages/AdEmp";
 import SignUpPage from "@/pages/Clientsignup";
 import Client from "@/pages/Client";
 import CaseForm from "@/pages/Case";
+import Allcases from "@/pages/AlCase";
+import CaseDetails from "@/components/CaseDetails"
 // import { Loader } from "lucide-react";
 export default function App() {
   return (
@@ -50,6 +52,17 @@ export default function App() {
       <Route path="/superadmin/UnverifiedClients" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <Client />
+        </ProtectedRoute>
+      } />
+
+        <Route path="/superadmin/Allcases" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <Allcases />
+        </ProtectedRoute>
+      } />
+              <Route path="/superadmin/CaseDetails" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <CaseDetails/>
         </ProtectedRoute>
       } />
 
