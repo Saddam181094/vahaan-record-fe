@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import CaseForm  from "@/components/CaseForm";
+import CaseForm from "@/components/CaseForm";
 
-const AddCase= () => {
- const [open, setOpen] = useState(false);
+const AddCase = () => {
+  const [open, setOpen] = useState(false);
   const { logout } = useAuth();
   const handleLogout = () => {
     logout();
@@ -20,9 +20,9 @@ const AddCase= () => {
         <SidebarTrigger />
         <div className="flex flex-col w-full bg-white px-6 py-4 h-full min-h-screen">
           <div className="flex justify-end mb-4">
-            <Button variant="destructive" onClick={() => setOpen(true)}>
-            Logout
-          </Button>
+            <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
+              Logout
+            </Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogContent>
                 <DialogHeader>
@@ -32,23 +32,23 @@ const AddCase= () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex justify-end gap-2">
-                   <Button variant="outline" onClick={() => setOpen(false)}>
-                  Cancel
-                </Button>
-                <Button variant="destructive" onClick={handleLogout}>
-                  Logout
-                </Button>
+                  <Button variant="outline" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={handleLogout}>
+                    Logout
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
-            <div className="flex-grow">
-              <CaseForm />
-            </div>
+          <div className="flex-grow">
+            <CaseForm />
+          </div>
         </div>
       </SidebarProvider>
     </>
-    );
+  );
 };
 
 export default AddCase;

@@ -225,7 +225,7 @@ return(
           </div>
           <Button
             type="submit"
-            className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold py-2 rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all"
+            className="w-full mt-6 bg-gradient-to-r cursor-pointer from-blue-500 to-purple-500 text-white font-semibold py-2 rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all"
           >
             Sign Up
           </Button>

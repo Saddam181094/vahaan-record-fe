@@ -27,7 +27,7 @@ import {
 
 
 import { useAuth } from "@/context/AuthContext";
-import { Link,useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 type SidebarItem = {
   title: string;
@@ -49,19 +49,19 @@ const items1: Record<string, SidebarItem[]> = {
     },
     { title: "Employees", url: "/superadmin/AddEmployee", icon: CircleUser },
     { title: "U-Clients", url: "/superadmin/UnverifiedClients", icon: UserRoundPen },
-    { title: "All-Cases", url: "/superadmin/AllCases", icon: PcCase },
+    { title: "All-Cases", url: "/superadmin/cases", icon: PcCase },
   ],
   client: [
     { title: "Home", url: "/client/home", icon: Home },
   ],
   employee: [
     { title: "Home", url: "/employee", icon: Home },
-     { title: "Case", url: "/employee", icon: UserRoundPen,
-       submenu: [
+    {
+      title: "Case", url: "/employee", icon: UserRoundPen,
+      submenu: [
         { title: "New Case", url: "/employee/CaseForm", icon: CircleUser },
-        { title: "Cases", url: "/employee", icon: CircleUser }]
-      },
-    { title: "All-Cases", url: "/employee/AllCasesE", icon: PcCase },
+        { title: "Cases", url: "/employee/cases", icon: PcCase }]
+    }
   ],
 };
 
@@ -73,7 +73,7 @@ export function AppSidebar() {
   const currentPath = location.pathname;
 
   return (
-      <Sidebar>
+    <Sidebar>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -82,17 +82,11 @@ export function AppSidebar() {
               {items.map((item, index) =>
                 item.submenu ? (
                   <Collapsible
-                    key={index}
+                    key={index + 1}
                     defaultOpen={item.submenu.some((sub) => sub.url === currentPath)}
                   >
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuItem
-                        className={
-                          item.submenu.some((sub) => sub.url === currentPath)
-                            ? "bg-primary/10 rounded-lg m-2"
-                            : ""
-                        }
-                      >
+                      <SidebarMenuItem>
                         <SidebarMenuButton>
                           <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-2">
@@ -109,7 +103,7 @@ export function AppSidebar() {
                       {item.submenu.map((sub) => (
                         <SidebarMenuItem
                           key={sub.title}
-                          className={sub.url === currentPath ? "bg-primary/10 rounded-lg m-2" : ""}
+                          className={sub.url === currentPath ? "bg-neutral-800 text-white rounded-lg hover:bg-black" : "hover:bg-black hover:text-white rounded-lg"}
                         >
                           <SidebarMenuButton asChild>
                             <Link to={sub.url ?? ""}>
@@ -124,7 +118,7 @@ export function AppSidebar() {
                 ) : (
                   <SidebarMenuItem
                     key={item.title}
-                    className={item.url === currentPath ? "bg-primary/10 rounded-lg m-2" : ""}
+                    className={item.url === currentPath ? "bg-neutral-800 text-white rounded-lg hover:bg-black" : "hover:bg-black hover:text-white rounded-lg"}
                   >
                     <SidebarMenuButton asChild>
                       <Link to={item.url ?? ""}>

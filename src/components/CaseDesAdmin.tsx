@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLoading } from "./LoadingContext";
 import { getAllCases } from "@/service/case.service";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
+import { FaEye } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import {
   Pagination,
@@ -19,22 +20,22 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export interface CaseDetails{
-    id:string,
-    CaseNo : string,
-    vehicleDetail : vehicleDetail,
-    createdBy : createdBy,
-    status : string,
-    
+export interface CaseDetails {
+  id: string,
+  CaseNo: string,
+  vehicleDetail: vehicleDetail,
+  createdBy: createdBy,
+  status: string,
+
 }
-export interface createdBy{
-    firstName : string,
-    lastName : string,
-    employeeCode: string
+export interface createdBy {
+  firstName: string,
+  lastName: string,
+  employeeCode: string
 }
 
-export interface vehicleDetail{
-    vehicleNo : string,
+export interface vehicleDetail {
+  vehicleNo: string,
 }
 export default function CaseDes() {
   useForm<CaseDetails>();
@@ -85,7 +86,7 @@ export default function CaseDes() {
                 key={Case.CaseNo}
                 className={idx % 2 === 1 ? "bg-gray-200 dark:bg-gray-900" : ""}
               >
-                <TableCell># {Case.CaseNo}</TableCell>
+                <TableCell>#{Case.CaseNo}</TableCell>
                 <TableCell>{Case?.vehicleDetail?.vehicleNo}</TableCell>
                 <TableCell>
                   {Case.createdBy.firstName} {Case.createdBy.lastName} |{" "}
@@ -96,8 +97,8 @@ export default function CaseDes() {
                   <button
                     type="button"
                     onClick={() =>
-                      navigate("/superadmin/CaseDetailsAdmin", {
-                        state: { id: Case.id }, // ✅ Pass CaseNo through state
+                      navigate(`/superadmin/cases/${Case.CaseNo}`, {
+                        state: { id: Case.id },
                       })
                     }
                     title="View Details"
@@ -105,9 +106,13 @@ export default function CaseDes() {
                       background: "none",
                       border: "none",
                       cursor: "pointer",
+                      fontSize: "1.2rem",
+                      color: "#000", // default color
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#007bff")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#000")}
                   >
-                    👁
+                    <FaEye />
                   </button>
                 </TableCell>
               </TableRow>

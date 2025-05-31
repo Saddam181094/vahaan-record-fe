@@ -57,14 +57,14 @@ export default function App() {
         </ProtectedRoute>
       } />
 
-        <Route path="/superadmin/Allcases" element={
+      <Route path="/superadmin/cases" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <Allcases />
         </ProtectedRoute>
       } />
-              <Route path="/superadmin/CaseDetailsAdmin" element={
+      <Route path="/superadmin/cases/:CaseNo" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
-          <CaseDetails/>
+          <CaseDetails />
         </ProtectedRoute>
       } />
 
@@ -86,21 +86,21 @@ export default function App() {
         </ProtectedRoute>
       } />
 
-        <Route path="/employee/CaseForm" element={
+      <Route path="/employee/CaseForm" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
           <CaseForm />
         </ProtectedRoute>
       } />
 
-      <Route path="/employee/AllCasesE" element={
+      <Route path="/employee/cases" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
-          < AllCaseE/>
+          < AllCaseE />
         </ProtectedRoute>
       } />
 
-      <Route path="/employee/CaseDetailsEmployee" element={
+      <Route path="/employee/cases/:CaseNo" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
-          <CaseDetailsEmployee/>
+          <CaseDetailsEmployee />
         </ProtectedRoute>
       } />
 

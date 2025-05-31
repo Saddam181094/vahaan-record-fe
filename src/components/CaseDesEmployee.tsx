@@ -1,8 +1,8 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLoading } from "./LoadingContext";
 import { getAllCasesE } from "@/service/case.service";
 import { useNavigate } from "react-router-dom";
-import {type CaseDetails} from "@/components/CaseDesAdmin"
+import { type CaseDetails } from "@/components/CaseDesAdmin"
 import {
   Table,
   TableHeader,
@@ -19,6 +19,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { FaEye } from "react-icons/fa";
 
 
 export default function CaseDes() {
@@ -76,8 +77,8 @@ export default function CaseDes() {
                   <button
                     type="button"
                     onClick={() =>
-                      navigate("/employee/CaseDetailsEmployee", {
-                        state: { id: Case.id }, // ✅ Pass CaseNo through state
+                      navigate(`/employee/cases/${Case.CaseNo}`, {
+                        state: { id: Case.id },
                       })
                     }
                     title="View Details"
@@ -85,9 +86,13 @@ export default function CaseDes() {
                       background: "none",
                       border: "none",
                       cursor: "pointer",
+                      fontSize: "1.2rem",
+                      color: "#000", // default color
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#007bff")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#000")}
                   >
-                    👁
+                    <FaEye />
                   </button>
                 </TableCell>
               </TableRow>

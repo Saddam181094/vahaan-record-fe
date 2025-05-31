@@ -54,19 +54,39 @@ export default function CaseDetails() {
   }: {
     label: string;
     value: string | number | boolean | null;
-  }) => (
-    <div>
-      <Label className="text-sm text-muted-foreground">{label}</Label>
-      <div className="border p-2 rounded-md bg-muted">
-        {value?.toString() || "—"}
+  }) => {
+    const displayValue = (() => {
+      if (value === null || value === undefined) return "—";
+
+      if (typeof value === "string" || typeof value === "number") {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleDateString();
+        }
+      }
+
+      return value.toString();
+    })();
+
+    return (
+      <div>
+        <Label className="text-sm text-muted-foreground">{label}</Label>
+        <div className="border p-2 rounded-md bg-muted">{displayValue}</div>
       </div>
-    </div>
-  );
+    );
+  };
+
+
+  const getBoolStatus = (bool: boolean | undefined) => {
+    if (bool === true) return "Yes";
+    if (bool === false) return "No";
+    return "NA";
+  };
 
   return (
     <div className="p-6 space-y-6">
       <button
-        className="sticky top-4 z-50 mb-4 px-4 py-2 rounded bg-primary text-white hover:bg-primary/90 transition"
+        className="sticky top-4 cursor-pointer z-50 mb-4 px-4 py-2 rounded bg-primary text-white hover:bg-primary/90 transition"
         onClick={() => navigate(-1)}
         type="button"
       >
@@ -79,14 +99,14 @@ export default function CaseDetails() {
 
       <Section title="General Details">
         <RenderField label="Firm Name" value={generalDetails?.firmName ?? ""} />
-        <RenderField
+        {/* <RenderField
           label="Dealer Code"
           value={generalDetails?.dealerCode ?? ""}
-        />
-        <RenderField
+        /> */}
+        {/* <RenderField
           label="Incentive Type"
           value={generalDetails?.incentiveType ?? ""}
-        />
+        /> */}
       </Section>
 
       <Section title="Vehicle Details">
@@ -133,17 +153,17 @@ export default function CaseDetails() {
         <RenderField label="To RTO" value={transactionDetail?.to ?? null} />
         <RenderField
           label="Fitness"
-          value={transactionDetail?.fitness ?? null}
+          value={getBoolStatus(transactionDetail?.fitness)}
         />
-        <RenderField label="RRF" value={transactionDetail?.rrf ?? null} />
-        <RenderField label="RMA" value={transactionDetail?.rma ?? null} />
+        <RenderField label="RRF" value={getBoolStatus(transactionDetail?.rrf)} />
+        <RenderField label="RMA" value={getBoolStatus(transactionDetail?.rma)} />
         <RenderField
           label="Alteration"
-          value={transactionDetail?.alteration ?? null}
+          value={getBoolStatus(transactionDetail?.alteration)}
         />
         <RenderField
           label="Conversion"
-          value={transactionDetail?.conversion ?? null}
+          value={getBoolStatus(transactionDetail?.conversion)}
         />
         <RenderField
           label="Number Plate Type"
@@ -151,9 +171,9 @@ export default function CaseDetails() {
         />
         <RenderField
           label="Address Change"
-          value={transactionDetail?.addressChange ?? null}
+          value={getBoolStatus(transactionDetail?.addressChange)}
         />
-        <RenderField label="DRC" value={transactionDetail?.drc ?? null} />
+        <RenderField label="DRC" value={getBoolStatus(transactionDetail?.drc)} />
         <RenderField
           label="Remarks"
           value={transactionDetail?.remarks ?? null}
@@ -173,12 +193,12 @@ export default function CaseDetails() {
           label="Other Charges"
           value={expenseDetail?.otherCharges ?? null}
         />
-        <RenderField
+        {/* <RenderField
           label="Admin Charges"
           value={expenseDetail?.adminCharges ?? null}
-        />
+        /> */}
       </Section>
-<Section title="Logs">
+      {/* <Section title="Logs">
   
       <RenderField label="Status [From]" value={logs?.fromStatus ?? null} />
       <RenderField label="Status [To]" value={logs?.toStatus ?? null} />
@@ -188,7 +208,7 @@ export default function CaseDetails() {
       />
       <RenderField label="Email" value={logs?.user?.email ?? null} />
       <RenderField label="UserRole" value={logs?.user?.role ?? null} />
-</Section>
+</Section> */}
     </div>
   );
 }

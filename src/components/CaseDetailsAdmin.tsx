@@ -91,10 +91,16 @@ export default function CaseDetails() {
     </div>
   );
 
+  const getBoolStatus = (bool: boolean | undefined) => {
+    if (bool === true) return "Yes";
+    if (bool === false) return "No";
+    return "NA";
+  };
+
   return (
     <div className="p-6 space-y-6">
       <button
-        className="sticky top-4 z-50 mb-4 px-4 py-2 rounded bg-primary text-white hover:bg-primary/90 transition"
+        className="sticky top-4 z-50 mb-4 px-4 py-2 cursor-pointer rounded bg-primary text-white hover:bg-primary/90 transition"
         onClick={() => navigate(-1)}
         type="button"
       >
@@ -161,17 +167,17 @@ export default function CaseDetails() {
         <RenderField label="To RTO" value={transactionDetail?.to ?? null} />
         <RenderField
           label="Fitness"
-          value={transactionDetail?.fitness ?? null}
+          value={getBoolStatus(transactionDetail?.fitness)}
         />
-        <RenderField label="RRF" value={transactionDetail?.rrf ?? null} />
-        <RenderField label="RMA" value={transactionDetail?.rma ?? null} />
+        <RenderField label="RRF" value={getBoolStatus(transactionDetail?.rrf)} />
+        <RenderField label="RMA" value={getBoolStatus(transactionDetail?.rma)} />
         <RenderField
           label="Alteration"
-          value={transactionDetail?.alteration ?? null}
+          value={getBoolStatus(transactionDetail?.alteration)}
         />
         <RenderField
           label="Conversion"
-          value={transactionDetail?.conversion ?? null}
+          value={getBoolStatus(transactionDetail?.conversion)}
         />
         <RenderField
           label="Number Plate Type"
@@ -179,9 +185,9 @@ export default function CaseDetails() {
         />
         <RenderField
           label="Address Change"
-          value={transactionDetail?.addressChange ?? null}
+          value={getBoolStatus(transactionDetail?.addressChange)}
         />
-        <RenderField label="DRC" value={transactionDetail?.drc ?? null} />
+        <RenderField label="DRC" value={getBoolStatus(transactionDetail?.drc)} />
         <RenderField
           label="Remarks"
           value={transactionDetail?.remarks ?? null}
@@ -207,7 +213,7 @@ export default function CaseDetails() {
         />
       </Section>
 
-      <Section title="Logs">
+      {/* <Section title="Logs">
         <RenderField label="Status [From]" value={logs?.fromStatus ?? null} />
         <RenderField label="Status [To]" value={logs?.toStatus ?? null} />
         <RenderField
@@ -222,7 +228,7 @@ export default function CaseDetails() {
         />
         <RenderField label="Email" value={logs?.user?.email ?? null} />
         <RenderField label="UserRole" value={logs?.user?.role ?? null} />
-      </Section>
+      </Section> */}
     </div>
   );
 }
