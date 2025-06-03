@@ -1,13 +1,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import type {
   GeneralDetails,
   TransactionDetail,
   ExpenseDetail,
   ExpireDetail,
   VehicleDetail,
+  Case,
 } from "@/components/CaseForm";
-import { getCaseID } from "@/service/case.service";
+import { getCaseID, updateCaseID } from "@/service/case.service";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
@@ -40,8 +42,17 @@ export default function CaseDetails() {
   const navigate = useNavigate();
   const id = location.state?.id;
   const { setLoading } = useLoading();
-
   const [caseData, setCaseData] = useState<FinalDetails>();
+  const [editMode, setEditMode] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<FinalDetails>({
+    defaultValues: caseData,
+  });
 
   useEffect(() => {
     if (!id) {
@@ -49,17 +60,62 @@ export default function CaseDetails() {
       return;
     }
     setLoading(true);
-    getCaseID(id).then((resp) => {
-      setCaseData(resp?.data);
-    }).finally(() => setLoading(false));
+    getCaseID(id)
+      .then((resp) => {
+        console.log(resp?.data);
+        setCaseData(resp?.data);
+      })
+      .finally(() => setLoading(false));
   }, [id, navigate]);
 
-  const generalDetails = caseData?.generalDetail;
-  const vehicleDetail = caseData?.vehicleDetail;
-  const expireDetail = caseData?.expireDetail;
-  const transactionDetail = caseData?.transactionDetail;
-  const expenseDetail = caseData?.expenseDetail;
-  const logs = caseData?.logs;
+  useEffect(() => {
+    if (caseData) {
+      reset(caseData);
+    }
+  }, [caseData, reset]);
+
+  const stripIds = <T extends object>(obj: T): Partial<T> => {
+    const { id, ...rest } = obj as any;
+    return rest;
+  };
+  const formatDate = (dateStr: string | undefined) =>
+    dateStr?.split("T")[0] ?? null;
+  const onSubmit = async (data: FinalDetails) => {
+    try {
+      setLoading(true);
+      const casePayload: Case = {
+        generalDetails: stripIds(data.generalDetail) as GeneralDetails,
+        vehicleDetail: stripIds(data.vehicleDetail) as VehicleDetail,
+        expireDetail: {
+          ...stripIds(data.expireDetail),
+          insuranceExpiry: formatDate(data.expireDetail.insuranceExpiry),
+          pucExpiry: formatDate(data.expireDetail.pucExpiry),
+          fitnessExpiry: formatDate(data.expireDetail.fitnessExpiry),
+          taxExpiry: formatDate(data.expireDetail.taxExpiry),
+          permitExpiry: formatDate(data.expireDetail.permitExpiry),
+        } as ExpireDetail,
+        transactionDetail: stripIds(
+          data.transactionDetail
+        ) as TransactionDetail,
+        expenseDetail: stripIds(data.expenseDetail) as ExpenseDetail,
+      };
+
+      await updateCaseID(id, casePayload);
+      alert("Case updated successfully");
+      reset(casePayload);
+      setEditMode(false);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update case");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onCancel = () => {
+    reset(caseData);
+    setEditMode(false);
+  };
 
   const Section = ({
     title,
@@ -79,15 +135,40 @@ export default function CaseDetails() {
   const RenderField = ({
     label,
     value,
+    name,
+    type = "text",
   }: {
     label: string;
-    value: string | number | boolean | null;
+    value: any;
+    name: string;
+    type?: string;
   }) => (
     <div>
       <Label className="text-sm text-muted-foreground">{label}</Label>
-      <div className="border p-2 rounded-md bg-muted">
-        {value?.toString() || "—"}
-      </div>
+      {editMode ? (
+        type === "checkbox" ? (
+          <input
+            type="checkbox"
+            {...register(name as any)}
+            defaultChecked={value ?? false}
+          />
+        ) : (
+          <input
+            type={type}
+            {...register(name as any)}
+            defaultValue={value ?? ""}
+            className="border p-2 rounded-md w-full"
+          />
+        )
+      ) : (
+        <div className="border p-2 rounded-md bg-muted">
+          {typeof value === "boolean"
+            ? value
+              ? "Yes"
+              : "No"
+            : value?.toString() || "—"}
+        </div>
+      )}
     </div>
   );
 
@@ -97,138 +178,210 @@ export default function CaseDetails() {
     return "NA";
   };
 
-  return (
-    <div className="p-6 space-y-6">
-      <button
-        className="sticky top-4 z-50 mb-4 px-4 py-2 cursor-pointer rounded bg-primary text-white hover:bg-primary/90 transition"
-        onClick={() => navigate(-1)}
-        type="button"
-      >
-        ← Back
-      </button>
+  const caseNo = caseData?.CaseNo;
+  const gd = caseData?.generalDetail;
+  const vd = caseData?.vehicleDetail;
+  const ed = caseData?.expireDetail;
+  const td = caseData?.transactionDetail;
+  const exd = caseData?.expenseDetail;
 
-      <h1 className="text-2xl font-bold mb-4">
-        Case Details: #{caseData?.CaseNo}
-      </h1>
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <button
+          className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90"
+          onClick={() => navigate(-1)}
+          type="button"
+        >
+          ← Back
+        </button>
+
+        {!editMode ? (
+          <button
+            className="px-4 py-2 rounded bg-secondary text-primary border border-primary hover:bg-secondary/80"
+            onClick={() => setEditMode(true)}
+            type="button"
+          >
+            ✎ Edit
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              💾 Save
+            </button>
+            <button
+              className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+              onClick={onCancel}
+              type="button"
+            >
+              ✖ Cancel
+            </button>
+          </div>
+        )}
+      </div>
+
+      <h1 className="text-2xl font-bold mb-4">Case Details: #{caseNo}</h1>
 
       <Section title="General Details">
-        <RenderField label="Firm Name" value={generalDetails?.firmName ?? ""} />
+        <RenderField
+          label="Firm Name"
+          value={gd?.firmName}
+          name="generalDetail.firmName"
+        />
         <RenderField
           label="Dealer Code"
-          value={generalDetails?.dealerCode ?? ""}
+          value={gd?.dealerCode}
+          name="generalDetail.dealerCode"
         />
         <RenderField
           label="Incentive Type"
-          value={generalDetails?.incentiveType ?? ""}
+          value={gd?.incentiveType}
+          name="generalDetail.incentiveType"
         />
       </Section>
 
       <Section title="Vehicle Details">
         <RenderField
           label="Vehicle No"
-          value={vehicleDetail?.vehicleNo ?? null}
+          value={vd?.vehicleNo}
+          name="vehicleDetail.vehicleNo"
         />
-        <RenderField label="From RTO" value={vehicleDetail?.fromRTO ?? null} />
-        <RenderField label="To RTO" value={vehicleDetail?.toRTO ?? null} />
+        <RenderField
+          label="From RTO"
+          value={vd?.fromRTO}
+          name="vehicleDetail.fromRTO"
+        />
+        <RenderField
+          label="To RTO"
+          value={vd?.toRTO}
+          name="vehicleDetail.toRTO"
+        />
         <RenderField
           label="Chassis No"
-          value={vehicleDetail?.chassisNo ?? null}
+          value={vd?.chassisNo}
+          name="vehicleDetail.chassisNo"
         />
         <RenderField
           label="Engine No"
-          value={vehicleDetail?.engineNo ?? null}
+          value={vd?.engineNo}
+          name="vehicleDetail.engineNo"
         />
       </Section>
 
       <Section title="Expire Details">
         <RenderField
           label="Insurance Expiry"
-          value={expireDetail?.insuranceExpiry ?? null}
+          value={ed?.insuranceExpiry}
+          name="expireDetail.insuranceExpiry"
         />
         <RenderField
           label="PUC Expiry"
-          value={expireDetail?.pucExpiry ?? null}
+          value={ed?.pucExpiry}
+          name="expireDetail.pucExpiry"
         />
         <RenderField
           label="Fitness Expiry"
-          value={expireDetail?.fitnessExpiry ?? null}
+          value={ed?.fitnessExpiry}
+          name="expireDetail.fitnessExpiry"
         />
         <RenderField
           label="Tax Expiry"
-          value={expireDetail?.taxExpiry ?? null}
+          value={ed?.taxExpiry}
+          name="expireDetail.taxExpiry"
         />
         <RenderField
           label="Permit Expiry"
-          value={expireDetail?.permitExpiry ?? null}
+          value={ed?.permitExpiry}
+          name="expireDetail.permitExpiry"
         />
       </Section>
 
       <Section title="Transaction Details">
-        <RenderField label="To RTO" value={transactionDetail?.to ?? null} />
+        <RenderField
+          label="To RTO"
+          value={td?.to}
+          name="transactionDetail.to"
+        />
         <RenderField
           label="Fitness"
-          value={getBoolStatus(transactionDetail?.fitness)}
+          value={getBoolStatus(td?.fitness)}
+          name="transactionDetail.fitness"
+          type="checkbox"
         />
-        <RenderField label="RRF" value={getBoolStatus(transactionDetail?.rrf)} />
-        <RenderField label="RMA" value={getBoolStatus(transactionDetail?.rma)} />
+        <RenderField
+          label="RRF"
+          value={getBoolStatus(td?.rrf)}
+          name="transactionDetail.rrf"
+          type="checkbox"
+        />
+        <RenderField
+          label="RMA"
+          value={getBoolStatus(td?.rma)}
+          name="transactionDetail.rma"
+          type="checkbox"
+        />
         <RenderField
           label="Alteration"
-          value={getBoolStatus(transactionDetail?.alteration)}
+          value={getBoolStatus(td?.alteration)}
+          name="transactionDetail.alteration"
+          type="checkbox"
         />
         <RenderField
           label="Conversion"
-          value={getBoolStatus(transactionDetail?.conversion)}
+          value={getBoolStatus(td?.conversion)}
+          name="transactionDetail.conversion"
+          type="checkbox"
         />
         <RenderField
           label="Number Plate Type"
-          value={transactionDetail?.numberPlate ?? null}
+          value={td?.numberPlate}
+          name="transactionDetail.numberPlate"
         />
         <RenderField
           label="Address Change"
-          value={getBoolStatus(transactionDetail?.addressChange)}
+          value={getBoolStatus(td?.addressChange)}
+          name="transactionDetail.addressChange"
+          type="checkbox"
         />
-        <RenderField label="DRC" value={getBoolStatus(transactionDetail?.drc)} />
+        <RenderField
+          label="DRC"
+          value={getBoolStatus(td?.drc)}
+          name="transactionDetail.drc"
+          type="checkbox"
+        />
         <RenderField
           label="Remarks"
-          value={transactionDetail?.remarks ?? null}
+          value={td?.remarks}
+          name="transactionDetail.remarks"
         />
       </Section>
 
       <Section title="Expense Details">
         <RenderField
           label="PUC Charges"
-          value={expenseDetail?.pucCharges ?? null}
+          value={exd?.pucCharges}
+          name="expenseDetail.pucCharges"
         />
         <RenderField
           label="Insurance Charges"
-          value={expenseDetail?.insuranceCharges ?? null}
+          value={exd?.insuranceCharges}
+          name="expenseDetail.insuranceCharges"
         />
         <RenderField
           label="Other Charges"
-          value={expenseDetail?.otherCharges ?? null}
+          value={exd?.otherCharges}
+          name="expenseDetail.otherCharges"
         />
         <RenderField
           label="Admin Charges"
-          value={expenseDetail?.adminCharges ?? null}
+          value={exd?.adminCharges}
+          name="expenseDetail.adminCharges"
         />
       </Section>
-
-      {/* <Section title="Logs">
-        <RenderField label="Status [From]" value={logs?.fromStatus ?? null} />
-        <RenderField label="Status [To]" value={logs?.toStatus ?? null} />
-        <RenderField
-          label="Name"
-          value={
-            logs?.user
-              ? `${logs.user.firstName ?? ""} ${
-                  logs.user.lastName ?? ""
-                }`.trim()
-              : null
-          }
-        />
-        <RenderField label="Email" value={logs?.user?.email ?? null} />
-        <RenderField label="UserRole" value={logs?.user?.role ?? null} />
-      </Section> */}
-    </div>
+    </form>
   );
 }

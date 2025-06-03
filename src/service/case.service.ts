@@ -1,33 +1,35 @@
 import axios from "axios";
-import { url,getConfig } from "@/service/auth.service";
+import { url, getConfig } from "@/service/auth.service";
+import type { FinalDetails } from "@/components/CaseDetailsAdmin";
+import type { Case } from "@/components/CaseForm";
 // import { type Case } from "@/components/CaseForm";
 
-export async function createCase(CaseData: any){
-    const token = localStorage.getItem("token"); // Assuming user is logged in
-    try {
-        const response = await axios.post(
-            `${url}/case/new`,
-            CaseData,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-            }
-        );
-        const result = response.data;
+export async function createCase(CaseData: any) {
+  const token = localStorage.getItem("token"); // Assuming user is logged in
+  try {
+    const response = await axios.post(
+      `${url}/case/new`,
+      CaseData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      }
+    );
+    const result = response.data;
 
-        if (!response.status || !result.success) {
-            throw new Error(result.message || "Failed to create Case");
-        }
-
-        return result || "Case created successfully";
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message || error.message || "Failed to create Case");
+    if (!response.status || !result.success) {
+      throw new Error(result.message || "Failed to create Case");
     }
+
+    return result || "Case created successfully";
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || error.message || "Failed to create Case");
+  }
 }
 
-export const getAllCases= async () => {
+export const getAllCases = async () => {
   const config = getConfig();
   return axios
     .get(url + "/case/all", config)
@@ -40,7 +42,7 @@ export const getAllCases= async () => {
     });
 };
 
-export const getAllCasesE= async () => {
+export const getAllCasesE = async () => {
   const config = getConfig();
   return axios
     .get(url + "/case/employee", config)
@@ -53,7 +55,7 @@ export const getAllCasesE= async () => {
     });
 };
 
-export const getCaseID= async (Id:any) => {
+export const getCaseID = async (Id: any) => {
   const config = getConfig();
   return axios
     .get(`${url}/case/${Id}`, config)
@@ -65,3 +67,36 @@ export const getCaseID= async (Id:any) => {
       throw error;
     });
 };
+
+export const updateCaseID = async (Id: any, data: Case) => {
+  const config = getConfig();
+
+  console.log(data);
+  return axios.patch(`${url}/case/edit/${Id}`, data, config)
+    .then((resp) => {
+      return resp.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during patch:", error);
+      throw error;
+    });
+}
+
+
+export const assignCase = async (caseId: string, clientId: string) => {
+  const config = getConfig();
+  const data = {
+    caseId,
+    clientId
+  };
+
+  console.log(data);
+  return axios.post(`${url}/case/assign`, data, config)
+    .then((resp) => {
+      return resp.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during post:", error);
+      throw error;
+    });
+}
