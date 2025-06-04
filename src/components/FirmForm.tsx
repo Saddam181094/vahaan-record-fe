@@ -27,6 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useLoading } from "./LoadingContext";
+import { Label } from "@radix-ui/react-label";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Firm {
@@ -94,20 +95,27 @@ const {setLoading} = useLoading();
   }
 
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
+  const [items, setItemsper] = useState("10"); // Default to 10 entries
+  const items_per_page = parseInt(items, 10);
 
-  const totalPages = Math.ceil(firms.length / ITEMS_PER_PAGE);
+  const isEntryLimitValid = items_per_page >= 1 && items_per_page <= 20;
+  const ITEMS_PER_PAGE = items_per_page;
+  const totalPages = isEntryLimitValid
+    ? Math.ceil(firms.length / ITEMS_PER_PAGE)
+    : 1;
+
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedFirms = firms.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const paginatedFirms = isEntryLimitValid
+    ? firms.slice(startIdx, startIdx + ITEMS_PER_PAGE)
+    : [];
 
-  const handlePrev = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when limit changes
+  }, [items_per_page]);
 
-  const handleNext = () => {
+  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () =>
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
-
   return (
     <div>
       <Button onClick={() => setDialogOpen(true)} className="mb-4">
@@ -188,7 +196,28 @@ const {setLoading} = useLoading();
           )}
         </TableBody>
       </Table>
-
+<div className="flex items-center justify-end mb-4">
+            <Label htmlFor="entryLimit" className="mr-2 font-medium">
+              No of entries:
+            </Label>
+            <Input
+              id="entryLimit"
+              type="number"
+              min="1"
+              max="20"
+              value={items_per_page === 0 ? "" : items_per_page}
+              onChange={(e) => {
+                const val = e.target.value;
+                setItemsper(val === "" ? "" : val);
+              }}
+              className="border rounded px-3 py-1 w-20 text-sm"
+            />
+          </div>
+          {items !== "" && !isEntryLimitValid && (
+            <div className="text-red-500 text-right text-xs mb-2">
+              Please enter a value between 1 and 20.
+            </div>
+          )}
       <Pagination className="mt-4">
         <PaginationContent>
           <PaginationItem>

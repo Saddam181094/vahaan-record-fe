@@ -16,6 +16,7 @@ import Allcases from "@/pages/AlCase";
 import AllCaseE from "@/pages/AlCaseE"
 import CaseDetails from "@/components/CaseDetailsAdmin"
 import CaseDetailsEmployee from "@/components/CaseDetailsEmployee"
+import CaseDetailsC from "@/components/CaseDetailsClient"
 import ClientCases from "@/pages/ClientCases"
 import Profile from "@/pages/MyProfile"
 // import { Loader } from "lucide-react";
@@ -88,6 +89,12 @@ export default function App() {
       <Route path="/client/cases" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
           <ClientCases/>
+        </ProtectedRoute>
+      } />
+
+            <Route path="/client/cases/:CaseNo" element={
+        <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
+          <CaseDetailsC />
         </ProtectedRoute>
       } />
 

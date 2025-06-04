@@ -38,7 +38,7 @@ const MyProfile: React.FC = () => {
     } = useForm<PasswordFormInputs>();
 
     const [open, setOpen] = useState(false);
-    const { logout } = useAuth();
+    const { logout,user } = useAuth();
     const handleLogout = () => {
         logout();
     };
@@ -95,10 +95,13 @@ const MyProfile: React.FC = () => {
                         <h2 className="text-xl font-semibold">My Profile</h2>
                         <div>
                             <p>
-                                <strong>Name:</strong> John Doe
+                                <strong>Name:</strong> {user?.name}
                             </p>
                             <p>
-                                <strong>Email:</strong> johndoe@email.com
+                                <strong>Email:</strong> {user?.email}
+                            </p>
+                            <p>
+                                <strong>Email:</strong> {user?.role}
                             </p>
                         </div>
 

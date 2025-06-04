@@ -39,6 +39,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@radix-ui/react-label";
+import { useToast } from "@/context/ToastContext";
 
 export interface Branch {
   branchCode?: string;
@@ -108,15 +110,18 @@ export default function AdminBranchForm() {
   const [formLoading, setFormLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     setLoading(true);
     getBranch()
       .then((resp) => {
+        toast.showToast('State Optimized','Branches Fetched Perfectly', 'success');
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-        console.error("Error fetching branches:", err);
+        toast.showToast('Some Error in Fetching Branches', err , 'error');
+        // console.error("Error fetching branches:", err);
       })
       .finally(() => {
         setLoading(false);
@@ -132,7 +137,8 @@ export default function AdminBranchForm() {
       setRefreshFlag((prev) => !prev);
       reset();
     } catch (err: any) {
-      console.error(err);
+      toast.showToast('Some Error in Fetching Branches', err , 'error');
+      // console.error(err);
     } finally {
       setFormLoading(false);
     }
@@ -148,18 +154,32 @@ export default function AdminBranchForm() {
     try {
       await toggleBranch(branch);
     } catch (err: any) {
-      console.error(err);
+      toast.showToast('Some Error in Fetching Branches', err , 'error');
+      // console.error(err);
     } finally {
       setRefreshFlag((prev) => !prev);
       setLoading(false);
     }
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
-  const totalPages = Math.ceil(branches.length / ITEMS_PER_PAGE);
+   const [currentPage, setCurrentPage] = useState(1);
+  const [items, setItemsper] = useState("10"); // Default to 10 entries
+  const items_per_page = parseInt(items, 10);
+
+  const isEntryLimitValid = items_per_page >= 1 && items_per_page <= 20;
+  const ITEMS_PER_PAGE = items_per_page;
+  const totalPages = isEntryLimitValid
+    ? Math.ceil(branches.length / ITEMS_PER_PAGE)
+    : 1;
+
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedBranches = branches.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const paginatedBranches = isEntryLimitValid
+    ? branches.slice(startIdx, startIdx + ITEMS_PER_PAGE)
+    : [];
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when limit changes
+  }, [items_per_page]);
 
   const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
   const handleNext = () =>
@@ -264,6 +284,28 @@ export default function AdminBranchForm() {
           )}
         </TableBody>
       </Table>
+                <div className="flex items-center justify-end mb-4">
+            <Label htmlFor="entryLimit" className="mr-2 font-medium">
+              No of entries:
+            </Label>
+            <Input
+              id="entryLimit"
+              type="number"
+              min="1"
+              max="20"
+              value={items_per_page === 0 ? "" : items_per_page}
+              onChange={(e) => {
+                const val = e.target.value;
+                setItemsper(val === "" ? "" : val);
+              }}
+              className="border rounded px-3 py-1 w-20 text-sm"
+            />
+          </div>
+          {items !== "" && !isEntryLimitValid && (
+            <div className="text-red-500 text-right text-xs mb-2">
+              Please enter a value between 1 and 20.
+            </div>
+          )}
 
       <Pagination className="mt-4">
         <PaginationContent>

@@ -39,6 +39,7 @@ import {
 import type { Branch } from "./Branchform";
 import { UserRole } from "@/context/AuthContext";
 import { useLoading } from "./LoadingContext";
+import { Label } from "@radix-ui/react-label";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Employee {
@@ -121,20 +122,30 @@ export default function EmployeeForm() {
   //     }
   //   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
+const [currentPage, setCurrentPage] = useState(1);
+  const [items, setItemsper] = useState("10"); // Default to 10 entries
+  const items_per_page = parseInt(items, 10);
 
-  const totalPages = Math.ceil(Employee2.length / ITEMS_PER_PAGE);
+  const isEntryLimitValid = items_per_page >= 1 && items_per_page <= 20;
+  const ITEMS_PER_PAGE = items_per_page;
+  const totalPages = isEntryLimitValid
+    ? Math.ceil(Employee2.length / ITEMS_PER_PAGE)
+    : 1;
+
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedEmployee = Employee2.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const paginatedEmployee = isEntryLimitValid
+    ? Employee2.slice(startIdx, startIdx + ITEMS_PER_PAGE)
+    : [];
 
-  const handlePrev = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
 
-  const handleNext = () => {
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when limit changes
+  }, [items_per_page]);
+
+  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () =>
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
+
 
   return (
     <div>
@@ -241,6 +252,30 @@ export default function EmployeeForm() {
           )}
         </TableBody>
       </Table>
+
+      <div className="flex items-center justify-end mb-4">
+            <Label htmlFor="entryLimit" className="mr-2 font-medium">
+              No of entries:
+            </Label>
+            <Input
+              id="entryLimit"
+              type="number"
+              min="1"
+              max="20"
+              value={items_per_page === 0 ? "" : items_per_page}
+              onChange={(e) => {
+                const val = e.target.value;
+                setItemsper(val === "" ? "" : val);
+              }}
+              className="border rounded px-3 py-1 w-20 text-sm"
+            />
+          </div>
+          {items !== "" && !isEntryLimitValid && (
+            <div className="text-red-500 text-right text-xs mb-2">
+              Please enter a value between 1 and 20.
+            </div>
+          )}
+
       <Pagination className="mt-4">
         <PaginationContent>
           <PaginationItem>

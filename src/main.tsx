@@ -7,18 +7,23 @@ import { BrowserRouter } from 'react-router-dom';
 import { LoadingProvider } from "@/components/LoadingContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import { DialogProvider } from './components/DialogProvider.tsx';
+import { ToastProvider } from './context/ToastContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+            <ToastProvider>
 <LoadingProvider>
   <GlobalLoader/>
     <BrowserRouter>
       <AuthProvider>
+
         <DialogProvider>
         <App />
         </DialogProvider>
+
       </AuthProvider>
     </BrowserRouter>
     </LoadingProvider>
+            </ToastProvider>
   </StrictMode>,
 )

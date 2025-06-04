@@ -1,4 +1,4 @@
-import { useState, useEffect,type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import type { NewClient } from "../pages/Clientsignup";
 import { getUClient, verifyClient } from "@/service/client.service";
 // import Loader from "@/components/GlobalLoader";
@@ -31,16 +31,24 @@ import { useLoading } from "./LoadingContext";
 
 export default function UClient() {
   const [clients, setClients] = useState<NewClient[]>([]);
-const {setLoading} = useLoading();
+  const { setLoading } = useLoading();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<NewClient | null>(null);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [items, setItemsper] = useState("10"); // Default to 10 entries
+  const items_per_page = parseInt(items, 10);
 
-  const ITEMS_PER_PAGE = 10;
-  const totalPages = Math.ceil(clients.length / ITEMS_PER_PAGE);
+  const isEntryLimitValid = items_per_page >= 1 && items_per_page <= 20;
+  const ITEMS_PER_PAGE = items_per_page;
+  const totalPages = isEntryLimitValid
+    ? Math.ceil(clients.length / ITEMS_PER_PAGE)
+    : 1;
+
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedClients = clients.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const paginatedClients = isEntryLimitValid
+    ? clients.slice(startIdx, startIdx + ITEMS_PER_PAGE)
+    : [];
 
   useEffect(() => {
     setLoading(true);
@@ -58,7 +66,7 @@ const {setLoading} = useLoading();
     const fixedPenalty = Number(formData.get("fixedPenalty"));
 
     if (selectedClient) {
-      await verifyClient(selectedClient?.id?? "", creditLimit, fixedPenalty);
+      await verifyClient(selectedClient?.id ?? "", creditLimit, fixedPenalty);
       setDialogOpen(false);
       setSelectedClient(null);
       setRefreshFlag((prev) => !prev);
@@ -68,41 +76,41 @@ const {setLoading} = useLoading();
 
   return (
     <div className="flex flex-col w-full bg-white px-6 py-4 min-h-screen">
-        <>
-          <Table>
-            <TableHeader>
+      <>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Address</TableHead>
+              <TableHead>Contact</TableHead>
+              <TableHead>Firm Name</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedClients.length === 0 ? (
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Address</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Firm Name</TableHead>
-                <TableHead>Action</TableHead>
+                <TableCell colSpan={5} className="text-center py-4">
+                  No clients found.
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedClients.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-4">
-                    No clients found.
+            ) : (
+              paginatedClients.map((client) => (
+                <TableRow key={client.id}>
+                  <TableCell>{client.firstName} {client.lastName}</TableCell>
+                  <TableCell>
+                    {client.address1}, {client.address2}, {client.city}, {client.state}, {client.pincode}
                   </TableCell>
-                </TableRow>
-              ) : (
-                paginatedClients.map((client) => (
-                  <TableRow key={client.id}>
-                    <TableCell>{client.firstName} {client.lastName}</TableCell>
-                    <TableCell>
-                      {client.address1}, {client.address2}, {client.city}, {client.state}, {client.pincode}
-                    </TableCell>
-                    <TableCell>{client.email} | {client.mobileNo}</TableCell>
-                    <TableCell>{client.firmName}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
+                  <TableCell>{client.email} | {client.mobileNo}</TableCell>
+                  <TableCell>{client.firmName}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
                       <Button
                         variant="default"
                         size="icon"
                         onClick={() => {
-                        setSelectedClient(client);
-                        setDialogOpen(true);
+                          setSelectedClient(client);
+                          setDialogOpen(true);
                         }}
                       >
                         ✔
@@ -111,88 +119,110 @@ const {setLoading} = useLoading();
                         variant="destructive"
                         size="icon"
                         onClick={() => {
-                        // Optionally handle "Not Approve" logic here
+                          // Optionally handle "Not Approve" logic here
                         }}
                       >
                         ✖
                       </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+        <div className="flex items-center justify-end mb-4">
+          <Label htmlFor="entryLimit" className="mr-2 font-medium">
+            No of entries:
+          </Label>
+          <Input
+            id="entryLimit"
+            type="number"
+            min="1"
+            max="20"
+            value={items_per_page === 0 ? "" : items_per_page}
+            onChange={(e) => {
+              const val = e.target.value;
+              setItemsper(val === "" ? "" : val);
+            }}
+            className="border rounded px-3 py-1 w-20 text-sm"
+          />
+        </div>
+        {items !== "" && !isEntryLimitValid && (
+          <div className="text-red-500 text-right text-xs mb-2">
+            Please enter a value between 1 and 20.
+          </div>
+        )}
 
-          <Pagination className="mt-4">
-            <PaginationContent>
-              <PaginationItem>
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="disabled:opacity-50"
-                >
-                  <PaginationPrevious />
-                </button>
-              </PaginationItem>
-              <PaginationItem className="px-4 text-sm text-muted-foreground">
-                Page {currentPage} of {totalPages}
-              </PaginationItem>
-              <PaginationItem>
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className="disabled:opacity-50"
-                >
-                  <PaginationNext />
-                </button>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+        <Pagination className="mt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="disabled:opacity-50"
+              >
+                <PaginationPrevious />
+              </button>
+            </PaginationItem>
+            <PaginationItem className="px-4 text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </PaginationItem>
+            <PaginationItem>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="disabled:opacity-50"
+              >
+                <PaginationNext />
+              </button>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
 
-          {/* Shared Dialog */}
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Verify Client</DialogTitle>
-                <DialogDescription>
-                  Enter Credit Limit and Fixed Penalty to verify this client.
-                </DialogDescription>
-              </DialogHeader>
+        {/* Shared Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Verify Client</DialogTitle>
+              <DialogDescription>
+                Enter Credit Limit and Fixed Penalty to verify this client.
+              </DialogDescription>
+            </DialogHeader>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="creditLimit">Credit Limit</Label>
-                  <Input
-                    id="creditLimit"
-                    name="creditLimit"
-                    type="text"
-                    required
-                    placeholder="Enter credit limit"
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="creditLimit">Credit Limit</Label>
+                <Input
+                  id="creditLimit"
+                  name="creditLimit"
+                  type="text"
+                  required
+                  placeholder="Enter credit limit"
+                />
+              </div>
 
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="fixedPenalty">Fixed Penalty</Label>
-                  <Input
-                    id="fixedPenalty"
-                    name="fixedPenalty"
-                    type="text"
-                    required
-                    placeholder="Enter penalty amount"
-                  />
-                </div>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="fixedPenalty">Fixed Penalty</Label>
+                <Input
+                  id="fixedPenalty"
+                  name="fixedPenalty"
+                  type="text"
+                  required
+                  placeholder="Enter penalty amount"
+                />
+              </div>
 
-                <div className="flex justify-end gap-2 mt-4">
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button type="submit">Confirm</Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </>
+              <div className="flex justify-end gap-2 mt-4">
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Confirm</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </>
     </div>
   );
 }
