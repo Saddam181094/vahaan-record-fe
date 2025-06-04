@@ -10,12 +10,14 @@ import AddBranch from "@/pages/AdBranch";
 import AddFirm from "@/pages/AdFirm";
 import AddEmployee from "@/pages/AdEmp";
 import SignUpPage from "@/pages/Clientsignup";
-import Client from "@/pages/Client";
+import Client from "@/pages/AdminClient";
 import CaseForm from "@/pages/Case";
 import Allcases from "@/pages/AlCase";
 import AllCaseE from "@/pages/AlCaseE"
 import CaseDetails from "@/components/CaseDetailsAdmin"
 import CaseDetailsEmployee from "@/components/CaseDetailsEmployee"
+import ClientCases from "@/pages/ClientCases"
+import Profile from "@/pages/MyProfile"
 // import { Loader } from "lucide-react";
 export default function App() {
   return (
@@ -32,6 +34,11 @@ export default function App() {
       <Route path="/superadmin" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <AdminDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/superadmin/Profile" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <Profile />
         </ProtectedRoute>
       } />
       <Route path="/superadmin/AddBranch" element={
@@ -75,6 +82,12 @@ export default function App() {
       <Route path="/client" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
           <UserDashboard />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/client/cases" element={
+        <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
+          <ClientCases/>
         </ProtectedRoute>
       } />
 

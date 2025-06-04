@@ -6,7 +6,8 @@ import {
   ChevronDown,
   Building2,
   UserRoundPen,
-  PcCase
+  PcCase,
+  User
 } from "lucide-react";
 import {
   Sidebar,
@@ -50,9 +51,11 @@ const items1: Record<string, SidebarItem[]> = {
     { title: "Employees", url: "/superadmin/AddEmployee", icon: CircleUser },
     { title: "U-Clients", url: "/superadmin/UnverifiedClients", icon: UserRoundPen },
     { title: "All-Cases", url: "/superadmin/cases", icon: PcCase },
+    { title: "My Profile", url: "/superadmin/Profile", icon: User },
   ],
   client: [
-    { title: "Home", url: "/client/home", icon: Home },
+    { title: "Home", url: "/client", icon: Home },
+    { title: "Cases", url: "/client/cases", icon: UserRoundPen },
   ],
   employee: [
     { title: "Home", url: "/employee", icon: Home },

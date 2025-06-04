@@ -52,7 +52,6 @@ export const getActiveClients = async () => {
     });
 };
 
-
 export async function verifyClient(clientId: string, creditLimit: number, fixedPenaltyAmount: number): Promise<NewClient> {
     const config = getConfig();
     try {

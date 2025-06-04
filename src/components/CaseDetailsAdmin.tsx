@@ -13,6 +13,8 @@ import { getCaseID, updateCaseID } from "@/service/case.service";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
+import { Switch } from "@radix-ui/react-switch";
+import CaseDetails from "./CaseDetailsEmployee";
 
 export interface FinalDetails {
   CaseNo: string;
@@ -37,28 +39,37 @@ export interface user {
   role: string;
 }
 
-export default function CaseDetails() {
+export default function CaseDescription() {
   const location = useLocation();
   const navigate = useNavigate();
   const id = location.state?.id;
+  const state = location.state?.status;
   const { setLoading } = useLoading();
+  const [refreshFlag] = useState(false);
   const [caseData, setCaseData] = useState<FinalDetails>();
   const [editMode, setEditMode] = useState(false);
+  const [status, setStatus] = useState<string | undefined>();
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { isSubmitting },
   } = useForm<FinalDetails>({
     defaultValues: caseData,
   });
+
+  useEffect(()=>{
+    setStatus(state);
+  },[refreshFlag])
 
   useEffect(() => {
     if (!id) {
       alert("No ID provided");
       return;
     }
+
     setLoading(true);
     getCaseID(id)
       .then((resp) => {
@@ -80,6 +91,7 @@ export default function CaseDetails() {
   };
   const formatDate = (dateStr: string | undefined) =>
     dateStr?.split("T")[0] ?? null;
+
   const onSubmit = async (data: FinalDetails) => {
     try {
       setLoading(true);
@@ -146,11 +158,10 @@ export default function CaseDetails() {
     <div>
       <Label className="text-sm text-muted-foreground">{label}</Label>
       {editMode ? (
-        type === "checkbox" ? (
-          <input
-            type="checkbox"
-            {...register(name as any)}
-            defaultChecked={value ?? false}
+        type === "switch" ? (
+          <Switch
+            checked={value ?? false}
+            onCheckedChange={(val) => setValue(name as any, val)}
           />
         ) : (
           <input
@@ -196,31 +207,33 @@ export default function CaseDetails() {
           ← Back
         </button>
 
-        {!editMode ? (
+        {status?.toLowerCase() === "assigned" ? null : (
+          !editMode ? (
+        <button
+          className="px-4 py-2 rounded bg-secondary text-primary border border-primary hover:bg-secondary/80"
+          onClick={() => setEditMode(true)}
+          type="button"
+        >
+          ✎ Edit
+        </button>
+          ) : (
+        <div className="flex gap-2">
           <button
-            className="px-4 py-2 rounded bg-secondary text-primary border border-primary hover:bg-secondary/80"
-            onClick={() => setEditMode(true)}
+            className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            Save
+          </button>
+          <button
+            className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+            onClick={onCancel}
             type="button"
           >
-            ✎ Edit
+            ✖ Cancel
           </button>
-        ) : (
-          <div className="flex gap-2">
-            <button
-              className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              💾 Save
-            </button>
-            <button
-              className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-              onClick={onCancel}
-              type="button"
-            >
-              ✖ Cancel
-            </button>
-          </div>
+        </div>
+          )
         )}
       </div>
 
@@ -231,11 +244,6 @@ export default function CaseDetails() {
           label="Firm Name"
           value={gd?.firmName}
           name="generalDetail.firmName"
-        />
-        <RenderField
-          label="Dealer Code"
-          value={gd?.dealerCode}
-          name="generalDetail.dealerCode"
         />
         <RenderField
           label="Incentive Type"
@@ -275,27 +283,27 @@ export default function CaseDetails() {
       <Section title="Expire Details">
         <RenderField
           label="Insurance Expiry"
-          value={ed?.insuranceExpiry}
+          value={formatDate(ed?.insuranceExpiry)}
           name="expireDetail.insuranceExpiry"
         />
         <RenderField
           label="PUC Expiry"
-          value={ed?.pucExpiry}
+          value={formatDate(ed?.pucExpiry)}
           name="expireDetail.pucExpiry"
         />
         <RenderField
           label="Fitness Expiry"
-          value={ed?.fitnessExpiry}
+          value={formatDate(ed?.fitnessExpiry)}
           name="expireDetail.fitnessExpiry"
         />
         <RenderField
           label="Tax Expiry"
-          value={ed?.taxExpiry}
+          value={formatDate(ed?.taxExpiry)}
           name="expireDetail.taxExpiry"
         />
         <RenderField
           label="Permit Expiry"
-          value={ed?.permitExpiry}
+          value={formatDate(ed?.permitExpiry)}
           name="expireDetail.permitExpiry"
         />
       </Section>

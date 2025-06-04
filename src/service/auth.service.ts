@@ -31,6 +31,21 @@ export async function forgotPassword(email: string): Promise<string> {
   }
 }
 
+export async function changePassword(oldPassword:string,newPasssword:string){
+  const data = {oldPassword,newPasssword}
+
+  const config = getConfig();
+  return axios
+    .post(url + "/auth/change-password",data, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error :", error);
+      throw error;
+    });
+}
+
 // Login
 export async function login(
   email: string,

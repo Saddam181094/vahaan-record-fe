@@ -108,15 +108,15 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
               onValueChange={(value) => setValue("clientId", value)}
               value={selectedClient}
             >
-              <SelectTrigger id="clients">
-                <SelectValue placeholder="Select Dealer" />
+              <SelectTrigger id="clients" className="w-full">
+              <SelectValue placeholder="Select Dealer" />
               </SelectTrigger>
-              <SelectContent>
-                {clients.map((client: any) => (
-                  <SelectItem key={client.id} value={client.id}>
-                    {client.firstName} {client.lastName}
-                  </SelectItem>
-                ))}
+              <SelectContent className="w-full">
+              {clients.map((client: any) => (
+                <SelectItem key={client.id} value={client.id} className="w-full">
+                {client.firstName} {client.lastName}
+                </SelectItem>
+              ))}
               </SelectContent>
             </Select>
             {/* Register the field for react-hook-form */}
@@ -210,7 +210,7 @@ export default function CaseDes() {
                       type="button"
                       onClick={() =>
                         navigate(`/superadmin/cases/${Case.CaseNo}`, {
-                        state: { id: Case.id },
+                        state: { id: Case.id, status: Case.status }
                         })
                       }
                       title="View Details"
@@ -230,11 +230,13 @@ export default function CaseDes() {
                       >
                       <FaEye />
                       </button>
-                      <AssignDialog
-                      caseNo={Case.CaseNo}
-                      caseId={Case.id}
-                      disabled={Case.status?.toLowerCase() === "assigned"}
-                      />
+                      {Case.status?.toLowerCase() !== "assigned" &&
+                      Case.status?.toLowerCase() !== "created" && (
+                        <AssignDialog
+                        caseNo={Case.CaseNo}
+                        caseId={Case.id}
+                        />
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

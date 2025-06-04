@@ -99,10 +99,7 @@ export default function CaseDetails() {
 
       <Section title="General Details">
         <RenderField label="Firm Name" value={generalDetails?.firmName ?? ""} />
-        {/* <RenderField
-          label="Dealer Code"
-          value={generalDetails?.dealerCode ?? ""}
-        /> */}
+
         {/* <RenderField
           label="Incentive Type"
           value={generalDetails?.incentiveType ?? ""}

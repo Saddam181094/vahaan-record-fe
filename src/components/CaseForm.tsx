@@ -36,7 +36,6 @@ export interface GeneralDetails {
   firmName: string;
   branchCodeId: string;
   employeeCodeId: string;
-  dealerCode: string | null;
   incentiveType: number;
 }
 
@@ -107,7 +106,6 @@ export default function CaseForm() {
         firmName: "",
         branchCodeId: "",
         employeeCodeId: "",
-        dealerCode: "",
         incentiveType: 1,
       },
       vehicleDetail: {
@@ -317,10 +315,6 @@ export default function CaseForm() {
                   </div>
                 )}
               />
-              {/* <Input
-                placeholder="Dealer Code"
-                {...register("generalDetails.dealerCode")}
-              /> */}
             </div>
           {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Select

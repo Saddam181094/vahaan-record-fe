@@ -100,3 +100,17 @@ export const assignCase = async (caseId: string, clientId: string) => {
       throw error;
     });
 }
+
+export const getClientCases = async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/case/client", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
