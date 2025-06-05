@@ -11,19 +11,19 @@ import { ToastProvider } from './context/ToastContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-            <ToastProvider>
-<LoadingProvider>
-  <GlobalLoader/>
-    <BrowserRouter>
-      <AuthProvider>
+    <ToastProvider>
+      <LoadingProvider>
+        <GlobalLoader />
+        <BrowserRouter>
+          <AuthProvider>
 
-        <DialogProvider>
-        <App />
-        </DialogProvider>
+            <DialogProvider>
+              <App />
+            </DialogProvider>
 
-      </AuthProvider>
-    </BrowserRouter>
-    </LoadingProvider>
-            </ToastProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </LoadingProvider>
+    </ToastProvider>
   </StrictMode>,
 )

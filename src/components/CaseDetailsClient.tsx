@@ -1,39 +1,46 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import type {
-    GeneralDetails,
-    TransactionDetail,
-    ExpenseDetail,
-    ExpireDetail,
-    VehicleDetail,
-    Case,
-} from "@/components/CaseForm";
 import { getCaseID } from "@/service/case.service";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
 
-export interface FinalDetails {
-    CaseNo: string;
-    generalDetail: GeneralDetails;
-    vehicleDetail: VehicleDetail;
-    expireDetail: ExpireDetail;
-    transactionDetail: TransactionDetail;
-    expenseDetail: ExpenseDetail;
-    logs: Logs;
-}
-
-export interface Logs {
-    user: user;
-    fromStatus: string;
-    toStatus: string;
-}
-
-export interface user {
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
+interface DetailedCase {
+  id: string;
+  CaseNo: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  vehicleDetail: {
+    vehicleNo: string;
+    fromRTO: string;
+    toRTO: string;
+    chassisNo: string;
+    engineNo: string;
+  };
+  expireDetail: {
+    insuranceExpiry: string;
+    pucExpiry: string;
+    fitnessExpiry: string;
+    taxExpiry: string;
+    permitExpiry: string;
+  };
+  transactionDetail: {
+    to: string;
+    fitness: boolean;
+    rrf: boolean;
+    rma: boolean;
+    alteration: boolean;
+    conversion: boolean;
+    numberPlate: string;
+    addressChange: boolean;
+    drc: boolean;
+    remarks: string;
+  };
+  generalDetail: {
+    firmName: string;
+    applicationDate: string | null;
+  };
 }
 
 export default function CaseDescription() {
@@ -41,7 +48,7 @@ export default function CaseDescription() {
     const navigate = useNavigate();
     const id = location.state?.id;
     const { setLoading } = useLoading();
-    const [caseData, setCaseData] = useState<FinalDetails>();
+    const [caseData, setCaseData] = useState<DetailedCase>();
 
 
     useEffect(() => {
@@ -111,6 +118,7 @@ export default function CaseDescription() {
         <div className="p-6 space-y-6">
             <div className="flex justify-between items-center">
                 <button
+                style={{cursor:"pointer"}}
                     className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90"
                     onClick={() => navigate(-1)}
                     type="button"
@@ -127,8 +135,8 @@ export default function CaseDescription() {
                     value={gd?.firmName}
                 />
                 <RenderField
-                    label="Incentive Type"
-                    value={gd?.incentiveType}
+                    label="Application Date"
+                    value={gd?.applicationDate}
                 />
             </Section>
 

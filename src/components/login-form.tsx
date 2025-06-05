@@ -91,6 +91,7 @@ export function LoginForm({
           onOpenChange={setShowForgotModal}
           />
           <Button
+          style={{cursor:"pointer"}}
           type="submit"
           className="mx-auto w-full bg-[#584ff7] hover:bg-[#3e36b0] cursor-pointer text-white font-semibold rounded-lg py-2 transition-colors duration-150 shadow"
           disabled={loading}

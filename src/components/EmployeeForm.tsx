@@ -68,6 +68,7 @@ export default function EmployeeForm() {
   const {setLoading} = useLoading();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const [search,setSearch] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -78,7 +79,10 @@ export default function EmployeeForm() {
       .catch((err: any) => {
         console.error("Error fetching branches:", err);
       }).finally(()=> setLoading(false));
-  
+
+  }, [refreshFlag]);
+
+  useEffect(()=>{
     setLoading(true);
     getActiveBranch()
       .then((resp) => {
@@ -88,7 +92,7 @@ export default function EmployeeForm() {
         console.error("Error fetching branches:", err);
       })
       .finally(() => setLoading(false));
-  }, [refreshFlag]);
+  },[refreshFlag])
 
   const onSubmit: SubmitHandler<Employee> = async (data: Employee) => {
     setLoading(true);
@@ -149,7 +153,7 @@ const [currentPage, setCurrentPage] = useState(1);
 
   return (
     <div>
-      <Button onClick={() => setDialogOpen(true)} className="mb-4">
+      <Button style={{cursor:"pointer"}} onClick={() => setDialogOpen(true)} className="mb-4">
         Add Employee
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -170,6 +174,14 @@ const [currentPage, setCurrentPage] = useState(1);
                       <SelectValue placeholder="Select a Branch" />
                     </SelectTrigger>
                     <SelectContent>
+                      <div className="p-2">
+                    <Input
+                      placeholder="Search a Branch"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                    />
+                  </div>
                       {branch.map((resp) => (
                         <SelectItem key={resp?.branchCode ?? ""} value={resp?.branchCode ?? ""}>
                           {resp.name}
@@ -207,10 +219,10 @@ const [currentPage, setCurrentPage] = useState(1);
             )}
 
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={handleDiagClick}>
+              <Button style={{cursor:"pointer"}} type="button" variant="outline" onClick={handleDiagClick}>
                 Cancel
               </Button>
-              <Button type="submit">
+              <Button style={{cursor:"pointer"}} type="submit">
                 Create Employee
               </Button>
             </div>
@@ -280,6 +292,7 @@ const [currentPage, setCurrentPage] = useState(1);
         <PaginationContent>
           <PaginationItem>
             <button
+            style={{cursor:"pointer"}}
               type="button"
               onClick={handlePrev}
               disabled={currentPage === 1}
@@ -293,6 +306,7 @@ const [currentPage, setCurrentPage] = useState(1);
           </PaginationItem>
           <PaginationItem>
             <button
+            style={{cursor:"pointer"}}
               type="button"
               onClick={handleNext}
               disabled={currentPage === totalPages}

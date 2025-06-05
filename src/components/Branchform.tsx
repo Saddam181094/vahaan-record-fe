@@ -116,11 +116,11 @@ export default function AdminBranchForm() {
     setLoading(true);
     getBranch()
       .then((resp) => {
-        toast.showToast('State Optimized','Branches Fetched Perfectly', 'success');
+        toast.showToast('State Optimized', 'Branches Fetched Perfectly', 'success');
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Some Error in Fetching Branches', err , 'error');
+        toast.showToast('Some Error in Fetching Branches', err, 'error');
         // console.error("Error fetching branches:", err);
       })
       .finally(() => {
@@ -137,12 +137,12 @@ export default function AdminBranchForm() {
       setRefreshFlag((prev) => !prev);
       reset();
     } catch (err: any) {
-      toast.showToast('Some Error in Fetching Branches', err , 'error');
+      toast.showToast('Some Error in Fetching Branches', err, 'error');
       // console.error(err);
     } finally {
       setFormLoading(false);
     }
-  };  
+  };
 
   const handleDiagClick = () => {
     setDialogOpen(false);
@@ -154,7 +154,7 @@ export default function AdminBranchForm() {
     try {
       await toggleBranch(branch);
     } catch (err: any) {
-      toast.showToast('Some Error in Fetching Branches', err , 'error');
+      toast.showToast('Some Error in Fetching Branches', err, 'error');
       // console.error(err);
     } finally {
       setRefreshFlag((prev) => !prev);
@@ -162,9 +162,10 @@ export default function AdminBranchForm() {
     }
   };
 
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [items, setItemsper] = useState("10"); // Default to 10 entries
   const items_per_page = parseInt(items, 10);
+  const [search,setSearch] = useState("");
 
   const isEntryLimitValid = items_per_page >= 1 && items_per_page <= 20;
   const ITEMS_PER_PAGE = items_per_page;
@@ -187,7 +188,9 @@ export default function AdminBranchForm() {
 
   return (
     <div>
-      <Button onClick={() => setDialogOpen(true)} className="mb-4">
+      <Button 
+      style={{cursor:"pointer"}}
+      onClick={() => setDialogOpen(true)} className="mb-4">
         Add Branch
       </Button>
 
@@ -221,6 +224,14 @@ export default function AdminBranchForm() {
                   <SelectValue placeholder="Select a state" />
                 </SelectTrigger>
                 <SelectContent>
+                  <div className="p-2">
+                    <Input
+                      placeholder="Search a State"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                    />
+                  </div>
                   {indianStates.map((state) => (
                     <SelectItem key={state} value={state}>
                       {state}
@@ -234,10 +245,10 @@ export default function AdminBranchForm() {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={handleDiagClick}>
+              <Button style={{cursor:"pointer"}} type="button" variant="outline" onClick={handleDiagClick}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={formLoading}>
+              <Button style={{cursor:"pointer"}} type="submit" disabled={formLoading}>
                 {formLoading ? "Creating..." : "Create Branch"}
               </Button>
             </div>
@@ -248,69 +259,70 @@ export default function AdminBranchForm() {
       <Table>
         <TableHeader>
           <TableRow>
-        <TableHead>Name</TableHead>
-        <TableHead>Address</TableHead>
-        <TableHead>Action</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Address</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedBranches.length === 0 ? (
-        <TableRow>
-          <TableCell colSpan={3} className="text-center py-4">
-            No branches found.
-          </TableCell>
-        </TableRow>
+            <TableRow>
+              <TableCell colSpan={3} className="text-center py-4">
+                No branches found.
+              </TableCell>
+            </TableRow>
           ) : (
-        paginatedBranches.map((branch, idx) => (
-          <TableRow
-            key={branch.branchCode}
-            className={idx % 2 === 1 ? "bg-gray-100 dark:bg-gray-800" : ""}
-          >
-            <TableCell>{branch.name}</TableCell>
-            <TableCell>
-          {branch.address1}, {branch.address2}, {branch.city},{" "}
-          {branch.state}, {branch.pincode}
-            </TableCell>
-            <TableCell>
-          <Switch
-            checked={!!branch.isActive}
-            onCheckedChange={() =>
-              handleToggle(branch?.branchCode ?? "")
-            }
-          />
-            </TableCell>
-          </TableRow>
-        ))
+            paginatedBranches.map((branch, idx) => (
+              <TableRow
+                key={branch.branchCode}
+                className={idx % 2 === 1 ? "bg-gray-100 dark:bg-gray-800" : ""}
+              >
+                <TableCell>{branch.name}</TableCell>
+                <TableCell>
+                  {branch.address1}, {branch.address2}, {branch.city},{" "}
+                  {branch.state}, {branch.pincode}
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    checked={!!branch.isActive}
+                    onCheckedChange={() =>
+                      handleToggle(branch?.branchCode ?? "")
+                    }
+                  />
+                </TableCell>
+              </TableRow>
+            ))
           )}
         </TableBody>
       </Table>
-                <div className="flex items-center justify-end mb-4">
-            <Label htmlFor="entryLimit" className="mr-2 font-medium">
-              No of entries:
-            </Label>
-            <Input
-              id="entryLimit"
-              type="number"
-              min="1"
-              max="20"
-              value={items_per_page === 0 ? "" : items_per_page}
-              onChange={(e) => {
-                const val = e.target.value;
-                setItemsper(val === "" ? "" : val);
-              }}
-              className="border rounded px-3 py-1 w-20 text-sm"
-            />
-          </div>
-          {items !== "" && !isEntryLimitValid && (
-            <div className="text-red-500 text-right text-xs mb-2">
-              Please enter a value between 1 and 20.
-            </div>
-          )}
+      <div className="flex items-center justify-end mb-4">
+        <Label htmlFor="entryLimit" className="mr-2 font-medium">
+          No of entries:
+        </Label>
+        <Input
+          id="entryLimit"
+          type="number"
+          min="1"
+          max="20"
+          value={items_per_page === 0 ? "" : items_per_page}
+          onChange={(e) => {
+            const val = e.target.value;
+            setItemsper(val === "" ? "" : val);
+          }}
+          className="border rounded px-3 py-1 w-20 text-sm"
+        />
+      </div>
+      {items !== "" && !isEntryLimitValid && (
+        <div className="text-red-500 text-right text-xs mb-2">
+          Please enter a value between 1 and 20.
+        </div>
+      )}
 
       <Pagination className="mt-4">
         <PaginationContent>
           <PaginationItem>
             <button
+            style={{cursor:"pointer"}}
               type="button"
               onClick={handlePrev}
               disabled={currentPage === 1}
@@ -324,6 +336,7 @@ export default function AdminBranchForm() {
           </PaginationItem>
           <PaginationItem>
             <button
+            style={{cursor:"pointer"}}
               type="button"
               onClick={handleNext}
               disabled={currentPage === totalPages}

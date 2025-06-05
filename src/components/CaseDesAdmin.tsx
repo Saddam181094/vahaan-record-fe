@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useLoading } from "./LoadingContext";
 import { getAllCases } from "@/service/case.service";
 import { useNavigate } from "react-router-dom";
@@ -51,6 +51,7 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
   const [clients, setClients] = useState<any[]>([]);
   const { setLoading } = useLoading();
   const [refreshFlag] = useState(false);
+  const [search,setSearch] = useState("");
 
   const { register, handleSubmit, setValue, watch, reset } = useForm<{ clientId: string }>({
     defaultValues: { clientId: "" },
@@ -112,6 +113,14 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
               <SelectValue placeholder="Select Dealer" />
               </SelectTrigger>
               <SelectContent className="w-full">
+                <div className="p-2">
+                    <Input
+                      placeholder="Search a State"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                    />
+                  </div>
               {clients.map((client: any) => (
                 <SelectItem key={client.id} value={client.id} className="w-full">
                 {client.firstName} {client.lastName}
@@ -123,7 +132,7 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
             <input type="hidden" {...register("clientId", { required: true })} />
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={!selectedClient}>Submit</Button>
+            <Button style={{cursor:"pointer"}} type="submit" disabled={!selectedClient}>Submit</Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -270,6 +279,7 @@ export default function CaseDes() {
             <PaginationContent>
               <PaginationItem>
                 <button
+                style={{cursor:"pointer"}}
                   type="button"
                   onClick={handlePrev}
                   disabled={currentPage === 1}
@@ -283,6 +293,7 @@ export default function CaseDes() {
               </PaginationItem>
               <PaginationItem>
                 <button
+                style={{cursor:"pointer"}}
                   type="button"
                   onClick={handleNext}
                   disabled={currentPage === totalPages}

@@ -118,7 +118,7 @@ const {setLoading} = useLoading();
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   return (
     <div>
-      <Button onClick={() => setDialogOpen(true)} className="mb-4">
+      <Button style={{cursor:"pointer"}} onClick={() => setDialogOpen(true)} className="mb-4">
         Add Firm
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -141,13 +141,14 @@ const {setLoading} = useLoading();
 
             <div className="flex justify-end gap-2">
               <Button
+              style={{cursor:"pointer"}}
                 type="button"
                 variant="outline"
                 onClick={handleDiagClick}
               >
                 Cancel
               </Button>
-              <Button type="submit">
+              <Button style={{cursor:"pointer"}} type="submit">
                Create
               </Button>
             </div>
@@ -222,6 +223,7 @@ const {setLoading} = useLoading();
         <PaginationContent>
           <PaginationItem>
             <button
+            style={{cursor:"pointer"}}
               type="button"
               onClick={handlePrev}
               disabled={currentPage === 1}
@@ -235,6 +237,7 @@ const {setLoading} = useLoading();
           </PaginationItem>
           <PaginationItem>
             <button
+            style={{cursor:"pointer"}}
               type="button"
               onClick={handleNext}
               disabled={currentPage === totalPages}

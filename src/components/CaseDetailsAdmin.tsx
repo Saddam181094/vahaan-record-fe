@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
 import { Switch } from "@radix-ui/react-switch";
-import CaseDetails from "./CaseDetailsEmployee";
+// import CaseDetails from "./CaseDetailsEmployee";
 
 export interface FinalDetails {
   CaseNo: string;
@@ -200,6 +200,7 @@ export default function CaseDescription() {
     <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <button
+        style={{cursor:"pointer"}}
           className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90"
           onClick={() => navigate(-1)}
           type="button"
@@ -210,6 +211,7 @@ export default function CaseDescription() {
         {status?.toLowerCase() === "assigned" ? null : (
           !editMode ? (
         <button
+        style={{cursor:"pointer"}}
           className="px-4 py-2 rounded bg-secondary text-primary border border-primary hover:bg-secondary/80"
           onClick={() => setEditMode(true)}
           type="button"
@@ -219,6 +221,7 @@ export default function CaseDescription() {
           ) : (
         <div className="flex gap-2">
           <button
+          style={{cursor:"pointer"}}
             className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
             type="submit"
             disabled={isSubmitting}
@@ -226,6 +229,7 @@ export default function CaseDescription() {
             Save
           </button>
           <button
+          style={{cursor:"pointer"}}
             className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
             onClick={onCancel}
             type="button"

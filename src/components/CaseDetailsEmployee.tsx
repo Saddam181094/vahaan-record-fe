@@ -31,7 +31,7 @@ export default function CaseDetails() {
   const expireDetail = caseData?.expireDetail;
   const transactionDetail = caseData?.transactionDetail;
   const expenseDetail = caseData?.expenseDetail;
-  const logs = caseData?.logs;
+  // const logs = caseData?.logs;
 
   const Section = ({
     title,
@@ -86,6 +86,7 @@ export default function CaseDetails() {
   return (
     <div className="p-6 space-y-6">
       <button
+      style={{cursor:"pointer"}}
         className="sticky top-4 cursor-pointer z-50 mb-4 px-4 py-2 rounded bg-primary text-white hover:bg-primary/90 transition"
         onClick={() => navigate(-1)}
         type="button"

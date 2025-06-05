@@ -94,7 +94,6 @@ export type NumberPlate = (typeof NumberPlate)[keyof typeof NumberPlate];
 export default function CaseForm() {
   const {
     control,
-    register,
     handleSubmit,
     setValue,
     watch,
@@ -157,8 +156,8 @@ export default function CaseForm() {
   const { setLoading } = useLoading();
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
-
-  // const expireDetail = watch("expireDetail");
+  const [search,setSearch] = useState("");
+  // const expireDetail = watch(" expireDetail");
 
   const [refreshFlag] = useState(false);
 
@@ -267,6 +266,14 @@ export default function CaseForm() {
                         <SelectValue placeholder="Select Branch" />
                       </SelectTrigger>
                       <SelectContent>
+                        <div className="p-2">
+                                            <Input
+                                              placeholder="Search a Branch"
+                                              value={search}
+                                              onChange={(e) => setSearch(e.target.value)}
+                                              className="mb-2"
+                                            />
+                                          </div>
                         {branches.map((branch) => (
                           <SelectItem
                             key={branch?.branchCode}
@@ -300,6 +307,14 @@ export default function CaseForm() {
                         <SelectValue placeholder="Select Employee" />
                       </SelectTrigger>
                       <SelectContent>
+                        <div className="p-2">
+                    <Input
+                      placeholder="Search a Employee"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                    />
+                  </div>
                         {branchEmp.map((emp) => (
                           <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
                             {emp?.name}
@@ -640,6 +655,14 @@ export default function CaseForm() {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
+                  <div className="p-2">
+                    <Input
+                      placeholder="Search a Firm"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                    />
+                  </div>
                   {firms.map((firm) => (
                   <SelectItem key={firm.id} value={firm.id}>
                     {firm.name}
@@ -672,6 +695,14 @@ export default function CaseForm() {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
+                  <div className="p-2">
+                    <Input
+                      placeholder="Search a Firm"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                    />
+                  </div>
                   {firms.map((firm) => (
                   <SelectItem key={firm.id} value={firm.id}>
                     {firm.name}
@@ -827,7 +858,7 @@ export default function CaseForm() {
             </div>
         </CardContent>
       </Card>
-      <Button type="submit">Submit Case</Button>
+      <Button style={{cursor:"pointer"}} type="submit">Submit Case</Button>
     </form>
   );
 }

@@ -1,4 +1,4 @@
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { useState,useEffect } from "react";
 import {
@@ -12,7 +12,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 import { createBranch, getBranch, toggleBranch } from "@/service/branch.service";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog"
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 // import { Toaster } from "@/components/ui/sonner";
@@ -85,7 +85,7 @@ export default function AdminBranchForm() {
 
   return (
     <div>
-      <Button onClick={() => setDialogOpen(true)} className="mb-4">
+      <Button style={{cursor:"pointer"}} onClick={() => setDialogOpen(true)} className="mb-4">
       Add Branch
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -107,10 +107,10 @@ export default function AdminBranchForm() {
         ))}
 
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+          <Button style={{cursor:"pointer"}} type="button" variant="outline" onClick={() => setDialogOpen(false)}>
           Cancel
           </Button>
-          <Button type="submit" disabled={loading}>
+          <Button style={{cursor:"pointer"}} type="submit" disabled={loading}>
           {loading ? "Creating..." : "Create Branch"}
           </Button>
         </div>

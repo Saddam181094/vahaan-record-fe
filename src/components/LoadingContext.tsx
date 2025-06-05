@@ -1,8 +1,13 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-const LoadingContext = createContext({
+type LoadingContextType = {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const LoadingContext = createContext<LoadingContextType>({
   isLoading: false,
-  setLoading: (val: boolean) => {},
+  setLoading: () => {},
 });
 
 export const useLoading = () => useContext(LoadingContext);

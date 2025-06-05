@@ -20,7 +20,7 @@ const Client = () => {
         <SidebarTrigger />
         <div className="flex flex-col w-full bg-white px-6 py-4 h-full min-h-screen">
           <div className="flex justify-end mb-4">
-            <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
+            <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
               Logout
             </Button>
             <Dialog open={open} onOpenChange={setOpen}>
@@ -32,10 +32,10 @@ const Client = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setOpen(false)}>
+                  <Button style={{cursor:"pointer"}} variant="outline" onClick={() => setOpen(false)}>
                     Cancel
                   </Button>
-                  <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={handleLogout}>
+                  <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={handleLogout}>
                     Logout
                   </Button>
                 </div>

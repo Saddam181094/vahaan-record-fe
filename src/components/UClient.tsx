@@ -106,6 +106,7 @@ export default function UClient() {
                   <TableCell>
                     <div className="flex gap-2">
                       <Button
+                      style={{cursor:"pointer"}}
                         variant="default"
                         size="icon"
                         onClick={() => {
@@ -116,6 +117,7 @@ export default function UClient() {
                         ✔
                       </Button>
                       <Button
+                      style={{cursor:"pointer"}}
                         variant="destructive"
                         size="icon"
                         onClick={() => {
@@ -158,6 +160,7 @@ export default function UClient() {
           <PaginationContent>
             <PaginationItem>
               <button
+              style={{cursor:"pointer"}}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="disabled:opacity-50"
@@ -170,6 +173,7 @@ export default function UClient() {
             </PaginationItem>
             <PaginationItem>
               <button
+              style={{cursor:"pointer"}}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
                 className="disabled:opacity-50"
@@ -214,10 +218,10 @@ export default function UClient() {
               </div>
 
               <div className="flex justify-end gap-2 mt-4">
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                <Button style={{cursor:"pointer"}} type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit">Confirm</Button>
+                <Button style={{cursor:"pointer"}} type="submit">Confirm</Button>
               </div>
             </form>
           </DialogContent>

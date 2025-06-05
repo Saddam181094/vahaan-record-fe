@@ -79,7 +79,7 @@ const MyProfile: React.FC = () => {
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="flex justify-end gap-2">
-                                <Button variant="outline" onClick={() => setOpen(false)}>
+                                <Button style={{cursor:"pointer"}} variant="outline" onClick={() => setOpen(false)}>
                                     Cancel
                                 </Button>
                                 <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={handleLogout}>
@@ -107,6 +107,7 @@ const MyProfile: React.FC = () => {
 
                         <div className="mt-6 flex flex-col items-center">
                             <Button
+                            style={{cursor:"pointer"}}
                                 variant="default"
                                 className="w-full max-w-xs"
                                 onClick={() => setShowDialog(true)}
@@ -182,6 +183,7 @@ const MyProfile: React.FC = () => {
                                         </div>
                                         <DialogFooter className="flex justify-between gap-2 pt-2">
                                             <Button
+                                            style={{cursor:"pointer"}}
                                                 type="button"
                                                 variant="outline"
                                                 className="w-1/2"
@@ -189,7 +191,7 @@ const MyProfile: React.FC = () => {
                                             >
                                                 Cancel
                                             </Button>
-                                            <Button type="submit" className="w-1/2">
+                                            <Button style={{cursor:"pointer"}} type="submit" className="w-1/2">
                                                 Submit
                                             </Button>
                                         </DialogFooter>

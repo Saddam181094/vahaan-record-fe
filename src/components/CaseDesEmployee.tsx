@@ -144,6 +144,7 @@ export default function CaseDes() {
         <PaginationContent>
           <PaginationItem>
             <button
+            style={{cursor:"pointer"}}
               type="button"
               onClick={handlePrev}
               disabled={currentPage === 1}
@@ -157,6 +158,7 @@ export default function CaseDes() {
           </PaginationItem>
           <PaginationItem>
             <button
+            style={{cursor:"pointer"}}
               type="button"
               onClick={handleNext}
               disabled={currentPage === totalPages}

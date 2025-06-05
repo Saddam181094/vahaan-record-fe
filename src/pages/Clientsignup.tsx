@@ -41,21 +41,10 @@ export default function Signup () {
         formState: { errors },
       } = useForm<NewClient>({ defaultValues: {} as NewClient });
 
-    const [form, setForm] = useState<NewClient>({
-        firstName: "",
-        lastName: "",
-        email: "",
-        mobileNo: "",
-        firmName: "",
-        address1: "",
-        address2: "",
-        city: "",
-        state: "",
-        pincode: "",
-    });
     const [client, setClient] = useState<NewClient[]>([]);
     const {setLoading} = useLoading();
-    const [serror, showerror] = useState<String>("");
+    const [search,setSearch] = useState("");
+    // const [serror, showerror] = useState<String>("");
       const onsubmit: SubmitHandler<NewClient> = async (data: NewClient) => {
         setLoading(true);
         try {
@@ -63,7 +52,7 @@ export default function Signup () {
           setClient([...client, newClient]);
           reset();
         } catch (err: any) {
-          showerror(err);
+          // showerror(err);
           alert("Email Already Exists");
           reset();
         } finally {
@@ -71,9 +60,9 @@ export default function Signup () {
         }
       };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
+    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     setForm({ ...form, [e.target.name]: e.target.value });
+    // };
 
 return(
   <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100">
@@ -200,6 +189,14 @@ return(
                   <SelectValue placeholder="Select State" />
                 </SelectTrigger>
                 <SelectContent>
+                  <div className="p-2">
+                    <Input
+                      placeholder="Search a State"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                    />
+                  </div>
                   {indianStates.map((state) => (
                     <SelectItem key={state} value={state}>
                       {state}
@@ -224,6 +221,7 @@ return(
             </div>
           </div>
           <Button
+          style={{cursor:"pointer"}}
             type="submit"
             className="w-full mt-6 bg-gradient-to-r cursor-pointer from-blue-500 to-purple-500 text-white font-semibold py-2 rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all"
           >

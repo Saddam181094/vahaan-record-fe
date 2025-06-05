@@ -1,6 +1,6 @@
 import axios from "axios";
 import { url, getConfig } from "@/service/auth.service";
-import type { FinalDetails } from "@/components/CaseDetailsAdmin";
+// import type { FinalDetails } from "@/components/CaseDetailsAdmin";
 import type { Case } from "@/components/CaseForm";
 // import { type Case } from "@/components/CaseForm";
 
