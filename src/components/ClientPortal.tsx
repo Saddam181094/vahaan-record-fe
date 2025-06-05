@@ -3,10 +3,13 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-// import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox"; // make sure this exists or use another checkbox
 import { useLoading } from "@/components/LoadingContext";
-import { getClientCases} from "@/service/case.service";
+import { getClientCases } from "@/service/case.service";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/context/ToastContext";
+// Assuming you have a function like this:
+import { makePayment } from "@/service/case.service"; // You should implement this service
 
 interface ClientCase {
   id: string;
@@ -22,51 +25,13 @@ interface ClientCase {
   };
 }
 
-// interface DetailedCase {
-//   id: string;
-//   CaseNo: number;
-//   status: string;
-//   createdAt: string;
-//   updatedAt: string;
-//   vehicleDetail: {
-//     vehicleNo: string;
-//     fromRTO: string;
-//     toRTO: string;
-//     chassisNo: string;
-//     engineNo: string;
-//   };
-//   expireDetail: {
-//     insuranceExpiry: string;
-//     pucExpiry: string;
-//     fitnessExpiry: string;
-//     taxExpiry: string;
-//     permitExpiry: string;
-//   };
-//   transactionDetail: {
-//     to: string;
-//     fitness: boolean;
-//     rrf: boolean;
-//     rma: boolean;
-//     alteration: boolean;
-//     conversion: boolean;
-//     numberPlate: string;
-//     addressChange: boolean;
-//     drc: boolean;
-//     remarks: string;
-//   };
-//   generalDetail: {
-//     firmName: string;
-//     applicationDate: string | null;
-//   };
-// }
-
 export default function ClientCaseList() {
   const [cases, setCases] = useState<ClientCase[]>([]);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [selectedCaseIds, setSelectedCaseIds] = useState<string[]>([]);
+  const [selectMode, setSelectMode] = useState(false);
   const navigate = useNavigate();
-  // const [dialogOpen, setDialogOpen] = useState(false);
-  // const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
-  // const [detailedCase, setDetailedCase] = useState<DetailedCase | null>(null);
+  const toast = useToast();
   const { setLoading } = useLoading();
 
   useEffect(() => {
@@ -75,6 +40,9 @@ export default function ClientCaseList() {
       .then((resp) => {
         setCases(resp?.data || []);
       })
+      .catch((err: any) => {
+        toast.showToast("Error fetching cases", err.message || err, "error");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -82,18 +50,29 @@ export default function ClientCaseList() {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  // const fetchCaseDetails = async (caseId: string) => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await getCaseID(caseId);
-  //     setDetailedCase(response.data);
-  //     setDialogOpen(true);
-  //   } catch (error) {
-  //     console.error("Error fetching case details:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const toggleSelect = (id: string) => {
+    setSelectedCaseIds((prev) =>
+      prev.includes(id) ? prev.filter((cid) => cid !== id) : [...prev, id]
+    );
+  };
+
+  const handleMakePayment = async () => {
+    if (selectedCaseIds.length === 0) {
+      toast.showToast("No cases selected", "Please select at least one case.", "warning");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await makePayment(selectedCaseIds); // your backend API call
+      toast.showToast("Payment initiated", "Redirecting...", "success");
+      // optionally clear selection or redirect
+    } catch (err: any) {
+      toast.showToast("Payment failed", err.message || err, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const RenderField = ({ label, value }: { label: string; value: string | number }) => (
     <div>
@@ -104,7 +83,34 @@ export default function ClientCaseList() {
 
   return (
     <div className="p-4 space-y-4 h-screen">
-      <h1 className="text-xl font-bold mb-4">Your Cases</h1>
+<div className="flex justify-between items-center mb-4">
+  <h1 className="text-xl font-bold">Your Cases</h1>
+  {!selectMode ? (
+    <Button style={{cursor:"pointer"}} variant="default" onClick={() => setSelectMode(true)}>
+      Make Payment
+    </Button>
+  ) : (
+    <div className="flex gap-2">
+      <Button 
+      style={{cursor:"pointer"}}
+      variant="outline" onClick={() => {
+        setSelectMode(false);
+        setSelectedCaseIds([]);
+      }}>
+        Cancel
+      </Button>
+      <Button
+      style={{cursor:"pointer"}}
+        variant="default"
+        onClick={handleMakePayment}
+        disabled={selectedCaseIds.length === 0}
+      >
+        Proceed
+      </Button>
+    </div>
+  )}
+</div>
+
 
       {cases.map((item, idx) => {
         const isOpen = expandedIndex === idx;
@@ -116,10 +122,19 @@ export default function ClientCaseList() {
               className="flex justify-between items-center cursor-pointer"
               onClick={() => toggleCard(idx)}
             >
-              <div>
-                <h2 className="font-semibold text-lg">Case #{caseData.CaseNo}</h2>
-                <p className="text-sm text-muted-foreground">{caseData.status}</p>
-              </div>
+                <div className="flex items-center gap-4">
+                {selectMode && (
+                  <Checkbox
+                  checked={selectedCaseIds.includes(caseData.id)}
+                  onCheckedChange={() => toggleSelect(caseData.id)}
+                  onClick={(e: any) => e.stopPropagation()}
+                  />
+                )}
+                <div>
+                  <h2 className="font-semibold text-lg">Case #{caseData.CaseNo}</h2>
+                  <p className="text-sm text-muted-foreground">{caseData.status}</p>
+                </div>
+                </div>
               {isOpen ? <ChevronUp /> : <ChevronDown />}
             </CardHeader>
 
@@ -136,11 +151,11 @@ export default function ClientCaseList() {
                 </div>
                 <div className="flex justify-end">
                   <Button
-                  style={{cursor:"pointer"}}
-                    onClick={() =>                         
-                    navigate(`/client/cases/${caseData.CaseNo}`, {
-                        state: { id: caseData.id }
-                        })}
+                    onClick={() =>
+                      navigate(`/client/cases/${caseData.CaseNo}`, {
+                        state: { id: caseData.id },
+                      })
+                    }
                     variant="outline"
                     size="sm"
                   >

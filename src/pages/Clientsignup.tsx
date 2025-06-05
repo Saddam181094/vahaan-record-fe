@@ -15,6 +15,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useLoading } from "@/components/LoadingContext";
+import { useToast } from "@/context/ToastContext";
 
 export interface NewClient {
   id?: string;
@@ -44,6 +45,7 @@ export default function Signup () {
     const [client, setClient] = useState<NewClient[]>([]);
     const {setLoading} = useLoading();
     const [search,setSearch] = useState("");
+    const toast = useToast();
     // const [serror, showerror] = useState<String>("");
       const onsubmit: SubmitHandler<NewClient> = async (data: NewClient) => {
         setLoading(true);
@@ -53,7 +55,7 @@ export default function Signup () {
           reset();
         } catch (err: any) {
           // showerror(err);
-          alert("Email Already Exists");
+         toast.showToast('Error:',err,'warning');
           reset();
         } finally {
           setLoading(false);

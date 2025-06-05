@@ -56,6 +56,7 @@ const items1: Record<string, SidebarItem[]> = {
   client: [
     { title: "Home", url: "/client", icon: Home },
     { title: "Cases", url: "/client/cases", icon: UserRoundPen },
+    { title: "My Profile", url: "/client/Profile", icon: User },
   ],
   employee: [
     { title: "Home", url: "/employee", icon: Home },
@@ -64,7 +65,8 @@ const items1: Record<string, SidebarItem[]> = {
       submenu: [
         { title: "New Case", url: "/employee/CaseForm", icon: CircleUser },
         { title: "Cases", url: "/employee/cases", icon: PcCase }]
-    }
+    },
+    { title: "My Profile", url: "/employee/Profile", icon: User },
   ],
 };
 

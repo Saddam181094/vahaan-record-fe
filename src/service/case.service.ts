@@ -42,6 +42,19 @@ export const getAllCases = async () => {
     });
 };
 
+export const makePayment = async (caseAssignmentIds:string[]) => {
+  const config = getConfig();
+  return axios
+    .post(url + "/case/get-payment-details",{caseAssignmentIds}, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
 export const getAllCasesE = async () => {
   const config = getConfig();
   return axios

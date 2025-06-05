@@ -18,6 +18,13 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -28,6 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useLoading } from "./LoadingContext";
+import { useToast } from "@/context/ToastContext";
 
 export default function UClient() {
   const [clients, setClients] = useState<NewClient[]>([]);
@@ -37,6 +45,7 @@ export default function UClient() {
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [items, setItemsper] = useState("10"); // Default to 10 entries
+  const toast = useToast();
   const items_per_page = parseInt(items, 10);
 
   const isEntryLimitValid = items_per_page >= 1 && items_per_page <= 20;
@@ -54,7 +63,7 @@ export default function UClient() {
     setLoading(true);
     getUClient()
       .then((resp) => setClients(resp?.data || []))
-      .catch((err) => console.error("Error fetching clients:", err))
+      .catch((err) => toast.showToast('Error in Fetching:',err,'error'))
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
@@ -70,6 +79,7 @@ export default function UClient() {
       setDialogOpen(false);
       setSelectedClient(null);
       setRefreshFlag((prev) => !prev);
+      toast.showToast('Affirmation:','Client Verified','success');
       setLoading(false);
     }
   };
@@ -137,18 +147,19 @@ export default function UClient() {
           <Label htmlFor="entryLimit" className="mr-2 font-medium">
             No of entries:
           </Label>
-          <Input
-            id="entryLimit"
-            type="number"
-            min="1"
-            max="20"
-            value={items_per_page === 0 ? "" : items_per_page}
-            onChange={(e) => {
-              const val = e.target.value;
-              setItemsper(val === "" ? "" : val);
-            }}
-            className="border rounded px-3 py-1 w-20 text-sm"
-          />
+                      <Select
+          value={items}
+          onValueChange={(val) => setItemsper(val)}
+        >
+          <SelectTrigger id="entryLimit" className="w-24">
+        <SelectValue placeholder="Entries" />
+          </SelectTrigger>
+          <SelectContent>
+        <SelectItem value="10">10</SelectItem>
+        <SelectItem value="15">15</SelectItem>
+        <SelectItem value="20">20</SelectItem>
+          </SelectContent>
+        </Select>
         </div>
         {items !== "" && !isEntryLimitValid && (
           <div className="text-red-500 text-right text-xs mb-2">

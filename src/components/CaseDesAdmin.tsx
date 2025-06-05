@@ -27,6 +27,7 @@ import { getActiveClients } from "@/service/client.service";
 import { useForm } from "react-hook-form";
 import CaseDetails from "./CaseDetailsAdmin";
 import { assignCase } from "@/service/case.service";
+import { useToast } from "@/context/ToastContext";
 
 export interface CaseDetails {
   id: string;
@@ -52,6 +53,7 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
   const { setLoading } = useLoading();
   const [refreshFlag] = useState(false);
   const [search,setSearch] = useState("");
+  const toast = useToast();
 
   const { register, handleSubmit, setValue, watch, reset } = useForm<{ clientId: string }>({
     defaultValues: { clientId: "" },
@@ -66,7 +68,8 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
         setClients(resp?.data || []);
       })
       .catch((err: any) => {
-        console.error("Error fetching firms:", err);
+        toast.showToast('Error fetching firms',err,'error');
+        // console.error("Error fetching firms:", err);
         setClients([]);
       })
       .finally(() => setLoading(false));
@@ -76,10 +79,13 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
 
     setLoading(true);
     assignCase(caseId, data.clientId).
-      then((resp) => {
-        console.log(resp?.data);
-        alert("Successfully assigned the case");
-      }).finally(() => setLoading(false));
+      then(() => {
+        // console.log(resp?.data);
+        toast.showToast('Affirmation','Case Assigned Successfully.','success');
+      }).catch((err:any)=>{
+        toast.showToast('Error Assigning Case',err,'error');
+      })
+      .finally(() => setLoading(false));
     setOpen(false);
     reset();
   };
@@ -256,18 +262,19 @@ export default function CaseDes() {
             <Label htmlFor="entryLimit" className="mr-2 font-medium">
               No of entries:
             </Label>
-            <Input
-              id="entryLimit"
-              type="number"
-              min="1"
-              max="20"
-              value={items_per_page === 0 ? "" : items_per_page}
-              onChange={(e) => {
-                const val = e.target.value;
-                setItemsper(val === "" ? "" : val);
-              }}
-              className="border rounded px-3 py-1 w-20 text-sm"
-            />
+            <Select
+          value={items}
+          onValueChange={(val) => setItemsper(val)}
+        >
+          <SelectTrigger id="entryLimit" className="w-24">
+        <SelectValue placeholder="Entries" />
+          </SelectTrigger>
+          <SelectContent>
+        <SelectItem value="10">10</SelectItem>
+        <SelectItem value="15">15</SelectItem>
+        <SelectItem value="20">20</SelectItem>
+          </SelectContent>
+        </Select>
           </div>
           {items !== "" && !isEntryLimitValid && (
             <div className="text-red-500 text-right text-xs mb-2">

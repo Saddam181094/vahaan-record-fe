@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
 import { type FinalDetails } from "./CaseDetailsAdmin";
+import { useToast } from "@/context/ToastContext";
 
 
 export default function CaseDetails() {
@@ -12,18 +13,21 @@ export default function CaseDetails() {
   const navigate = useNavigate();
   const id = location.state?.id;
   const { setLoading } = useLoading();
-
+  const toast = useToast();
   const [caseData, setCaseData] = useState<FinalDetails>();
 
   useEffect(() => {
     if (!id) {
-      alert("No ID provided");
+      toast.showToast('Error','Proper ID was not provided','error');
       return;
     }
     setLoading(true);
     getCaseID(id).then((resp) => {
       setCaseData(resp?.data);
-    }).finally(() => setLoading(false));
+    }).catch((err:any)=>{
+      toast.showToast('Error fetching:',err,'error');
+    })
+    .finally(() => setLoading(false));
   }, [id, navigate]);
 
   const generalDetails = caseData?.generalDetail;

@@ -15,6 +15,7 @@ import { createBranch, getBranch, toggleBranch } from "@/service/branch.service"
 import { Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog"
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useToast } from "@/context/ToastContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Branch {
@@ -43,6 +44,7 @@ export default function AdminBranchForm() {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const toast = useToast();
 
  useEffect(() => {
     setLoading(true);
@@ -51,7 +53,7 @@ export default function AdminBranchForm() {
       setBranches(branches);
       })
       .catch((err:any) => {
-      console.error("Error fetching branches:", err);
+      toast.showToast('Error in Updating:',err,'error');
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
@@ -63,9 +65,10 @@ export default function AdminBranchForm() {
       setBranches([...branches, newBranch]);
       setDialogOpen(false);
       setRefreshFlag((prev) => !prev); // Trigger a refresh
+      toast.showToast('Affirmation','New Branch created Successfully','success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
-      console.error(err);
+      toast.showToast('Error in Updating:',err,'error');
     } finally {
       setLoading(false);
     }
@@ -77,9 +80,9 @@ export default function AdminBranchForm() {
       setBranches((prev) =>
         prev.map((b) => (b.id === branch.id ? { ...b, isActive } : b))
       );
-      console.log("Branch toggled successfully");
+      toast.showToast('Affirmation','Branch Toggled Succesfully','success');
     } catch (err: any) {
-        console.error(err);
+      toast.showToast('Error in Updating:',err,'error');
     }
   };
 

@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
 import { Switch } from "@radix-ui/react-switch";
+import { useToast } from "@/context/ToastContext";
 // import CaseDetails from "./CaseDetailsEmployee";
 
 export interface FinalDetails {
@@ -49,6 +50,7 @@ export default function CaseDescription() {
   const [caseData, setCaseData] = useState<FinalDetails>();
   const [editMode, setEditMode] = useState(false);
   const [status, setStatus] = useState<string | undefined>();
+  const toast = useToast();
 
   const {
     register,
@@ -66,7 +68,8 @@ export default function CaseDescription() {
 
   useEffect(() => {
     if (!id) {
-      alert("No ID provided");
+      toast.showToast('Error','Proper ID was not provided','error');
+      // alert("No ID provided");
       return;
     }
 
@@ -75,6 +78,8 @@ export default function CaseDescription() {
       .then((resp) => {
         console.log(resp?.data);
         setCaseData(resp?.data);
+      }).catch((err:any)=>{
+        toast.showToast('Error fetching:',err,'error');
       })
       .finally(() => setLoading(false));
   }, [id, navigate]);
@@ -113,12 +118,12 @@ export default function CaseDescription() {
       };
 
       await updateCaseID(id, casePayload);
-      alert("Case updated successfully");
+      toast.showToast('Affirmation','Case Successfully Updated','success');
       reset(casePayload);
       setEditMode(false);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update case");
+    } catch (err:any) {
+      // console.error(err);
+      toast.showToast('Error in Updating:',err,'error');
     } finally {
       setLoading(false);
     }

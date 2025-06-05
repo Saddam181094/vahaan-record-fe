@@ -4,6 +4,7 @@ import { getCaseID } from "@/service/case.service";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
+import { useToast } from "@/context/ToastContext";
 
 interface DetailedCase {
   id: string;
@@ -49,11 +50,11 @@ export default function CaseDescription() {
     const id = location.state?.id;
     const { setLoading } = useLoading();
     const [caseData, setCaseData] = useState<DetailedCase>();
-
+    const toast = useToast();
 
     useEffect(() => {
         if (!id) {
-            alert("No ID provided");
+            toast.showToast('Error','Proper ID was not provided','error');
             return;
         }
 
@@ -61,6 +62,9 @@ export default function CaseDescription() {
         getCaseID(id)
             .then((resp) => {
                 setCaseData(resp?.data);
+            })
+            .catch((err:any)=>{
+                toast.showToast('Error fetching:',err,'error');
             })
             .finally(() => setLoading(false));
     }, [id, navigate]);

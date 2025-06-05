@@ -116,7 +116,6 @@ export default function AdminBranchForm() {
     setLoading(true);
     getBranch()
       .then((resp) => {
-        toast.showToast('State Optimized', 'Branches Fetched Perfectly', 'success');
         setBranches(resp?.data);
       })
       .catch((err: any) => {
@@ -134,6 +133,7 @@ export default function AdminBranchForm() {
       const newBranch = await createBranch(data);
       setBranches([...branches, newBranch]);
       setDialogOpen(false);
+      toast.showToast('Affirmation','Branch Successfully created.','success');
       setRefreshFlag((prev) => !prev);
       reset();
     } catch (err: any) {
@@ -153,6 +153,7 @@ export default function AdminBranchForm() {
     setLoading(true);
     try {
       await toggleBranch(branch);
+      toast.showToast('Affirmation','Branch Switched Succesfully', 'success');
     } catch (err: any) {
       toast.showToast('Some Error in Fetching Branches', err, 'error');
       // console.error(err);
@@ -299,18 +300,19 @@ export default function AdminBranchForm() {
         <Label htmlFor="entryLimit" className="mr-2 font-medium">
           No of entries:
         </Label>
-        <Input
-          id="entryLimit"
-          type="number"
-          min="1"
-          max="20"
-          value={items_per_page === 0 ? "" : items_per_page}
-          onChange={(e) => {
-            const val = e.target.value;
-            setItemsper(val === "" ? "" : val);
-          }}
-          className="border rounded px-3 py-1 w-20 text-sm"
-        />
+        <Select
+          value={items}
+          onValueChange={(val) => setItemsper(val)}
+        >
+          <SelectTrigger id="entryLimit" className="w-24">
+        <SelectValue placeholder="Entries" />
+          </SelectTrigger>
+          <SelectContent>
+        <SelectItem value="10">10</SelectItem>
+        <SelectItem value="15">15</SelectItem>
+        <SelectItem value="20">20</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       {items !== "" && !isEntryLimitValid && (
         <div className="text-red-500 text-right text-xs mb-2">

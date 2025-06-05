@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
-import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +21,7 @@ import type { Firm } from "@/components/FirmForm";
 import { getbranchEmployee } from "@/service/emp.service";
 import { getActiveFirm } from "@/service/firm.service";
 import { createCase } from "@/service/case.service";
+import { useToast } from "@/context/ToastContext";
 
 // Interfaces
 export interface Case {
@@ -157,7 +157,7 @@ export default function CaseForm() {
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
   const [search,setSearch] = useState("");
-  // const expireDetail = watch(" expireDetail");
+  const toast = useToast();
 
   const [refreshFlag] = useState(false);
 
@@ -168,7 +168,8 @@ export default function CaseForm() {
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-        console.error("Error fetching branches:", err);
+        toast.showToast('Error fetching:',err,'error');
+        // console.error("Error fetching branches:", err);
       })
       .finally(() => {
         setLoading(false);
@@ -184,7 +185,7 @@ export default function CaseForm() {
           setbranchEmp(resp?.data);
         })
         .catch((err: any) => {
-          console.error("Error fetching branches:", err);
+        toast.showToast('Error fetching:',err,'error');
         })
         .finally(() => {
           setLoading(false);
@@ -200,7 +201,7 @@ export default function CaseForm() {
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-        console.error("Error fetching firms:", err);
+        toast.showToast('Error fetching:',err,'error');
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
@@ -210,9 +211,8 @@ export default function CaseForm() {
     // handle form submission, e.g., send data to API
     setLoading(true);
     createCase(data)
-      .then((resp) => {
-        if (resp) toast.success("Case Has been Created.");
-        else toast.error("Case Not created Due to error");
+      .catch((err:any)=>{
+        toast.showToast('Error fetching:',err,'error');
       })
       .finally(() => {
         setLoading(false);

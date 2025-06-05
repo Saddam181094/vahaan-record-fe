@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/pagination";
 import { FaEye } from "react-icons/fa";
 import { Label } from "@radix-ui/react-label";
-import { Input } from "./ui/input";
-
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useToast } from "@/context/ToastContext";
 
 export default function CaseDes() {
   useForm<CaseDetails>();
@@ -30,12 +30,17 @@ export default function CaseDes() {
 
   const [cases, setCases] = useState<CaseDetails[]>([]);
   const { setLoading } = useLoading();
+  const toast = useToast();
 
   useEffect(() => {
     setLoading(true);
     getAllCasesE()
-      .then((resp) => setCases(resp?.data))
-      .catch((err: any) => console.error("Error fetching cases:", err))
+      .then((resp) => {
+        setCases(resp?.data)})
+      .catch((err: any) => {
+        toast.showToast('Error fetching cases:',err,'error');
+        // console.error("Error fetching cases:", err)
+        })
       .finally(() => setLoading(false));
   }, []);
 
@@ -121,18 +126,19 @@ export default function CaseDes() {
             <Label htmlFor="entryLimit" className="mr-2 font-medium">
               No of entries:
             </Label>
-            <Input
-              id="entryLimit"
-              type="number"
-              min="1"
-              max="20"
-              value={items_per_page === 0 ? "" : items_per_page}
-              onChange={(e) => {
-                const val = e.target.value;
-                setItemsper(val === "" ? "" : val);
-              }}
-              className="border rounded px-3 py-1 w-20 text-sm"
-            />
+            <Select
+          value={items}
+          onValueChange={(val) => setItemsper(val)}
+        >
+          <SelectTrigger id="entryLimit" className="w-24">
+        <SelectValue placeholder="Entries" />
+          </SelectTrigger>
+          <SelectContent>
+        <SelectItem value="10">10</SelectItem>
+        <SelectItem value="15">15</SelectItem>
+        <SelectItem value="20">20</SelectItem>
+          </SelectContent>
+        </Select>
           </div>
           {items !== "" && !isEntryLimitValid && (
             <div className="text-red-500 text-right text-xs mb-2">

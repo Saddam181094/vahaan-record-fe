@@ -40,6 +40,7 @@ import type { Branch } from "./Branchform";
 import { UserRole } from "@/context/AuthContext";
 import { useLoading } from "./LoadingContext";
 import { Label } from "@radix-ui/react-label";
+import { useToast } from "@/context/ToastContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Employee {
@@ -69,6 +70,7 @@ export default function EmployeeForm() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [search,setSearch] = useState("");
+  const toast = useToast();
 
   useEffect(() => {
     setLoading(true);
@@ -77,7 +79,7 @@ export default function EmployeeForm() {
         setEmployee2(resp?.data);
       })
       .catch((err: any) => {
-        console.error("Error fetching branches:", err);
+        toast.showToast('Error fetching:',err,'error');
       }).finally(()=> setLoading(false));
 
   }, [refreshFlag]);
@@ -89,7 +91,7 @@ export default function EmployeeForm() {
         setBranch(resp?.data);
       })
       .catch((err: any) => {
-        console.error("Error fetching branches:", err);
+        toast.showToast('Error fetching:',err,'error');
       })
       .finally(() => setLoading(false));
   },[refreshFlag])
@@ -101,9 +103,10 @@ export default function EmployeeForm() {
       setEmployee([...Employee, newEmployee]);
       setDialogOpen(false);
       setRefreshFlag((prev) => !prev); // Trigger a refresh
+      toast.showToast('Affirmation','Created a New Employee','success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
-      console.error(err);
+        toast.showToast('Error fetching:',err,'error');
     } finally {
       setLoading(false);
     }
@@ -113,18 +116,6 @@ export default function EmployeeForm() {
     setDialogOpen(false);
     reset(); // Reset the form when dialog is closed
   };
-
-  //   const handleToggle = async (branch: string) => {
-  //     setLoading2(true);
-  //     try {
-
-  //     } catch (err: any) {
-  //       console.error(err);
-  //     } finally {
-  //       setRefreshFlag((prev) => !prev); // Trigger a refresh
-  //       setLoading2(false);
-  //     }
-  //   };
 
 const [currentPage, setCurrentPage] = useState(1);
   const [items, setItemsper] = useState("10"); // Default to 10 entries
@@ -269,18 +260,19 @@ const [currentPage, setCurrentPage] = useState(1);
             <Label htmlFor="entryLimit" className="mr-2 font-medium">
               No of entries:
             </Label>
-            <Input
-              id="entryLimit"
-              type="number"
-              min="1"
-              max="20"
-              value={items_per_page === 0 ? "" : items_per_page}
-              onChange={(e) => {
-                const val = e.target.value;
-                setItemsper(val === "" ? "" : val);
-              }}
-              className="border rounded px-3 py-1 w-20 text-sm"
-            />
+                        <Select
+          value={items}
+          onValueChange={(val) => setItemsper(val)}
+        >
+          <SelectTrigger id="entryLimit" className="w-24">
+        <SelectValue placeholder="Entries" />
+          </SelectTrigger>
+          <SelectContent>
+        <SelectItem value="10">10</SelectItem>
+        <SelectItem value="15">15</SelectItem>
+        <SelectItem value="20">20</SelectItem>
+          </SelectContent>
+        </Select>
           </div>
           {items !== "" && !isEntryLimitValid && (
             <div className="text-red-500 text-right text-xs mb-2">

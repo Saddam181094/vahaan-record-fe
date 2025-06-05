@@ -10,6 +10,7 @@ import { ForgotPasswordModal } from "./forgotPass";
 import { Link } from "react-router-dom";
 
 import type { HTMLAttributes } from "react";
+import { useToast } from "@/context/ToastContext";
 
 export function LoginForm({
   className,
@@ -22,6 +23,7 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
+  const toast = useToast();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -29,7 +31,8 @@ export function LoginForm({
     try {
       setError("");
       await login(email, password);
-    } catch (err) {
+    } catch (err:any) {
+      toast.showToast('Error in Updating:',err,'error');
       setError((err as Error).message);
     } finally {
       setLoading(false);

@@ -98,6 +98,12 @@ export default function App() {
         </ProtectedRoute>
       } />
 
+      <Route path="/client/Profile" element={
+        <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
+          <Profile />
+        </ProtectedRoute>
+      } />
+
 
       {/* Super Admin Routes */}
       <Route path="/employee" element={
@@ -121,6 +127,12 @@ export default function App() {
       <Route path="/employee/cases/:CaseNo" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
           <CaseDetailsEmployee />
+        </ProtectedRoute>
+      } />
+    
+    <Route path="/employee/Profile" element={
+        <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
+          <Profile />
         </ProtectedRoute>
       } />
 

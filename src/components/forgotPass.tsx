@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { forgotPassword } from "@/service/auth.service"
+import { useToast } from "@/context/ToastContext"
 
 export interface ForgotPasswordModalProps {
   open: boolean;
@@ -13,6 +14,7 @@ export function ForgotPasswordModal({open, onOpenChange}: ForgotPasswordModalPro
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
   // const [error, setError] = useState("")
+  const toast = useToast();
   const [loading, setLoading] = useState(false)
 //   const [open, onOpenChange] = useState(false)
 
@@ -26,10 +28,12 @@ export function ForgotPasswordModal({open, onOpenChange}: ForgotPasswordModalPro
       const res = await forgotPassword(email)
       setMessage(res)
     } catch (err: any) {
+      toast.showToast('Error fetching:',err,'error');
       // setError(err.message)
     } finally {
-    console.log("Submitting forgot password for", email);
-      setLoading(false)
+    toast.showToast('Submitting forgot password for:',email,'info');
+    // console.log("Submitting forgot password for", email);
+      setLoading(false);
     }
   }
 

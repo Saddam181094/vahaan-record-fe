@@ -21,6 +21,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { createFirm, toggleFirm, getFirm } from "@/service/firm.service";
 import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -28,6 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { useLoading } from "./LoadingContext";
 import { Label } from "@radix-ui/react-label";
+import { useToast } from "@/context/ToastContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Firm {
@@ -48,6 +56,7 @@ export default function AdminFirmForm() {
 const {setLoading} = useLoading();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     setLoading(true);
@@ -56,7 +65,7 @@ const {setLoading} = useLoading();
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-        console.error("Error fetching firms:", err);
+      toast.showToast('Error fetching:',err,'error');
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
@@ -68,9 +77,10 @@ const {setLoading} = useLoading();
       setfirms([...firms, newFirm]);
       setDialogOpen(false);
       setRefreshFlag((prev) => !prev); // Trigger a refresh
+      toast.showToast('Affirmation:','Successfully created a Firm','success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
-      console.error(err);
+     toast.showToast('Error fetching:',err,'error');
     } finally {
       setLoading(false);
     }
@@ -201,18 +211,19 @@ const {setLoading} = useLoading();
             <Label htmlFor="entryLimit" className="mr-2 font-medium">
               No of entries:
             </Label>
-            <Input
-              id="entryLimit"
-              type="number"
-              min="1"
-              max="20"
-              value={items_per_page === 0 ? "" : items_per_page}
-              onChange={(e) => {
-                const val = e.target.value;
-                setItemsper(val === "" ? "" : val);
-              }}
-              className="border rounded px-3 py-1 w-20 text-sm"
-            />
+                        <Select
+          value={items}
+          onValueChange={(val) => setItemsper(val)}
+        >
+          <SelectTrigger id="entryLimit" className="w-24">
+        <SelectValue placeholder="Entries" />
+          </SelectTrigger>
+          <SelectContent>
+        <SelectItem value="10">10</SelectItem>
+        <SelectItem value="15">15</SelectItem>
+        <SelectItem value="20">20</SelectItem>
+          </SelectContent>
+        </Select>
           </div>
           {items !== "" && !isEntryLimitValid && (
             <div className="text-red-500 text-right text-xs mb-2">

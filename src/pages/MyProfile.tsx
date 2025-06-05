@@ -90,118 +90,120 @@ const MyProfile: React.FC = () => {
                     </Dialog>
                 </div>
 
-                <div className="flex-grow max-w-md mx-auto p-6 w-full">
-                    <Card className="p-6 space-y-4 justify-center">
-                        <h2 className="text-xl font-semibold">My Profile</h2>
-                        <div>
-                            <p>
-                                <strong>Name:</strong> {user?.name}
-                            </p>
-                            <p>
-                                <strong>Email:</strong> {user?.email}
-                            </p>
-                            <p>
-                                <strong>Email:</strong> {user?.role}
-                            </p>
-                        </div>
+                <div className="flex justify-start w-full h-full">
+                    <div className="max-w-md w-full p-6">
+                        <Card className="p-6 space-y-4">
+                            <h2 className="text-xl font-semibold">My Profile</h2>
+                            <div>
+                                <p>
+                                    <strong>Name:</strong> {user?.name}
+                                </p>
+                                <p>
+                                    <strong>Email:</strong> {user?.email}
+                                </p>
+                                <p>
+                                    <strong>Email:</strong> {user?.role}
+                                </p>
+                            </div>
 
-                        <div className="mt-6 flex flex-col items-center">
-                            <Button
-                            style={{cursor:"pointer"}}
-                                variant="default"
-                                className="w-full max-w-xs"
-                                onClick={() => setShowDialog(true)}
-                            >
-                                Change Password
-                            </Button>
-                            <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                                <DialogContent className="sm:max-w-[400px] rounded-lg shadow-lg">
-                                    <DialogHeader>
-                                        <DialogTitle className="text-center text-lg font-bold">
-                                            Change Password
-                                        </DialogTitle>
-                                    </DialogHeader>
-                                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                                        <div>
-                                            <Label htmlFor="currentPassword" className="mb-1 block">
-                                                Current Password
-                                            </Label>
-                                            <Input
-                                                id="currentPassword"
-                                                type="password"
-                                                autoComplete="current-password"
-                                                className="w-full"
-                                                {...register("currentPassword", {
-                                                    required: "Current password is required",
-                                                })}
-                                            />
-                                            {errors.currentPassword && (
-                                                <p className="text-xs text-red-500 mt-1">
-                                                    {errors.currentPassword.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="newPassword" className="mb-1 block">
-                                                New Password
-                                            </Label>
-                                            <Input
-                                                id="newPassword"
-                                                type="password"
-                                                autoComplete="new-password"
-                                                className="w-full"
-                                                {...register("newPassword", {
-                                                    required: "New password is required",
-                                                })}
-                                            />
-                                            {errors.newPassword && (
-                                                <p className="text-xs text-red-500 mt-1">
-                                                    {errors.newPassword.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="confirmPassword" className="mb-1 block">
-                                                Confirm New Password
-                                            </Label>
-                                            <Input
-                                                id="confirmPassword"
-                                                type="password"
-                                                autoComplete="new-password"
-                                                className="w-full"
-                                                {...register("confirmPassword", {
-                                                    required: "Please confirm your new password",
-                                                    validate: (value) =>
-                                                        value === newPassword || "Passwords do not match",
-                                                })}
-                                            />
-                                            {errors.confirmPassword && (
-                                                <p className="text-xs text-red-500 mt-1">
-                                                    {errors.confirmPassword.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <DialogFooter className="flex justify-between gap-2 pt-2">
-                                            <Button
-                                            style={{cursor:"pointer"}}
-                                                type="button"
-                                                variant="outline"
-                                                className="w-1/2"
-                                                onClick={() => setShowDialog(false)}
-                                            >
-                                                Cancel
-                                            </Button>
-                                            <Button style={{cursor:"pointer"}} type="submit" className="w-1/2">
-                                                Submit
-                                            </Button>
-                                        </DialogFooter>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
+                            <div className="mt-6 flex flex-col items-center">
+                                <Button
+                                    style={{ cursor: "pointer" }}
+                                    variant="default"
+                                    className="w-full max-w-xs"
+                                    onClick={() => setShowDialog(true)}
+                                >
+                                    Change Password
+                                </Button>
+                                <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                                    <DialogContent className="sm:max-w-[400px] rounded-lg shadow-lg">
+                                        <DialogHeader>
+                                            <DialogTitle className="text-center text-lg font-bold">
+                                                Change Password
+                                            </DialogTitle>
+                                        </DialogHeader>
+                                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                                            <div>
+                                                <Label htmlFor="currentPassword" className="mb-1 block">
+                                                    Current Password
+                                                </Label>
+                                                <Input
+                                                    id="currentPassword"
+                                                    type="password"
+                                                    autoComplete="current-password"
+                                                    className="w-full"
+                                                    {...register("currentPassword", {
+                                                        required: "Current password is required",
+                                                    })}
+                                                />
+                                                {errors.currentPassword && (
+                                                    <p className="text-xs text-red-500 mt-1">
+                                                        {errors.currentPassword.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <Label htmlFor="newPassword" className="mb-1 block">
+                                                    New Password
+                                                </Label>
+                                                <Input
+                                                    id="newPassword"
+                                                    type="password"
+                                                    autoComplete="new-password"
+                                                    className="w-full"
+                                                    {...register("newPassword", {
+                                                        required: "New password is required",
+                                                    })}
+                                                />
+                                                {errors.newPassword && (
+                                                    <p className="text-xs text-red-500 mt-1">
+                                                        {errors.newPassword.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <Label htmlFor="confirmPassword" className="mb-1 block">
+                                                    Confirm New Password
+                                                </Label>
+                                                <Input
+                                                    id="confirmPassword"
+                                                    type="password"
+                                                    autoComplete="new-password"
+                                                    className="w-full"
+                                                    {...register("confirmPassword", {
+                                                        required: "Please confirm your new password",
+                                                        validate: (value) =>
+                                                            value === newPassword || "Passwords do not match",
+                                                    })}
+                                                />
+                                                {errors.confirmPassword && (
+                                                    <p className="text-xs text-red-500 mt-1">
+                                                        {errors.confirmPassword.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <DialogFooter className="flex justify-between gap-2 pt-2">
+                                                <Button
+                                                    style={{ cursor: "pointer" }}
+                                                    type="button"
+                                                    variant="outline"
+                                                    className="w-1/2"
+                                                    onClick={() => setShowDialog(false)}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button style={{ cursor: "pointer" }} type="submit" className="w-1/2">
+                                                    Submit
+                                                </Button>
+                                            </DialogFooter>
+                                        </form>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
 
-                        {message && <p className="text-green-600 text-sm mt-4">{message}</p>}
-                    </Card>
+                            {message && <p className="text-green-600 text-sm mt-4">{message}</p>}
+                        </Card>
+                    </div>
                 </div>
 
             </div>
