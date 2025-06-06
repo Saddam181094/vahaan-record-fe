@@ -114,7 +114,7 @@ export default function ClientCaseList() {
 
       {cases.map((item, idx) => {
         const isOpen = expandedIndex === idx;
-        const { case: caseData, TotalAmount } = item;
+        const { id,case: caseData, TotalAmount } = item;
 
         return (
           <Card key={item.id} className="border shadow-md">
@@ -125,8 +125,8 @@ export default function ClientCaseList() {
                 <div className="flex items-center gap-4">
                 {selectMode && (
                   <Checkbox
-                  checked={selectedCaseIds.includes(caseData.id)}
-                  onCheckedChange={() => toggleSelect(caseData.id)}
+                  checked={selectedCaseIds.includes(id)}
+                  onCheckedChange={() => toggleSelect(id)}
                   onClick={(e: any) => e.stopPropagation()}
                   />
                 )}

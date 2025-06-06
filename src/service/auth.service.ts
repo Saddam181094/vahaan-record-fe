@@ -31,8 +31,8 @@ export async function forgotPassword(email: string): Promise<string> {
   }
 }
 
-export async function changePassword(oldPassword:string,newPasssword:string){
-  const data = {oldPassword,newPasssword}
+export async function changePassword(currentPassword:string,newPasssword:string){
+  const data = {currentPassword,newPasssword}
 
   const config = getConfig();
   return axios
