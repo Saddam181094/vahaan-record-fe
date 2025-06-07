@@ -21,6 +21,7 @@ import ClientCases from "@/pages/ClientCases"
 import Profile from "@/pages/MyProfile"
 import Payment from "@/components/payment"
 import VerifyPayments from "@/components/VerifyPayments"
+import ClientDetails from "./components/ClientDetails";
 // import { Loader } from "lucide-react";
 export default function App() {
   return (
@@ -88,7 +89,11 @@ export default function App() {
           <CaseForm />
         </ProtectedRoute>
       } />
-
+      <Route path="/superadmin/clients/clientDetails" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <ClientDetails />
+        </ProtectedRoute>
+      } />
 
 
       {/* Super Admin Routes */}

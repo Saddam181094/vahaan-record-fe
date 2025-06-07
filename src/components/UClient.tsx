@@ -14,8 +14,9 @@ import { useToast } from "@/context/ToastContext";
 import { getClient, rejectClient, verifyClient } from "@/service/client.service";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./DataTable";
+import { useNavigate } from "react-router-dom";
 
-interface NewClient {
+export interface NewClient {
   id: string;
   firstName: string;
   lastName: string;
@@ -41,6 +42,7 @@ export default function UClient() {
   const [currentTab, setCurrentTab] = useState<'verified' | 'unverified'>('unverified');
   const toast = useToast();
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
 
 
@@ -164,6 +166,20 @@ export default function UClient() {
           );
         },
       },
+       {
+    id: "viewDetails",
+    header: "View Details",
+    cell: ({ row }) => (
+      <Button
+      style={{cursor:"pointer"}}
+        variant="outline"
+        size="sm"
+        onClick={() => navigate("/superadmin/clients/clientDetails", { state: { client: row.original } })}
+      >
+        View Details
+      </Button>
+    ),
+  },
     ];
 
   return (

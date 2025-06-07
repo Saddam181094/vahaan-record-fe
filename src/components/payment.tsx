@@ -1,14 +1,14 @@
-import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { useLocation } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -18,28 +18,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group";
-import { useLocation } from "react-router-dom";
-import { Label } from "@radix-ui/react-label";
-import {useForm, Controller} from "react-hook-form"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useAuth } from "@/context/AuthContext"; 
 import { useToast } from "@/context/ToastContext";
-// import { useNavigate } from "react-router-dom";
-import { uploadFileToServer } from "@/service/branch.service";
-import { useLoading } from "./LoadingContext";
+import { useLoading } from "./LoadingContext"; 
 import { makePayment } from "@/service/client.service";
-  
+import { uploadFileToServer } from "@/service/branch.service";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "./app-sidebar";
 
 const paymentOptions = [
-  { value: "CASH", label: "Cash" },
-  { value: "UPI", label: "UPI" },
-  { value: "CREDIT", label: "Credit Card" },
+  { label: "Cash", value: "CASH" },
+  { label: "UPI", value: "UPI" },
+  { label: "Cheque", value: "CHEQUE" },
 ];
 
 type FormData = {
-  paymentMethod: "CASH" | "UPI" | "CREDIT";
+  paymentMethod: string;
   paymentProofUrl?: string;
 };
 
@@ -139,20 +134,26 @@ const Payment = () => {
       <SidebarTrigger />
       <div className="flex flex-col w-full bg-white px-6 py-4 h-full min-h-screen">
         <div className="flex justify-end mb-4">
-          <Button variant="destructive" className="cursor-pointer hover:bg-red-800" onClick={() => setOpen(true)}>
+          <Button
+            variant="destructive"
+            className="cursor-pointer hover:bg-red-800"
+            onClick={() => setOpen(true)}
+          >
             Logout
           </Button>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Confirm Logout</DialogTitle>
-                <DialogDescription>Are you sure you want to logout?</DialogDescription>
+                <DialogDescription>
+                  Are you sure you want to logout?
+                </DialogDescription>
               </DialogHeader>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button variant="destructive" className="hover:bg-red-800" onClick={handleLogout}>
+                <Button variant="destructive" onClick={handleLogout}>
                   Logout
                 </Button>
               </div>
@@ -160,8 +161,13 @@ const Payment = () => {
           </Dialog>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-grow space-y-8 px-4 py-6 bg-gray-50 rounded-md shadow-sm">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-900">Payment Summary</h2>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex-grow space-y-8 px-4 py-6 bg-gray-50 rounded-md shadow-sm"
+        >
+          <h2 className="text-2xl font-semibold mb-6 text-gray-900">
+            Payment Summary
+          </h2>
 
           <div className="overflow-x-auto rounded-md border border-gray-300 bg-white shadow-sm">
             <Table className="min-w-full">
@@ -173,7 +179,7 @@ const Payment = () => {
               </TableHeader>
               <TableBody>
                 {caseIds.map((id, idx) => (
-                  <TableRow key={id} className="even:bg-gray-50 hover:bg-gray-100 transition-colors cursor-default">
+                  <TableRow key={id}>
                     <TableCell className="font-semibold text-gray-800">{caseNos[idx] ?? "—"}</TableCell>
                     <TableCell className="text-gray-700">₹{amounts[idx].toFixed(2)}</TableCell>
                   </TableRow>
@@ -182,31 +188,29 @@ const Payment = () => {
             </Table>
           </div>
 
-          <div className="flex justify-end items-center mt-4 mb-2">
+          <div className="flex justify-end mt-4 mb-2">
             <span className="text-lg font-semibold text-gray-900">
-              Total Amount Payable:&nbsp;₹{totalAmount.toFixed(2)}
+              Total Amount Payable: ₹{totalAmount.toFixed(2)}
             </span>
           </div>
 
           <div className="space-y-3">
-            <Label className="font-semibold text-gray-800 text-lg">Choose Payment Method</Label>
+            <Label className="font-semibold text-gray-800 text-lg">
+              Choose Payment Method
+            </Label>
             <Controller
               name="paymentMethod"
               control={control}
               render={({ field }) => (
-                <RadioGroup value={field.value} onValueChange={field.onChange} className="flex space-x-6">
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  className="flex space-x-6"
+                >
                   {paymentOptions.map(({ value, label }) => (
                     <div key={value} className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value={value}
-                        id={value}
-                        className={`cursor-pointer rounded-md border transition ${
-                          field.value === value
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                        }`}
-                      />
-                      <Label htmlFor={value} className="cursor-pointer select-none text-base">
+                      <RadioGroupItem value={value} id={value} />
+                      <Label htmlFor={value} className="cursor-pointer text-base">
                         {label}
                       </Label>
                     </div>
@@ -218,7 +222,10 @@ const Payment = () => {
 
           {(paymentMethod === "CASH" || paymentMethod === "UPI") && (
             <div className="mt-6 space-y-3">
-              <Label htmlFor="paymentProof" className="font-semibold text-gray-800 text-lg block">
+              <Label
+                htmlFor="paymentProof"
+                className="font-semibold text-gray-800 text-lg block"
+              >
                 Upload Payment Proof
               </Label>
               <Controller
@@ -237,12 +244,13 @@ const Payment = () => {
               {uploading && <p className="text-blue-600">Uploading image...</p>}
               {uploadedFileUrl && (
                 <div className="flex items-center space-x-4">
-                  <Button type="button" variant="secondary" onClick={() => setViewImageOpen(true)}>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setViewImageOpen(true)}
+                  >
                     View Uploaded Image
                   </Button>
-                  <a href={uploadedFileUrl} target="_blank" rel="noreferrer" className="underline text-green-700">
-                    Uploaded URL
-                  </a>
                 </div>
               )}
             </div>
@@ -255,15 +263,29 @@ const Payment = () => {
           </div>
         </form>
 
-        <Dialog open={viewImageOpen} onOpenChange={setViewImageOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Payment Proof</DialogTitle>
-              <DialogDescription>Here is your uploaded image:</DialogDescription>
-            </DialogHeader>
-            <img src={uploadedFileUrl || ""} alt="Payment Proof" className="rounded-md max-h-96 mx-auto" />
-          </DialogContent>
-        </Dialog>
+        {/* Image Preview Dialog */}
+        {uploadedFileUrl && (
+          <Dialog open={viewImageOpen} onOpenChange={setViewImageOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Payment Proof Preview</DialogTitle>
+                <DialogDescription>
+                  Please confirm this is the correct image before submitting your payment.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col items-center gap-4">
+                <img
+                  src={uploadedFileUrl}
+                  alt="Uploaded Payment Proof"
+                  className="rounded-md border max-h-96 object-contain"
+                />
+                <Button variant="outline" onClick={() => setViewImageOpen(false)}>
+                  Close Preview
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </SidebarProvider>
   );

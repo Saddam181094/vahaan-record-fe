@@ -53,24 +53,36 @@ export default function CaseDetails() {
   );
 
   const RenderField = ({
-    label,
-    value,
-  }: {
-    label: string;
-    value: string | number | boolean | null;
-  }) => {
-    const displayValue = (() => {
-      if (value === null || value === undefined) return "—";
+  label,
+  value,
+  type = "auto", // "auto" | "text" | "date" | "currency"
+}: {
+  label: string;
+  value: string | number | Date | null;
+  type?: "auto" | "text" | "date" | "currency";
+}) => {
+  const displayValue = (() => {
+    if (value === null || value === undefined) return "—";
 
-      if (typeof value === "string" || typeof value === "number") {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          return date.toLocaleDateString();
-        }
+    if (type === "currency") return `₹${value}`;
+    if (type === "date" && typeof value === "string") {
+      const date = new Date(value);
+      return isNaN(date.getTime()) ? value.toString() : date.toLocaleDateString();
+    }
+
+    if (type === "auto") {
+      const date = new Date(value);
+      if (
+        typeof value === "string" &&
+        !isNaN(date.getTime()) &&
+        value.includes("-") // e.g. "2024-06-01"
+      ) {
+        return date.toLocaleDateString();
       }
+    }
 
-      return value.toString();
-    })();
+    return value.toString();
+  })();
 
     return (
       <div>

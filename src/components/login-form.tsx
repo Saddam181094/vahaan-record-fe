@@ -26,18 +26,27 @@ export function LoginForm({
   const toast = useToast();
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      setError("");
-      await login(email, password);
-    } catch (err:any) {
-      toast.showToast('Error in Updating:',err,'error');
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  e.preventDefault();
+  setLoading(true);
+  setError(""); // Clear error before submission
+
+  try {
+    await login(email, password);
+  } catch (err: any) {
+    console.error("Login Error:", err);
+    
+    // Handle known error structure or fallback
+    const errorMessage = err?.response?.data?.message || err?.message || "Login failed";
+
+    setError(errorMessage);
+
+    // Optional: Keep toast, but guard against structure issues
+    toast.showToast('Login Error', errorMessage, 'error');
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
     <div className={cn("flex flex-col gap-6 min-h-screen bg-[#f8f9fb] dark:bg-white", className)} {...props}>
       <Card className="overflow-hidden md:mx-30 sm:mx-0 shadow-xl border-0 bg-white dark:bg-white">

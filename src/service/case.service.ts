@@ -59,6 +59,20 @@ export const getAllCasesE = async () => {
     });
 };
 
+export const getSummary = async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/case/summary", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
+
 export const getCaseID = async (Id: any) => {
   const config = getConfig();
   return axios
@@ -72,11 +86,49 @@ export const getCaseID = async (Id: any) => {
     });
 };
 
+export const getCasebyClient = async (Id: any) => {
+  const config = getConfig();
+  return axios
+    .get(`${url}/case/client/${Id}`, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
 export const updateCaseID = async (Id: any, data: Case) => {
   const config = getConfig();
 
-  console.log(data);
   return axios.patch(`${url}/case/edit/${Id}`, data, config)
+    .then((resp) => {
+      return resp.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during patch:", error);
+      throw error;
+    });
+}
+
+export const verifyPayments = async (Id: any) => {
+  const config = getConfig();
+
+  return axios.patch(`${url}/case/verify-payment/${Id}`, config)
+    .then((resp) => {
+      return resp.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during patch:", error);
+      throw error;
+    });
+}
+
+export const rejectPayment = async (Id: any) => {
+  const config = getConfig();
+
+  return axios.patch(`${url}/case/reject-payment/${Id}`, config)
     .then((resp) => {
       return resp.data;
     })

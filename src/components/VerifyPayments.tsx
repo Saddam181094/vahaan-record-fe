@@ -13,18 +13,18 @@ import {
 import { useToast } from "@/context/ToastContext";
 // import { useNavigate } from "react-router-dom";
 import { useLoading } from "./LoadingContext";
-import { getUnPayments } from "@/service/case.service";
+import { getUnPayments, rejectPayment } from "@/service/case.service";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./DataTable";
-
-type PaymentBy = {
+import { verifyPayments } from "@/service/case.service";
+type paymentBy = {
     id: string;
     name: string;
     email: string;
     phoneNo: string;
 };
 
-type CaseAssignment = {
+type caseAssignment = {
     id: string;
     TotalAmount: number;
     case: {
@@ -37,12 +37,12 @@ type CaseAssignment = {
 
 type PaymentData = {
     id: string;
-    paymentBy: PaymentBy;
+    paymentBy: paymentBy;
     Mode: string;
     PaymentDate: string;
     PaymentProofUrl: string;
     Remarks: string;
-    caseAssignments: CaseAssignment[];
+    caseAssignments: caseAssignment[];
 };
 
 const paymentTableColumns = (
@@ -50,24 +50,18 @@ const paymentTableColumns = (
   onVerify: (id: string) => void,
   onReject: (id: string) => void
 ): ColumnDef<PaymentData>[] => [
-  {
-    accessorKey: "id",
-    header: "Payment ID",
-    cell: ({ row }) => <span className="font-mono text-sm">{row.original.id}</span>,
-  },
+  // {
+  //   accessorKey: "id",
+  //   header: "Payment ID",
+  //   cell: ({ row }) => <span className="font-mono text-sm">{row.original.id}</span>,
+  // },
   {
     accessorKey: "paymentBy",
     header: "Paid By",
     cell: ({ row }) => {
-      const p = row.original.paymentBy;
-      return (
-        <div className="flex flex-col">
-          <span>{p.name}</span>
-          <span className="text-xs text-gray-500">{p.email}</span>
-          <span className="text-xs text-gray-500">{p.phoneNo}</span>
-        </div>
-      );
-    },
+      const {name,email,phoneNo,id} = row.original.paymentBy;
+      return id? `${name} | ${email} | ${phoneNo}`:``;
+    }
   },
   {
     accessorKey: "Mode",
@@ -80,13 +74,15 @@ const paymentTableColumns = (
       new Date(row.original.PaymentDate).toLocaleDateString(),
   },
   {
-    accessorKey: "PaymentProofUrl",
+    id: "viewProof",
     header: "Payment Proof",
     cell: ({ row }) =>
       row.original.PaymentProofUrl ? (
         <button
+        style={{cursor:"pointer"}}
           onClick={() => openProofDialog(row.original.PaymentProofUrl!)}
           className="text-blue-600 underline hover:text-blue-800"
+          type="button"
         >
           View Proof
         </button>
@@ -94,6 +90,21 @@ const paymentTableColumns = (
         <span className="text-gray-400 italic">No proof</span>
       ),
   },
+  // {
+  //   accessorKey: "PaymentProofUrl",
+  //   header: "Payment Proof",
+  //   cell: ({ row }) =>
+  //     row.original.PaymentProofUrl ? (
+  //       <button
+  //         onClick={() => openProofDialog(row.original.PaymentProofUrl!)}
+  //         className="text-blue-600 underline hover:text-blue-800"
+  //       >
+  //         View Proof
+  //       </button>
+  //     ) : (
+  //       <span className="text-gray-400 italic">No proof</span>
+  //     ),
+  // },
   {
     accessorKey: "Remarks",
     header: "Remarks",
@@ -116,6 +127,7 @@ const paymentTableColumns = (
       </ul>
     ),
   },
+  
   {
     id: "actions",
     header: "Actions",
@@ -125,7 +137,7 @@ const paymentTableColumns = (
           variant="outline"
           className="text-green-600 border-green-600 hover:bg-green-100"
           title="Verify Payment"
-          onClick={() => onVerify(row.original.id)}
+          onClick={() => onVerify(row.original.paymentBy.id)}
         >
           ✓
         </Button>
@@ -133,7 +145,7 @@ const paymentTableColumns = (
           variant="outline"
           className="text-red-600 border-red-600 hover:bg-red-100"
           title="Reject Payment"
-          onClick={() => onReject(row.original.id)}
+          onClick={() => onReject(row.original.paymentBy.id)}
         >
           ✗
         </Button>
@@ -159,7 +171,6 @@ const verifyPayment = () => {
         setLoading(true);
         getUnPayments()
             .then((resp) => {
-
                 setPayments(resp?.data);
             })
             .catch((error) => {
@@ -170,16 +181,26 @@ const verifyPayment = () => {
 
 
     const onVerify = (paymentId: string) => {
-
-        console.log("Verify payment", paymentId);
+      setLoading(true);
+        verifyPayments(paymentId).then(()=>{
+          toast.showToast('Affirmation','Verified the Payment','success');
+        }).catch((err)=>{
+          toast.showToast('Error',err?.message,'error');
+        }).finally(()=>{
+          setLoading(false);
+        })
     };
 
     const onReject = (paymentId: string) => {
-
-        console.log("Reject payment", paymentId);
+      setLoading(true);
+        rejectPayment(paymentId).then(()=>{
+          toast.showToast('Affirmation','Rejected the Payment','success');
+        }).catch((err)=>{
+          toast.showToast('Error',err?.message,'error');
+        }).finally(()=>{
+          setLoading(false);
+        })
     };
-
-
 
     const openProofDialog = (url: string) => {
         setSelectedProofUrl(url);
