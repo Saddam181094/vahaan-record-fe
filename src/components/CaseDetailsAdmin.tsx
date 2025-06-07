@@ -76,7 +76,7 @@ export default function CaseDescription() {
     setLoading(true);
     getCaseID(id)
       .then((resp) => {
-        console.log(resp?.data);
+        // console.log(resp?.data);
         setCaseData(resp?.data);
       }).catch((err:any)=>{
         toast.showToast('Error fetching:',err,'error');

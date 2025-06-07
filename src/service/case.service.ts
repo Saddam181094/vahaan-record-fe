@@ -42,7 +42,7 @@ export const getAllCases = async () => {
     });
 };
 
-export const makePayment = async (caseAssignmentIds:string[]) => {
+export const postIds = async (caseAssignmentIds:string[]) => {
   const config = getConfig();
   return axios
     .post(url + "/case/get-payment-details",{caseAssignmentIds}, config)
@@ -118,6 +118,19 @@ export const getClientCases = async () => {
   const config = getConfig();
   return axios
     .get(url + "/case/client", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
+export const getUnPayments = async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/case/unverified-payments", config)
     .then((response) => {
       return response.data;
     })

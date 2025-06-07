@@ -7,7 +7,8 @@ import {
   Building2,
   UserRoundPen,
   PcCase,
-  User
+  User,
+  IndianRupee
 } from "lucide-react";
 import {
   Sidebar,
@@ -49,8 +50,9 @@ const items1: Record<string, SidebarItem[]> = {
       ],
     },
     { title: "Employees", url: "/superadmin/AddEmployee", icon: CircleUser },
-    { title: "U-Clients", url: "/superadmin/UnverifiedClients", icon: UserRoundPen },
+    { title: "Clients", url: "/superadmin/UnverifiedClients", icon: UserRoundPen },
     { title: "All-Cases", url: "/superadmin/cases", icon: PcCase },
+    { title: "Payments", url: "/superadmin/VerifyPayments", icon: IndianRupee },
     { title: "My Profile", url: "/superadmin/Profile", icon: User },
   ],
   client: [

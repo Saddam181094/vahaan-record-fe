@@ -9,7 +9,7 @@ import { getClientCases } from "@/service/case.service";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/context/ToastContext";
 // Assuming you have a function like this:
-import { makePayment } from "@/service/case.service"; // You should implement this service
+import { postIds } from "@/service/case.service"; // You should implement this service
 
 interface ClientCase {
   id: string;
@@ -24,11 +24,17 @@ interface ClientCase {
     };
   };
 }
+export interface PaymentMode {
+  CASH : 'CASH',
+  UPI : 'UPI',
+  CREDIT : 'CREDIT',
+}
 
 export default function ClientCaseList() {
   const [cases, setCases] = useState<ClientCase[]>([]);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [selectedCaseIds, setSelectedCaseIds] = useState<string[]>([]);
+  const [selectedAmounts, setSelectedAmounts] = useState<number[]>([]);
   const [selectMode, setSelectMode] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
@@ -50,11 +56,28 @@ export default function ClientCaseList() {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  const toggleSelect = (id: string) => {
-    setSelectedCaseIds((prev) =>
-      prev.includes(id) ? prev.filter((cid) => cid !== id) : [...prev, id]
-    );
-  };
+const [selectedCaseNos, setSelectedCaseNos] = useState<number[]>([]);
+
+const toggleSelect = (id: string) => {
+  const isSelected = selectedCaseIds.includes(id);
+  const selectedCase = cases.find((c) => c.id === id);
+
+  if (!selectedCase) return;
+
+  if (isSelected) {
+    const indexToRemove = selectedCaseIds.indexOf(id); // Get the current index BEFORE state updates
+
+    setSelectedCaseIds((prev) => prev.filter((cid) => cid !== id));
+    setSelectedAmounts((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+    setSelectedCaseNos((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+  } else {
+    setSelectedCaseIds((prev) => [...prev, id]);
+    setSelectedAmounts((prev) => [...prev, parseFloat(selectedCase.TotalAmount || "0")]);
+    setSelectedCaseNos((prev) => [...prev, Number(selectedCase.case.CaseNo)]);
+  }
+};
+
+
 
   const handleMakePayment = async () => {
     if (selectedCaseIds.length === 0) {
@@ -64,9 +87,18 @@ export default function ClientCaseList() {
 
     try {
       setLoading(true);
-      await makePayment(selectedCaseIds); // your backend API call
+      await postIds(selectedCaseIds); // your backend API call
       toast.showToast("Payment initiated", "Redirecting...", "success");
       // optionally clear selection or redirect
+
+      setTimeout(() => {
+      navigate("/client/payment", {
+        state: { paidCaseIds: selectedCaseIds, 
+          totalPayable: selectedAmounts,
+          caseNos: selectedCaseNos
+        },
+      });
+    }, 1500); 
     } catch (err: any) {
       toast.showToast("Payment failed", err.message || err, "error");
     } finally {

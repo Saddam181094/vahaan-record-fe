@@ -26,10 +26,10 @@ export async function createClient(clientData: any): Promise<NewClient> {
     }
 }
 
-export const getUClient = async () => {
+export const getClient = async () => {
   const config = getConfig();
   return axios
-    .get(url + "/client/unverified/all", config)
+    .get(url + "/client/all", config)
     .then((response) => {
       return response.data;
     })
@@ -39,7 +39,21 @@ export const getUClient = async () => {
     });
 };
 
-export const makePayment = async () => {
+export const makePayment = async (data:any) => {
+  const config = getConfig();
+  return axios
+    .post(url + "/client/make-case-payment",data, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
+
+export const unVerifiedClients = async () => {
   const config = getConfig();
   return axios
     .get(url + "/client/unverified/all", config)

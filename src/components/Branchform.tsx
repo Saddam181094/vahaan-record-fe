@@ -3,21 +3,6 @@ import type { SubmitHandler } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -39,8 +24,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@radix-ui/react-label";
 import { useToast } from "@/context/ToastContext";
+import { DataTable } from "./DataTable";
+import { branchTableColumns } from "@/lib/tables.data";
 
 export interface Branch {
   branchCode?: string;
@@ -111,6 +97,11 @@ export default function AdminBranchForm() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const toast = useToast();
+  const [search , setSearch]= useState("");
+
+  const ind2 = indianStates.filter((hostel) =>
+        hostel.toLowerCase().includes(search.toLowerCase())
+    );
 
   useEffect(() => {
     setLoading(true);
@@ -163,29 +154,6 @@ export default function AdminBranchForm() {
     }
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [items, setItemsper] = useState("10"); // Default to 10 entries
-  const items_per_page = parseInt(items, 10);
-  const [search,setSearch] = useState("");
-
-  const isEntryLimitValid = items_per_page >= 1 && items_per_page <= 20;
-  const ITEMS_PER_PAGE = items_per_page;
-  const totalPages = isEntryLimitValid
-    ? Math.ceil(branches.length / ITEMS_PER_PAGE)
-    : 1;
-
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedBranches = isEntryLimitValid
-    ? branches.slice(startIdx, startIdx + ITEMS_PER_PAGE)
-    : [];
-
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when limit changes
-  }, [items_per_page]);
-
-  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const handleNext = () =>
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
     <div>
@@ -233,7 +201,7 @@ export default function AdminBranchForm() {
                       className="mb-2"
                     />
                   </div>
-                  {indianStates.map((state) => (
+                  {ind2.map((state) => (
                     <SelectItem key={state} value={state}>
                       {state}
                     </SelectItem>
@@ -257,98 +225,17 @@ export default function AdminBranchForm() {
         </DialogContent>
       </Dialog>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Address</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {paginatedBranches.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={3} className="text-center py-4">
-                No branches found.
-              </TableCell>
-            </TableRow>
-          ) : (
-            paginatedBranches.map((branch, idx) => (
-              <TableRow
-                key={branch.branchCode}
-                className={idx % 2 === 1 ? "bg-gray-100 dark:bg-gray-800" : ""}
-              >
-                <TableCell>{branch.name}</TableCell>
-                <TableCell>
-                  {branch.address1}, {branch.address2}, {branch.city},{" "}
-                  {branch.state}, {branch.pincode}
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    checked={!!branch.isActive}
+      <DataTable columns={[...branchTableColumns,
+        {
+                            header: 'Actions',
+                            cell: ({ row }) => (<Switch
+                    checked={!!row.original.isActive}
                     onCheckedChange={() =>
-                      handleToggle(branch?.branchCode ?? "")
+                      handleToggle(row.original?.branchCode ?? "")
                     }
-                  />
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      <div className="flex items-center justify-end mb-4">
-        <Label htmlFor="entryLimit" className="mr-2 font-medium">
-          No of entries:
-        </Label>
-        <Select
-          value={items}
-          onValueChange={(val) => setItemsper(val)}
-        >
-          <SelectTrigger id="entryLimit" className="w-24">
-        <SelectValue placeholder="Entries" />
-          </SelectTrigger>
-          <SelectContent>
-        <SelectItem value="10">10</SelectItem>
-        <SelectItem value="15">15</SelectItem>
-        <SelectItem value="20">20</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      {items !== "" && !isEntryLimitValid && (
-        <div className="text-red-500 text-right text-xs mb-2">
-          Please enter a value between 1 and 20.
-        </div>
-      )}
-
-      <Pagination className="mt-4">
-        <PaginationContent>
-          <PaginationItem>
-            <button
-            style={{cursor:"pointer"}}
-              type="button"
-              onClick={handlePrev}
-              disabled={currentPage === 1}
-              className="disabled:opacity-50"
-            >
-              <PaginationPrevious />
-            </button>
-          </PaginationItem>
-          <PaginationItem className="px-4 text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
-          </PaginationItem>
-          <PaginationItem>
-            <button
-            style={{cursor:"pointer"}}
-              type="button"
-              onClick={handleNext}
-              disabled={currentPage === totalPages}
-              className="disabled:opacity-50"
-            >
-              <PaginationNext />
-            </button>
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+                  />)
+                        }
+      ]} data={branches} />
     </div>
   );
 }

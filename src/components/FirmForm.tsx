@@ -3,30 +3,8 @@ import type { SubmitHandler } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Switch } from "@/components/ui/switch";
 import { createFirm, toggleFirm, getFirm } from "@/service/firm.service";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -34,8 +12,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useLoading } from "./LoadingContext";
-import { Label } from "@radix-ui/react-label";
 import { useToast } from "@/context/ToastContext";
+import { DataTable } from "./DataTable";
+import { firmTableColumns } from "@/lib/tables.data";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Firm {
@@ -104,28 +83,7 @@ const {setLoading} = useLoading();
     reset(); // Reset the form when dialog is closed
   }
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [items, setItemsper] = useState("10"); // Default to 10 entries
-  const items_per_page = parseInt(items, 10);
 
-  const isEntryLimitValid = items_per_page >= 1 && items_per_page <= 20;
-  const ITEMS_PER_PAGE = items_per_page;
-  const totalPages = isEntryLimitValid
-    ? Math.ceil(firms.length / ITEMS_PER_PAGE)
-    : 1;
-
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedFirms = isEntryLimitValid
-    ? firms.slice(startIdx, startIdx + ITEMS_PER_PAGE)
-    : [];
-
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when limit changes
-  }, [items_per_page]);
-
-  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const handleNext = () =>
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   return (
     <div>
       <Button style={{cursor:"pointer"}} onClick={() => setDialogOpen(true)} className="mb-4">
@@ -166,99 +124,21 @@ const {setLoading} = useLoading();
         </DialogContent>
       </Dialog>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-             <TableHead>Active</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {paginatedFirms.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center py-4">
-                No Firm found.
-              </TableCell>
-            </TableRow>
-          ) : (
-            paginatedFirms.map((Firm,idx) => (
-                <TableRow
-                key={Firm.id}
-                className={
-                  (idx % 2 === 1 ? "bg-gray-200 dark:bg-gray-900 " : "") +
-                  "rounded-xl overflow-hidden"
-                }
-                style={{
-                  borderRadius: "0.75rem",
-                  overflow: "hidden",
-                }}
-                >
-                <TableCell className="first:rounded-l-xl last:rounded-l-xl">
-                  {Firm.name}
-                </TableCell>
-                <TableCell>
-                  <Switch
-                  checked={!!Firm.isActive}
-                  onCheckedChange={() => handleToggle(Firm?.id ?? "")}
-                  />
-                </TableCell>
-                </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-<div className="flex items-center justify-end mb-4">
-            <Label htmlFor="entryLimit" className="mr-2 font-medium">
-              No of entries:
-            </Label>
-                        <Select
-          value={items}
-          onValueChange={(val) => setItemsper(val)}
-        >
-          <SelectTrigger id="entryLimit" className="w-24">
-        <SelectValue placeholder="Entries" />
-          </SelectTrigger>
-          <SelectContent>
-        <SelectItem value="10">10</SelectItem>
-        <SelectItem value="15">15</SelectItem>
-        <SelectItem value="20">20</SelectItem>
-          </SelectContent>
-        </Select>
-          </div>
-          {items !== "" && !isEntryLimitValid && (
-            <div className="text-red-500 text-right text-xs mb-2">
-              Please enter a value between 1 and 20.
-            </div>
-          )}
-      <Pagination className="mt-4">
-        <PaginationContent>
-          <PaginationItem>
-            <button
-            style={{cursor:"pointer"}}
-              type="button"
-              onClick={handlePrev}
-              disabled={currentPage === 1}
-              className="disabled:opacity-50"
-            >
-              <PaginationPrevious />
-            </button>
-          </PaginationItem>
-          <PaginationItem className="px-4 text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
-          </PaginationItem>
-          <PaginationItem>
-            <button
-            style={{cursor:"pointer"}}
-              type="button"
-              onClick={handleNext}
-              disabled={currentPage === totalPages}
-              className="disabled:opacity-50"
-            >
-              <PaginationNext />
-            </button>
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+          <DataTable columns={[...firmTableColumns,
+             {
+    id: "isActive",
+    header: "Active",
+    cell: ({ row }) => {
+      const firm = row.original;
+      return (
+        <Switch
+          checked={!!firm.isActive}
+          onCheckedChange={() => handleToggle(firm.id)}
+        />
+      );
+    },
+  },
+          ]} data={firms} />
     </div>
   );
 }

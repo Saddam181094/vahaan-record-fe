@@ -3,22 +3,7 @@ import { useLoading } from "./LoadingContext";
 import { getAllCases } from "@/service/case.service";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@radix-ui/react-label";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
 import { FaEye } from "react-icons/fa";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -28,6 +13,8 @@ import { useForm } from "react-hook-form";
 import CaseDetails from "./CaseDetailsAdmin";
 import { assignCase } from "@/service/case.service";
 import { useToast } from "@/context/ToastContext";
+import { DataTable } from "./DataTable";
+import { caseTableColumns } from "@/lib/tables.data";
 
 export interface CaseDetails {
   id: string;
@@ -47,12 +34,11 @@ export interface vehicleDetail {
 }
 
 
-function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: string, disabled?: boolean }) {
+function AssignDialog({ caseNo, caseId, disabled,clients }: { caseNo: string, caseId: string, disabled?: boolean,clients:any[] }) {
   const [open, setOpen] = useState(false);
-  const [clients, setClients] = useState<any[]>([]);
   const { setLoading } = useLoading();
-  const [refreshFlag] = useState(false);
-  const [search,setSearch] = useState("");
+  // const [refreshFlag] = useState(false);
+  const [search, setSearch] = useState("");
   const toast = useToast();
 
   const { register, handleSubmit, setValue, watch, reset } = useForm<{ clientId: string }>({
@@ -61,29 +47,15 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
 
   const selectedClient = watch("clientId");
 
-  useEffect(() => {
-    setLoading(true);
-    getActiveClients()
-      .then((resp) => {
-        setClients(resp?.data || []);
-      })
-      .catch((err: any) => {
-        toast.showToast('Error fetching firms',err,'error');
-        // console.error("Error fetching firms:", err);
-        setClients([]);
-      })
-      .finally(() => setLoading(false));
-  }, [refreshFlag]);
-
   const onSubmit = (data: { clientId: string }) => {
 
     setLoading(true);
     assignCase(caseId, data.clientId).
       then(() => {
         // console.log(resp?.data);
-        toast.showToast('Affirmation','Case Assigned Successfully.','success');
-      }).catch((err:any)=>{
-        toast.showToast('Error Assigning Case',err,'error');
+        toast.showToast('Affirmation', 'Case Assigned Successfully.', 'success');
+      }).catch((err: any) => {
+        toast.showToast('Error Assigning Case', err, 'error');
       })
       .finally(() => setLoading(false));
     setOpen(false);
@@ -116,29 +88,29 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
               value={selectedClient}
             >
               <SelectTrigger id="clients" className="w-full">
-              <SelectValue placeholder="Select Dealer" />
+                <SelectValue placeholder="Select Dealer" />
               </SelectTrigger>
               <SelectContent className="w-full">
                 <div className="p-2">
-                    <Input
-                      placeholder="Search a State"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="mb-2"
-                    />
-                  </div>
-              {clients.map((client: any) => (
-                <SelectItem key={client.id} value={client.id} className="w-full">
-                {client.firstName} {client.lastName}
-                </SelectItem>
-              ))}
+                  <Input
+                    placeholder="Search a State"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="mb-2"
+                  />
+                </div>
+                {clients.map((client: any) => (
+                  <SelectItem key={client.id} value={client.id} className="w-full">
+                    {client.firstName} {client.lastName}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {/* Register the field for react-hook-form */}
             <input type="hidden" {...register("clientId", { required: true })} />
           </div>
           <DialogFooter>
-            <Button style={{cursor:"pointer"}} type="submit" disabled={!selectedClient}>Submit</Button>
+            <Button style={{ cursor: "pointer" }} type="submit" disabled={!selectedClient}>Submit</Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -150,23 +122,24 @@ function AssignDialog({ caseNo, caseId, disabled }: { caseNo: string, caseId: st
 export default function CaseDes() {
   useForm<CaseDetails>();
   const navigate = useNavigate();
-
   const [cases, setCases] = useState<CaseDetails[]>([]);
+  const [clients, setClients] = useState<any[]>([]);
   const { setLoading } = useLoading();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [items, setItemsper] = useState("10"); // Default to 10 entries
-  const items_per_page = parseInt(items, 10);
+  const toast = useToast();
 
-  const isEntryLimitValid = items_per_page >= 1 && items_per_page <= 20;
-  const ITEMS_PER_PAGE = items_per_page;
-  const totalPages = isEntryLimitValid
-    ? Math.ceil(cases.length / ITEMS_PER_PAGE)
-    : 1;
-
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedFirms = isEntryLimitValid
-    ? cases.slice(startIdx, startIdx + ITEMS_PER_PAGE)
-    : [];
+    useEffect(() => {
+    setLoading(true);
+    getActiveClients()
+      .then((resp) => {
+        setClients(resp?.data || []);
+      })
+      .catch((err: any) => {
+        toast.showToast('Error fetching firms', err, 'error');
+        // console.error("Error fetching firms:", err);
+        setClients([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -176,56 +149,25 @@ export default function CaseDes() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when limit changes
-  }, [items_per_page]);
-
-  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const handleNext = () =>
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-
   return (
     <div>
       {
         <>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>No.</TableHead>
-                <TableHead>Vehicle No.</TableHead>
-                <TableHead>Created By</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedFirms.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4">
-                    No Cases found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedFirms.map((Case, idx) => (
-                  <TableRow
-                    key={Case.CaseNo}
-                    className={
-                      idx % 2 === 1 ? "bg-gray-200 dark:bg-gray-900" : ""
-                    }
-                  >
-                    <TableCell>#{Case.CaseNo}</TableCell>
-                    <TableCell>{Case?.vehicleDetail?.vehicleNo}</TableCell>
-                    <TableCell>
-                      {Case.createdBy.firstName} {Case.createdBy.lastName} |{" "}
-                      {Case.createdBy.employeeCode}
-                    </TableCell>
-                    <TableCell>{Case.status}</TableCell>
-                    <TableCell className="flex flex-row gap-4">
-                      <button
+          <DataTable
+            data={cases}
+            columns={[...caseTableColumns,
+            {
+              header: "Action",
+              accessorKey: "action",
+              cell: ({ row }: any) => {
+                const caseData = row.original;
+                return (
+                  <div className="flex center flex-row gap-4">
+                    <button
                       type="button"
                       onClick={() =>
-                        navigate(`/superadmin/cases/${Case.CaseNo}`, {
-                        state: { id: Case.id, status: Case.status }
+                        navigate(`/superadmin/cases/${caseData.CaseNo}`, {
+                          state: { id: caseData.id, status: caseData.status },
                         })
                       }
                       title="View Details"
@@ -242,75 +184,25 @@ export default function CaseDes() {
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.color = "#000")
                       }
-                      >
+                    >
                       <FaEye />
-                      </button>
-                      {Case.status?.toLowerCase() !== "assigned" &&
-                      Case.status?.toLowerCase() !== "created" && (
+                    </button>
+                    {caseData.status?.toLowerCase() !== "assigned" &&
+                      caseData.status?.toLowerCase() !== "created" && (
                         <AssignDialog
-                        caseNo={Case.CaseNo}
-                        caseId={Case.id}
+                          caseNo={caseData.CaseNo}
+                          caseId={caseData.id}
+                          clients={clients}
                         />
                       )}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-          <div className="flex items-center justify-end mb-4">
-            <Label htmlFor="entryLimit" className="mr-2 font-medium">
-              No of entries:
-            </Label>
-            <Select
-          value={items}
-          onValueChange={(val) => setItemsper(val)}
-        >
-          <SelectTrigger id="entryLimit" className="w-24">
-        <SelectValue placeholder="Entries" />
-          </SelectTrigger>
-          <SelectContent>
-        <SelectItem value="10">10</SelectItem>
-        <SelectItem value="15">15</SelectItem>
-        <SelectItem value="20">20</SelectItem>
-          </SelectContent>
-        </Select>
-          </div>
-          {items !== "" && !isEntryLimitValid && (
-            <div className="text-red-500 text-right text-xs mb-2">
-              Please enter a value between 1 and 20.
-            </div>
-          )}
+                  </div>
+                );
+              },
+            },
+            ]}
+          />
 
-          <Pagination className="mt-4">
-            <PaginationContent>
-              <PaginationItem>
-                <button
-                style={{cursor:"pointer"}}
-                  type="button"
-                  onClick={handlePrev}
-                  disabled={currentPage === 1}
-                  className="disabled:opacity-50"
-                >
-                  <PaginationPrevious />
-                </button>
-              </PaginationItem>
-              <PaginationItem className="px-4 text-sm text-muted-foreground">
-                Page {currentPage} of {totalPages}
-              </PaginationItem>
-              <PaginationItem>
-                <button
-                style={{cursor:"pointer"}}
-                  type="button"
-                  onClick={handleNext}
-                  disabled={currentPage === totalPages}
-                  className="disabled:opacity-50"
-                >
-                  <PaginationNext />
-                </button>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+
         </>
       }
     </div>

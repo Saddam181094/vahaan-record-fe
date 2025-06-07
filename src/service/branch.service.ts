@@ -1,11 +1,37 @@
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import { getConfig,url} from "@/service/auth.service";
 import type { Branch } from "@/components/Branchform";
+
+export const getFormDataConfig = (): AxiosRequestConfig => {
+  const t = localStorage.getItem("token");
+  return {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Accept: "application/json",
+      Authorization: `Bearer ${t}`,
+    },
+  } as AxiosRequestConfig;
+};
 
 export const getBranch = async () => {
   const config = getConfig();
   return axios
     .get(url + "/utils/branches/all", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
+export const uploadFileToServer = async (File:File) => {
+  const config = getFormDataConfig();
+  const formdata = new FormData();
+  formdata.append('file', File)
+  return axios
+    .post(url + "/utils/upload",formdata, config)
     .then((response) => {
       return response.data;
     })
