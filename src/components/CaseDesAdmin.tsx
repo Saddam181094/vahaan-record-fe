@@ -153,6 +153,16 @@ export default function CaseDes() {
     <div>
       {
         <>
+        <Button
+        style={{cursor:"pointer"}}
+          variant="default"
+          className="mb-4"
+          onClick={() => {
+            setLoading(true);
+            navigate("/superadmin/cases/new")}}
+        >
+          Add New Case
+        </Button>
           <DataTable
             data={cases}
             columns={[...caseTableColumns,

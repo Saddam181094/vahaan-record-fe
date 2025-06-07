@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 import {
   Select,
   SelectTrigger,
@@ -22,6 +23,7 @@ import { getbranchEmployee } from "@/service/emp.service";
 import { getActiveFirm } from "@/service/firm.service";
 import { createCase } from "@/service/case.service";
 import { useToast } from "@/context/ToastContext";
+import { useNavigate } from "react-router-dom";
 
 // Interfaces
 export interface Case {
@@ -151,13 +153,15 @@ export default function CaseForm() {
     name: string;
   };
 
+  const { user } = useAuth();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [b, setB] = useState<string>("");
   const { setLoading } = useLoading();
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
-  const [search,setSearch] = useState("");
+  const [search, setSearch] = useState("");
   const toast = useToast();
+  const navigate = useNavigate();
 
   const [refreshFlag] = useState(false);
 
@@ -165,10 +169,11 @@ export default function CaseForm() {
     setLoading(true);
     getActiveBranch()
       .then((resp) => {
+
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching:',err,'error');
+        toast.showToast('Error fetching:', err, 'error');
         // console.error("Error fetching branches:", err);
       })
       .finally(() => {
@@ -185,7 +190,7 @@ export default function CaseForm() {
           setbranchEmp(resp?.data);
         })
         .catch((err: any) => {
-        toast.showToast('Error fetching:',err,'error');
+          toast.showToast('Error fetching:', err, 'error');
         })
         .finally(() => {
           setLoading(false);
@@ -201,7 +206,7 @@ export default function CaseForm() {
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching:',err,'error');
+        toast.showToast('Error fetching:', err, 'error');
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
@@ -210,11 +215,19 @@ export default function CaseForm() {
   const onSubmit = (data: any) => {
     // handle form submission, e.g., send data to API
     setLoading(true);
-    createCase(data)
-      .catch((err:any)=>{
-        toast.showToast('Error fetching:',err,'error');
+    createCase(data).then((resp)=>{
+      toast.showToast('Affirmation',resp?.message,'success')
+    })
+      .catch((err: any) => {
+        toast.showToast('Error fetching:', err, 'error');
       })
       .finally(() => {
+        if(user?.role === "superadmin")
+        {
+          setLoading(false);
+          reset();
+          navigate(-1);
+        }
         setLoading(false);
         reset();
       });
@@ -226,123 +239,138 @@ export default function CaseForm() {
       <Card>
         <CardContent className="grid gap-4">
           <div className="text-xl font-semibold">General Details</div>
-          <hr></hr>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <hr />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Controller
+              name="generalDetails.firmName"
+              control={control}
+              rules={{ required: "Firm Name is required" }}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col w-full">
+                  <Input
+                    required
+                    placeholder="Firm Name"
+                    className="w-full"
+                    {...field}
+                  />
+                  {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
+            <Controller
+              name="generalDetails.branchCodeId"
+              control={control}
+              rules={{ required: "Branch is required" }}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col w-full">
+                  <Select
+                    required
+                    value={field.value}
+                    onValueChange={(val) => {
+                      field.onChange(val);
+                      setB(val);
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <div className="p-2">
+                        <Input
+                          placeholder="Search a Branch"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="mb-2"
+                        />
+                      </div>
+                      {branches.map((branch) => (
+                        <SelectItem
+                          key={branch?.branchCode}
+                          value={branch?.branchCode || "default"}
+                        >
+                          {branch.name} - {branch?.branchCode}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
+            <Controller
+              name="generalDetails.employeeCodeId"
+              control={control}
+              rules={{ required: "Employee is required" }}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col w-full">
+                  <Select
+                    required
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Employee" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <div className="p-2">
+                        <Input
+                          placeholder="Search a Employee"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="mb-2"
+                        />
+                      </div>
+                      {branchEmp.map((emp) => (
+                        <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
+                          {emp?.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
+            {/* Incentive Type - Only show for superadmin */}
+            {user?.role === "superadmin" && (
               <Controller
-                name="generalDetails.firmName"
+                name="generalDetails.incentiveType"
                 control={control}
-                rules={{ required: "Firm Name is required" }}
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-col">
-                    <Input
-                      required
-                      placeholder="Firm Name"
-                      className="w-full"
-                      {...field}
-                    />
-                    {fieldState.error && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-              <Controller
-                name="generalDetails.branchCodeId"
-                control={control}
-                rules={{ required: "Branch is required" }}
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-col">
+                render={({ field }) => (
+                  <div className="flex flex-col w-full">
                     <Select
-                      required
-                      value={field.value}
-                      onValueChange={(val) => {
-                        field.onChange(val);
-                        setB(val);
-                      }}
+                      value={String(field.value)}
+                      onValueChange={(val) => field.onChange(Number(val))}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Branch" />
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Incentive Type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <div className="p-2">
-                                            <Input
-                                              placeholder="Search a Branch"
-                                              value={search}
-                                              onChange={(e) => setSearch(e.target.value)}
-                                              className="mb-2"
-                                            />
-                                          </div>
-                        {branches.map((branch) => (
-                          <SelectItem
-                            key={branch?.branchCode}
-                            value={branch?.branchCode || "default"}
-                          >
-                            {branch.name} - {branch?.branchCode}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="1">Type 1</SelectItem>
+                        <SelectItem value="2">Type 2</SelectItem>
+                        <SelectItem value="3">Type 3</SelectItem>
+                        <SelectItem value="4">Type 4</SelectItem>
+                        <SelectItem value="5">Type 5</SelectItem>
+                        <SelectItem value="6">Type 6</SelectItem>
                       </SelectContent>
                     </Select>
-                    {fieldState.error && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {fieldState.error.message}
-                      </p>
-                    )}
                   </div>
                 )}
               />
-              <Controller
-                name="generalDetails.employeeCodeId"
-                control={control}
-                rules={{ required: "Employee is required" }}
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-col">
-                    <Select
-                      required
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Employee" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <div className="p-2">
-                    <Input
-                      placeholder="Search a Employee"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="mb-2"
-                    />
-                  </div>
-                        {branchEmp.map((emp) => (
-                          <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
-                            {emp?.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {fieldState.error && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
-          {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Select
-          value={String(formData.generalDetails.incentiveType)}
-          onValueChange={(val) => handleChange("generalDetails", "incentiveType", Number(val))}
-        >
-          <SelectTrigger><SelectValue placeholder="Select Incentive Type" /></SelectTrigger>
-          <SelectContent>
-          <SelectItem value="1">Fixed</SelectItem>
-          <SelectItem value="2">Variable</SelectItem>
-          </SelectContent>
-        </Select>
-        </div> */}
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -363,15 +391,14 @@ export default function CaseForm() {
                   <Input
                     id="vehicleNo"
                     placeholder="Vehicle No"
-                    className={`input input-bordered ${
-                      fieldState.error ? "input-error" : ""
-                    }`}
+                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
+                      }`}
                     {...field}
                   />
-                   {errors.vehicleDetail?.vehicleNo && (
-        <p className="text-red-500 text-xs mt-1">
-          {errors.vehicleDetail.vehicleNo?.message}
-        </p>
+                  {errors.vehicleDetail?.vehicleNo && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.vehicleDetail.vehicleNo?.message}
+                    </p>
                   )}
                 </div>
               )}
@@ -472,9 +499,8 @@ export default function CaseForm() {
                   <Input
                     id="insuranceExpiry"
                     type="date"
-                    className={`input input-bordered ${
-                      fieldState.error ? "input-error" : ""
-                    }`}
+                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
+                      }`}
                     {...field}
                   />
                   {fieldState.error && (
@@ -500,9 +526,8 @@ export default function CaseForm() {
                   <Input
                     id="pucExpiry"
                     type="date"
-                    className={`input input-bordered ${
-                      fieldState.error ? "input-error" : ""
-                    }`}
+                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
+                      }`}
                     {...field}
                   />
                   {fieldState.error && (
@@ -528,9 +553,8 @@ export default function CaseForm() {
                   <Input
                     id="fitnessExpiry"
                     type="date"
-                    className={`input input-bordered ${
-                      fieldState.error ? "input-error" : ""
-                    }`}
+                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
+                      }`}
                     {...field}
                   />
                   {fieldState.error && (
@@ -556,9 +580,8 @@ export default function CaseForm() {
                   <Input
                     id="taxExpiry"
                     type="date"
-                    className={`input input-bordered ${
-                      fieldState.error ? "input-error" : ""
-                    }`}
+                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
+                      }`}
                     {...field}
                   />
                   {fieldState.error && (
@@ -584,9 +607,8 @@ export default function CaseForm() {
                   <Input
                     id="permitExpiry"
                     type="date"
-                    className={`input input-bordered ${
-                      fieldState.error ? "input-error" : ""
-                    }`}
+                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
+                      }`}
                     {...field}
                   />
                   {fieldState.error && (
@@ -605,37 +627,37 @@ export default function CaseForm() {
         <CardContent className="grid gap-4 p-6 space-y-2">
           <div className="text-xl font-semibold">Transaction Detail</div>
           <hr></hr>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* To */}
             <Controller
               name="transactionDetail.to"
               control={control}
               rules={{ required: "To is required" }}
               render={({ field, fieldState }) => (
-              <div className="flex flex-col gap-1">
-                <Label className="py-2">To</Label>
-                <Select
-                required
-                value={field.value}
-                onValueChange={(val) => field.onChange(val as TransactionTo)}
-                >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(TransactionTo).map((val) => (
-                  <SelectItem key={val} value={val}>
-                    {val}
-                  </SelectItem>
-                  ))}
-                </SelectContent>
-                </Select>
-                {fieldState.error && (
-                <p className="text-red-500 text-xs mt-1">
-                  {fieldState.error.message}
-                </p>
-                )}
-              </div>
+                <div className="flex flex-col gap-1">
+                  <Label className="py-2">To</Label>
+                  <Select
+                    required
+                    value={field.value}
+                    onValueChange={(val) => field.onChange(val as TransactionTo)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(TransactionTo).map((val) => (
+                        <SelectItem key={val} value={val}>
+                          {val}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
               )}
             />
             {/* HPT ID */}
@@ -644,38 +666,38 @@ export default function CaseForm() {
               control={control}
               rules={{ required: "HPT ID is required" }}
               render={({ field, fieldState }) => (
-              <div className="flex flex-col gap-1">
-                <Label className="py-2">HPT ID</Label>
-                <Select
-                required
-                value={field.value}
-                onValueChange={field.onChange}
-                >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="p-2">
-                    <Input
-                      placeholder="Search a Firm"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="mb-2"
-                    />
-                  </div>
-                  {firms.map((firm) => (
-                  <SelectItem key={firm.id} value={firm.id}>
-                    {firm.name}
-                  </SelectItem>
-                  ))}
-                </SelectContent>
-                </Select>
-                {fieldState.error && (
-                <p className="text-red-500 text-xs mt-1">
-                  {fieldState.error.message}
-                </p>
-                )}
-              </div>
+                <div className="flex flex-col gap-1">
+                  <Label className="py-2">HPT ID</Label>
+                  <Select
+                    required
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <div className="p-2">
+                        <Input
+                          placeholder="Search a Firm"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="mb-2"
+                        />
+                      </div>
+                      {firms.map((firm) => (
+                        <SelectItem key={firm.id} value={firm.id}>
+                          {firm.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
               )}
             />
             {/* HPA ID */}
@@ -684,38 +706,38 @@ export default function CaseForm() {
               control={control}
               rules={{ required: "HPA ID is required" }}
               render={({ field, fieldState }) => (
-              <div className="flex flex-col gap-1">
-                <Label className="py-2">HPA ID</Label>
-                <Select
-                required
-                value={field.value}
-                onValueChange={field.onChange}
-                >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="p-2">
-                    <Input
-                      placeholder="Search a Firm"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="mb-2"
-                    />
-                  </div>
-                  {firms.map((firm) => (
-                  <SelectItem key={firm.id} value={firm.id}>
-                    {firm.name}
-                  </SelectItem>
-                  ))}
-                </SelectContent>
-                </Select>
-                {fieldState.error && (
-                <p className="text-red-500 text-xs mt-1">
-                  {fieldState.error.message}
-                </p>
-                )}
-              </div>
+                <div className="flex flex-col gap-1">
+                  <Label className="py-2">HPA ID</Label>
+                  <Select
+                    required
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <div className="p-2">
+                        <Input
+                          placeholder="Search a Firm"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="mb-2"
+                        />
+                      </div>
+                      {firms.map((firm) => (
+                        <SelectItem key={firm.id} value={firm.id}>
+                          {firm.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
               )}
             />
             {/* Number Plate */}
@@ -724,33 +746,33 @@ export default function CaseForm() {
               control={control}
               rules={{ required: "Number Plate is required" }}
               render={({ field, fieldState }) => (
-              <div className="flex flex-col gap-1">
-                <Label className="py-2">Number Plate</Label>
-                <Select
-                required
-                value={field.value}
-                onValueChange={(val) => field.onChange(val as NumberPlate)}
-                >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(NumberPlate).map((val) => (
-                  <SelectItem key={val} value={val}>
-                    {val}
-                  </SelectItem>
-                  ))}
-                </SelectContent>
-                </Select>
-                {fieldState.error && (
-                <p className="text-red-500 text-xs mt-1">
-                  {fieldState.error.message}
-                </p>
-                )}
-              </div>
+                <div className="flex flex-col gap-1">
+                  <Label className="py-2">Number Plate</Label>
+                  <Select
+                    required
+                    value={field.value}
+                    onValueChange={(val) => field.onChange(val as NumberPlate)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(NumberPlate).map((val) => (
+                        <SelectItem key={val} value={val}>
+                          {val}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
               )}
             />
-            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {(
               ["fitness", "rrf", "rma", "alteration"] as Array<
@@ -771,94 +793,125 @@ export default function CaseForm() {
               </div>
             ))}
           </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {(
               ["conversion", "addressChange", "drc"] as Array<
-              keyof Pick<
-                TransactionDetail,
-                "conversion" | "addressChange" | "drc"
-              >
+                keyof Pick<
+                  TransactionDetail,
+                  "conversion" | "addressChange" | "drc"
+                >
               >
             ).map((key) => (
               <div key={key} className="flex items-center space-x-2">
-              <Switch
-                checked={watch(`transactionDetail.${key}`)}
-                onCheckedChange={(val) =>
-                setValue(`transactionDetail.${key}` as any, val)
-                }
-              />
-              <Label>{key.toUpperCase()}</Label>
+                <Switch
+                  checked={watch(`transactionDetail.${key}`)}
+                  onCheckedChange={(val) =>
+                    setValue(`transactionDetail.${key}` as any, val)
+                  }
+                />
+                <Label>{key.toUpperCase()}</Label>
               </div>
             ))}
 
             <Controller
               name="transactionDetail.remarks"
               control={control}
-              rules={{ required: "Remarks are required" }}
-              render={({ field, fieldState }) => (
-              <div className="col-span-1 md:col-span-4 flex flex-col">
-                <Textarea
-                required
-                className=""
-                placeholder="Remarks"
-                {...field}
-                />
-                {fieldState.error && (
-                <p className="text-red-500 text-xs mt-1">
-                  {fieldState.error.message}
-                </p>
-                )}
-              </div>
+              render={({ field }) => (
+                <div className="col-span-1 md:col-span-4 flex flex-col">
+                  <Textarea
+                    className=""
+                    placeholder="Remarks"
+                    {...field}
+                  />
+                </div>
               )}
             />
-            </div>
+          </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="grid gap-4 p-6">
           <div className="text-xl font-semibold border-b-2">Expense Detail</div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {(["pucCharges", "insuranceCharges", "otherCharges"] as const).map(
               (key) => (
-              <Controller
-                key={key}
-                name={`expenseDetail.${key}`}
-                control={control}
-                rules={{ required: `${key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())} is required.` }}
-                render={({ field, fieldState }) => (
-                <div className="flex flex-col gap-1">
-                  <Label className="py-3" htmlFor={key}>
-                  {key
-                    .replace(/([A-Z])/g, " $1")
-                    .replace(/^./, (str) => str.toUpperCase())}
-                  </Label>
-                  <Input
-                  required
-                  id={key}
-                  type="number"
-                  placeholder="Enter a value"
-                  {...field}
-                  value={field.value ?? ""}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    field.onChange(val === "" ? "" : Number(val));
+                <Controller
+                  key={key}
+                  name={`expenseDetail.${key}`}
+                  control={control}
+                  rules={{
+                    required: `${key
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (str) => str.toUpperCase())} is required.`,
                   }}
-                  />
-                  {fieldState.error && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {fieldState.error.message}
-                  </p>
+                  render={({ field, fieldState }) => (
+                    <div className="flex flex-col gap-1">
+                      <Label className="py-3" htmlFor={key}>
+                        {key
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())}
+                      </Label>
+                      <Input
+                        required
+                        id={key}
+                        type="number"
+                        placeholder="Enter a value"
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          field.onChange(val === "" ? "" : Number(val));
+                        }}
+                      />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </div>
                   )}
-                </div>
-                )}
-              />
+                />
               )
             )}
-            </div>
+            {/* Show adminCharges only for superadmin */}
+            {user?.role === "superadmin" && (
+              <Controller
+                name="expenseDetail.adminCharges"
+                control={control}
+                rules={{
+                  required: "Admin Charges is required.",
+                }}
+                render={({ field, fieldState }) => (
+                  <div className="flex flex-col gap-1">
+                    <Label className="py-3" htmlFor="adminCharges">
+                      Admin Charges
+                    </Label>
+                    <Input
+                      required
+                      id="adminCharges"
+                      type="number"
+                      placeholder="Enter a value"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val === "" ? "" : Number(val));
+                      }}
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+            )}
+          </div>
         </CardContent>
       </Card>
-      <Button style={{cursor:"pointer"}} type="submit">Submit Case</Button>
+      <Button style={{ cursor: "pointer" }} type="submit">Submit Case</Button>
     </form>
   );
 }

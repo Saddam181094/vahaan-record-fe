@@ -38,7 +38,7 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
     header: "Created By",
     cell: ({ row }) => {
       const { firstName, lastName, employeeCode } = row.original.createdBy;
-      return `${firstName} ${lastName} | ${employeeCode}`;
+      return employeeCode ? `${firstName} ${lastName} | ${employeeCode}` : `${firstName} ${lastName}`;
     },
   },
   {

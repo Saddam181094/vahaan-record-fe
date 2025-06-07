@@ -79,6 +79,19 @@ export const getActiveClients = async () => {
     });
 };
 
+export const rejectClient = async (id:string) => {
+  const config = getConfig();
+  return axios
+    .delete(`${url}/client/reject-client/${id}`, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
 export async function verifyClient(clientId: string, creditLimit: number, fixedPenaltyAmount: number): Promise<NewClient> {
     const config = getConfig();
     try {

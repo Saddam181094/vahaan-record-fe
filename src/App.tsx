@@ -61,7 +61,7 @@ export default function App() {
           <AddEmployee />
         </ProtectedRoute>
       } />
-      <Route path="/superadmin/UnverifiedClients" element={
+      <Route path="/superadmin/clients" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <Client />
         </ProtectedRoute>
@@ -81,6 +81,11 @@ export default function App() {
       <Route path="/superadmin/VerifyPayments" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <VerifyPayments />
+        </ProtectedRoute>
+      } />
+      <Route path="/superadmin/cases/new" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <CaseForm />
         </ProtectedRoute>
       } />
 
@@ -126,7 +131,7 @@ export default function App() {
         </ProtectedRoute>
       } />
 
-      <Route path="/employee/CaseForm" element={
+      <Route path="/employee/cases/new" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
           <CaseForm />
         </ProtectedRoute>

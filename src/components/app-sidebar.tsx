@@ -50,7 +50,7 @@ const items1: Record<string, SidebarItem[]> = {
       ],
     },
     { title: "Employees", url: "/superadmin/AddEmployee", icon: CircleUser },
-    { title: "Clients", url: "/superadmin/UnverifiedClients", icon: UserRoundPen },
+    { title: "Clients", url: "/superadmin/clients", icon: UserRoundPen },
     { title: "All-Cases", url: "/superadmin/cases", icon: PcCase },
     { title: "Payments", url: "/superadmin/VerifyPayments", icon: IndianRupee },
     { title: "My Profile", url: "/superadmin/Profile", icon: User },
@@ -65,7 +65,7 @@ const items1: Record<string, SidebarItem[]> = {
     {
       title: "Case", url: "/employee", icon: UserRoundPen,
       submenu: [
-        { title: "New Case", url: "/employee/CaseForm", icon: CircleUser },
+        { title: "New Case", url: "/employee/cases/new", icon: CircleUser },
         { title: "Cases", url: "/employee/cases", icon: PcCase }]
     },
     { title: "My Profile", url: "/employee/Profile", icon: User },

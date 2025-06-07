@@ -1,4 +1,4 @@
-import { useEffect, useState,type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useLoading } from "@/components/LoadingContext";
 import { useToast } from "@/context/ToastContext";
-import { getClient, verifyClient } from "@/service/client.service";
+import { getClient, rejectClient, verifyClient } from "@/service/client.service";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./DataTable";
 
@@ -40,20 +40,43 @@ export default function UClient() {
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [currentTab, setCurrentTab] = useState<'verified' | 'unverified'>('unverified');
   const toast = useToast();
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+
 
 
   const clients = currentTab === 'verified' ? verifiedClients : unverifiedClients;
 
+  const handleReject = async () => {
+    if (!selectedClient) return;
+    
+    setLoading(true);
+    await rejectClient(selectedClient.id).then(() => {
+      toast.showToast("Rejection:", "Client Rejected", "success");
+      setRefreshFlag((prev) => !prev);
+    }).
+
+      catch((err: any) => {
+        toast.showToast("Error in Rejection:", err, "error");
+      })
+      .finally(() => {
+        setLoading(false);
+        setSelectedClient(null);
+        setRejectDialogOpen(false);
+      })
+
+  };
+
+
   useEffect(() => {
     setLoading(true);
     getClient()
-      .then((resp:any) => {
+      .then((resp: any) => {
         const verified = resp.data.find((group: any) => group.isVerified)?.clients || [];
         const unverified = resp.data.find((group: any) => !group.isVerified)?.clients || [];
         setVerifiedClients(verified);
         setUnverifiedClients(unverified);
       })
-      .catch((err:any) => toast.showToast('Error in Fetching:', err, 'error'))
+      .catch((err: any) => toast.showToast('Error in Fetching:', err, 'error'))
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
@@ -75,62 +98,73 @@ export default function UClient() {
   };
 
   const getClientColumns = (
-  currentTab: "verified" | "unverified",
-  setSelectedClient: (client: NewClient) => void,
-  setDialogOpen: (open: boolean) => void
-): ColumnDef<NewClient>[] => [
-  {
-    header: "Name",
-    accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+    currentTab: "verified" | "unverified",
+    setSelectedClient: (client: NewClient) => void,
+    setDialogOpen: (open: boolean) => void
+  ): ColumnDef<NewClient>[] => [
+    {
+    id: "serial",
+    header: "S.No",
+    cell: ({ row }) => row.index + 1, // Calculate the serial number based on visible row index
+    enableSorting: false, // Disable sorting for this column
+    size: 50, // Optional: Adjust width
   },
-  {
-    header: "Address",
-    accessorFn: (row) =>
-      `${row.address1}, ${row.address2}, ${row.city}, ${row.state}, ${row.pincode}`,
-  },
-  {
-    header: "Contact",
-    accessorFn: (row) => `${row.email} | ${row.mobileNo}`,
-  },
-  {
-    header: "Firm Name",
-    accessorKey: "firmName",
-  },
-  {
-    id: "action_or_credit",
-    header: currentTab === "verified" ? "Credit Limit" : "Action",
-    cell: ({ row }) => {
-      const client = row.original;
+      {
+        header: "Name",
+        accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+      },
+      {
+        header: "Address",
+        accessorFn: (row) =>
+          `${row.address1}, ${row.address2}, ${row.city}, ${row.state}, ${row.pincode}`,
+      },
+      {
+        header: "Contact",
+        accessorFn: (row) => `${row.email} | ${row.mobileNo}`,
+      },
+      {
+        header: "Firm Name",
+        accessorKey: "firmName",
+      },
+      {
+        id: "action_or_credit",
+        header: currentTab === "verified" ? "Credit Limit" : "Action",
+        cell: ({ row }) => {
+          const client = row.original;
 
-      if (currentTab === "verified") {
-        return <span>{client.creditLimit ?? "N/A"}</span>;
-      }
+          if (currentTab === "verified") {
+            return <span>{client.creditLimit ?? "N/A"}</span>;
+          }
 
-      return (
-        <div className="flex gap-2">
-          <Button
-            style={{ cursor: "pointer" }}
-            variant="default"
-            size="icon"
-            onClick={() => {
-              setSelectedClient(client);
-              setDialogOpen(true);
-            }}
-          >
-            ✔
-          </Button>
-          <Button
-            style={{ cursor: "pointer" }}
-            variant="destructive"
-            size="icon"
-          >
-            ✖
-          </Button>
-        </div>
-      );
-    },
-  },
-];
+          return (
+            <div className="flex gap-2">
+              <Button
+                style={{ cursor: "pointer" }}
+                variant="default"
+                size="icon"
+                onClick={() => {
+                  setSelectedClient(client);
+                  setDialogOpen(true);
+                }}
+              >
+                ✔
+              </Button>
+              <Button
+                style={{ cursor: "pointer" }}
+                variant="destructive"
+                size="icon"
+                onClick={() => {
+                  setSelectedClient(client);
+                  setRejectDialogOpen(true);
+                }}
+              >
+                ✖
+              </Button>
+            </div>
+          );
+        },
+      },
+    ];
 
   return (
     <div className="flex flex-col w-full bg-white px-6 py-4 min-h-screen">
@@ -139,7 +173,7 @@ export default function UClient() {
         <Button style={{ cursor: "pointer" }} onClick={() => setCurrentTab('verified')} variant={currentTab === 'verified' ? 'default' : 'outline'}>Verified Clients</Button>
       </div>
 
-     <DataTable columns={getClientColumns(currentTab,setSelectedClient,setDialogOpen)} data={clients} />
+      <DataTable columns={getClientColumns(currentTab, setSelectedClient, setDialogOpen)} data={clients} />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
@@ -182,6 +216,34 @@ export default function UClient() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reject Client</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to reject this client? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              style={{ cursor: "pointer" }}
+              variant="outline"
+              onClick={() => setRejectDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              style={{ cursor: "pointer" }}
+              variant="destructive"
+              onClick={handleReject}
+            >
+              Reject
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
