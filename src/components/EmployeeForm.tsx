@@ -27,6 +27,7 @@ import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { employeeTableColumns } from "@/lib/tables.data";
+import { useAuth } from "@/context/AuthContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Employee {
@@ -38,6 +39,8 @@ export interface Employee {
   phoneNo: string;
   role: string;
 }
+
+
 
 export default function EmployeeForm() {
   const {
@@ -52,11 +55,12 @@ export default function EmployeeForm() {
   const [Employee, setEmployee] = useState<Employee[]>([]);
   const [Employee2, setEmployee2] = useState<Employee[]>([]);
   const [branch, setBranch] = useState<Branch[]>([]);
-  const {setLoading} = useLoading();
+  const { setLoading } = useLoading();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
-  const [search,setSearch] = useState("");
+  const [search, setSearch] = useState("");
   const toast = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     setLoading(true);
@@ -65,22 +69,22 @@ export default function EmployeeForm() {
         setEmployee2(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching:',err,'error');
-      }).finally(()=> setLoading(false));
+        toast.showToast('Error fetching:', err, 'error');
+      }).finally(() => setLoading(false));
 
   }, [refreshFlag]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     getActiveBranch()
       .then((resp) => {
         setBranch(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching:',err,'error');
+        toast.showToast('Error fetching:', err, 'error');
       })
       .finally(() => setLoading(false));
-  },[refreshFlag])
+  }, [refreshFlag])
 
   const onSubmit: SubmitHandler<Employee> = async (data: Employee) => {
     setLoading(true);
@@ -89,10 +93,10 @@ export default function EmployeeForm() {
       setEmployee([...Employee, newEmployee]);
       setDialogOpen(false);
       setRefreshFlag((prev) => !prev); // Trigger a refresh
-      toast.showToast('Affirmation','Created a New Employee','success');
+      toast.showToast('Affirmation', 'Created a New Employee', 'success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
-        toast.showToast('Error fetching:',err,'error');
+      toast.showToast('Error fetching:', err, 'error');
     } finally {
       setLoading(false);
     }
@@ -106,7 +110,7 @@ export default function EmployeeForm() {
 
   return (
     <div>
-      <Button style={{cursor:"pointer"}} onClick={() => setDialogOpen(true)} className="mb-4">
+      <Button style={{ cursor: "pointer" }} onClick={() => setDialogOpen(true)} className="mb-4">
         Add Employee
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -128,13 +132,13 @@ export default function EmployeeForm() {
                     </SelectTrigger>
                     <SelectContent>
                       <div className="p-2">
-                    <Input
-                      placeholder="Search a Branch"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="mb-2"
-                    />
-                  </div>
+                        <Input
+                          placeholder="Search a Branch"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="mb-2"
+                        />
+                      </div>
                       {branch.map((resp) => (
                         <SelectItem key={resp?.branchCode ?? ""} value={resp?.branchCode ?? ""}>
                           {resp.name}
@@ -152,9 +156,11 @@ export default function EmployeeForm() {
                     </SelectTrigger>
                     <SelectContent>
                       {Object.values(UserRole).map((role) => (
-                        <SelectItem key={role} value={role}>
-                          {role.charAt(0).toUpperCase() + role.slice(1)}
-                        </SelectItem>
+                        (!['superadmin','client'].includes(role)) && (
+                          <SelectItem key={role} value={role}>
+                            {role.charAt(0).toUpperCase() + role.slice(1)}
+                          </SelectItem>
+                        )
                       ))}
                     </SelectContent>
                   </Select>
@@ -172,10 +178,10 @@ export default function EmployeeForm() {
             )}
 
             <div className="flex justify-end gap-2">
-              <Button style={{cursor:"pointer"}} type="button" variant="outline" onClick={handleDiagClick}>
+              <Button style={{ cursor: "pointer" }} type="button" variant="outline" onClick={handleDiagClick}>
                 Cancel
               </Button>
-              <Button style={{cursor:"pointer"}} type="submit">
+              <Button style={{ cursor: "pointer" }} type="submit">
                 Create Employee
               </Button>
             </div>
