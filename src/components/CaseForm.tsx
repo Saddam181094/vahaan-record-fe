@@ -24,6 +24,7 @@ import { getActiveFirm } from "@/service/firm.service";
 import { createCase } from "@/service/case.service";
 import { useToast } from "@/context/ToastContext";
 import { useNavigate } from "react-router-dom";
+import { DateInput } from "@/components/ui/date-input";
 
 // Interfaces
 export interface Case {
@@ -215,18 +216,17 @@ export default function CaseForm() {
   const onSubmit = (data: any) => {
     // handle form submission, e.g., send data to API
     setLoading(true);
-    createCase(data).then((resp)=>{
-      toast.showToast('Affirmation',resp?.message,'success')
+    createCase(data).then((resp) => {
+      toast.showToast('Affirmation', resp?.message, 'success')
     })
       .catch((err: any) => {
         toast.showToast('Error fetching:', err, 'error');
       })
       .finally(() => {
-        if(user?.role === "superadmin")
-        {
+        if (user?.role === "superadmin") {
           setLoading(false);
           reset();
-          navigate(-1);
+          navigate('/superadmin/cases');
         }
         setLoading(false);
         reset();
@@ -496,11 +496,9 @@ export default function CaseForm() {
                   >
                     Insurance Expiry
                   </Label>
-                  <Input
+                  <DateInput
                     id="insuranceExpiry"
-                    type="date"
-                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
-                      }`}
+                    error={!!fieldState.error}
                     {...field}
                   />
                   {fieldState.error && (
@@ -523,11 +521,9 @@ export default function CaseForm() {
                   >
                     PUC Expiry
                   </Label>
-                  <Input
+                  <DateInput
                     id="pucExpiry"
-                    type="date"
-                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
-                      }`}
+                    error={!!fieldState.error}
                     {...field}
                   />
                   {fieldState.error && (
@@ -550,11 +546,9 @@ export default function CaseForm() {
                   >
                     Fitness Expiry
                   </Label>
-                  <Input
+                  <DateInput
                     id="fitnessExpiry"
-                    type="date"
-                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
-                      }`}
+                    error={!!fieldState.error}
                     {...field}
                   />
                   {fieldState.error && (
@@ -577,11 +571,9 @@ export default function CaseForm() {
                   >
                     Tax Expiry
                   </Label>
-                  <Input
+                  <DateInput
                     id="taxExpiry"
-                    type="date"
-                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
-                      }`}
+                    error={!!fieldState.error}
                     {...field}
                   />
                   {fieldState.error && (
@@ -604,11 +596,9 @@ export default function CaseForm() {
                   >
                     Permit Expiry
                   </Label>
-                  <Input
+                  <DateInput
                     id="permitExpiry"
-                    type="date"
-                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
-                      }`}
+                    error={!!fieldState.error}
                     {...field}
                   />
                   {fieldState.error && (

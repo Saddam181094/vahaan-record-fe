@@ -21,6 +21,7 @@ export interface CaseDetails {
   CaseNo: string;
   vehicleDetail: vehicleDetail;
   createdBy: createdBy;
+  assignedTo?:AssignedTo;
   status: string;
 }
 export interface createdBy {
@@ -29,6 +30,13 @@ export interface createdBy {
   employeeCode: string;
 }
 
+export interface AssignedTo {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role : string;
+}
 export interface vehicleDetail {
   vehicleNo: string;
 }
@@ -126,6 +134,7 @@ export default function CaseDes() {
   const [clients, setClients] = useState<any[]>([]);
   const { setLoading } = useLoading();
   const toast = useToast();
+  // console.log(cases);
 
     useEffect(() => {
     setLoading(true);

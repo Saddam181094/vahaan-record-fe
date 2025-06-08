@@ -125,6 +125,7 @@ export default function CaseDescription() {
       // console.error(err);
       toast.showToast('Error in Updating:',err,'error');
     } finally {
+      navigate('/superadmin/cases')
       setLoading(false);
     }
   };

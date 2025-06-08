@@ -6,7 +6,6 @@ import { type CaseDetails } from "@/components/CaseDesAdmin";
 import type { Employee } from "@/components/EmployeeForm";
 import type { Firm } from "@/components/FirmForm";
 
-
 export const branchTableColumns: ColumnDef<Branch>[] = [
   {
     accessorKey: "name",
@@ -24,9 +23,9 @@ export const branchTableColumns: ColumnDef<Branch>[] = [
 
 export const caseTableColumns: ColumnDef<CaseDetails>[] = [
   {
-    accessorKey: "CaseNo",
-    header: "No.",
-    cell: ({ row }) => `#${row.original.CaseNo}`,
+    // accessorKey: "CaseNo",
+    header: "Case No.",
+    cell: ({ row }) => "#" + `${row.original.CaseNo}`,
   },
   {
     id: "vehicleNo",
@@ -38,12 +37,24 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
     header: "Created By",
     cell: ({ row }) => {
       const { firstName, lastName, employeeCode } = row.original.createdBy;
-      return employeeCode ? `${firstName} ${lastName} | ${employeeCode}` : `${firstName} ${lastName}`;
+      return employeeCode
+        ? `${firstName} ${lastName} | ${employeeCode}`
+        : `${firstName} ${lastName}`;
     },
   },
   {
     accessorKey: "status",
     header: "Status",
+  },
+  {
+    id: "assignedTo",
+    header: "Assigned To",
+    cell: ({ row }) => {
+      const assignedTo = row.original?.assignedTo;
+      return assignedTo
+        ? `${assignedTo.firstName} ${assignedTo.lastName}`
+        : "-";
+    },
   },
 ];
 
@@ -61,7 +72,7 @@ export const employeeCaseTableColumns: ColumnDef<CaseDetails>[] = [
   {
     accessorKey: "status",
     header: "Status",
-  }
+  },
 ];
 
 export const employeeTableColumns: ColumnDef<Employee>[] = [
@@ -91,6 +102,5 @@ export const firmTableColumns: ColumnDef<Firm>[] = [
   {
     accessorKey: "name",
     header: "Name",
-  }
+  },
 ];
-
