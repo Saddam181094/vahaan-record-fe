@@ -57,13 +57,14 @@ export async function login(
       password,
     });
     const responseData = response.data;
-
     const user: User = {
       id: responseData.data.user.id,
       name: responseData.data.user.name,
       isVerified: responseData.data.user.isVerified,
       email: responseData.data.user.email,
       role: responseData.data.user.role as UserRole,
+      branchCode: responseData.data.user.branchCode,
+      employeeCode:  responseData.data.user.employeeCode,
     };
 
     const token = responseData.data.access_token;

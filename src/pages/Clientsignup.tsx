@@ -68,11 +68,11 @@ export default function Signup () {
     // };
 
 return(
-  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100">
-    <Card className="w-full max-w-lg shadow-2xl rounded-2xl border-0 bg-white/80 backdrop-blur-md">
+  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 ">
+    <Card className="w-full max-w-[98%] shadow-2xl rounded-2xl border-0 bg-white/80 backdrop-blur-md">
       <CardHeader className="text-center">
         <CardTitle className="text-3xl font-bold text-purple-700 mb-2">Sign Up</CardTitle>
-        <p className="text-gray-500 text-base">Create your account to get started</p>
+        <p className="text-gray-500 text-base">Create your account for Vahaan Record</p>
       </CardHeader>
       <CardContent>
         <form className="space-y-5" onSubmit={handleSubmit(onsubmit)}>

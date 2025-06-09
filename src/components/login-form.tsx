@@ -48,7 +48,7 @@ export function LoginForm({
 };
 
   return (
-<div className={cn("flex flex-col gap-6 bg-[#f8f9fb] dark:bg-white", className)} {...props}>
+<div className={cn("flex flex-col gap-6 bg-[#f8f9fb] dark:bg-white my-5", className)} {...props}>
   <Card className="overflow-hidden mx-auto shadow-xl border-0 bg-white dark:bg-white">
     <CardContent className="grid md:grid-cols-2 sm:grid-cols-1 p-0">
       {/* Login Form Section */}
@@ -57,7 +57,7 @@ export function LoginForm({
           <div className="flex flex-col gap-7">
             <div className="text-center">
               <h1 className="text-3xl font-extrabold pb-2 text-[#584ff7]">Welcome</h1>
-              <p className="text-[#8a8fa3]">Login to your Adviz Portal account</p>
+              <p className="text-[#8a8fa3]">Login to your Vahaan Record Portal</p>
             </div>
 
             <div className="grid gap-3">
@@ -100,6 +100,7 @@ export function LoginForm({
             <ForgotPasswordModal open={showForgotModal} onOpenChange={setShowForgotModal} />
 
             <Button
+            style={{cursor:"pointer"}}
               type="submit"
               className="w-full bg-[#584ff7] hover:bg-[#3e36b0] text-white font-semibold rounded-lg py-2 transition-colors duration-150 shadow"
               disabled={loading}

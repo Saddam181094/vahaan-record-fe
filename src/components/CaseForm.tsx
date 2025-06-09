@@ -152,6 +152,7 @@ export default function CaseForm() {
   type BranchEmployee = {
     id: string;
     name: string;
+    employeeCode: string;
   };
 
   const { user } = useAuth();
@@ -161,6 +162,7 @@ export default function CaseForm() {
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
   const [search, setSearch] = useState("");
+  // const [done,setDone] = useState("");
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -168,9 +170,9 @@ export default function CaseForm() {
 
   useEffect(() => {
     setLoading(true);
+    // console.log(user);
     getActiveBranch()
       .then((resp) => {
-
         setBranches(resp?.data);
       })
       .catch((err: any) => {
@@ -183,21 +185,20 @@ export default function CaseForm() {
   }, [refreshFlag]);
 
   useEffect(() => {
-    setLoading(true);
+    if (!b) return; // guard clause
 
-    if (b !== "") {
-      getbranchEmployee(b)
-        .then((resp) => {
-          setbranchEmp(resp?.data);
-        })
-        .catch((err: any) => {
-          toast.showToast('Error fetching:', err, 'error');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [refreshFlag, b]);
+    setLoading(true);
+    getbranchEmployee(b)
+      .then((resp) => {
+        setbranchEmp(resp?.data);
+      })
+      .catch((err: any) => {
+        toast.showToast('Error fetching:', err, 'error');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [b]);
 
   useEffect(() => {
     setLoading(true);
@@ -211,6 +212,16 @@ export default function CaseForm() {
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
+
+  useEffect(() => {
+    if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
+      setValue("generalDetails.branchCodeId", user.branchCode);
+      setValue("generalDetails.employeeCodeId", user.employeeCode);
+      setB(user.branchCode); // ✅ only this triggers the next effect
+    }
+  }, [user, setValue]);
+
+
 
   // Add a submit handler function
   const onSubmit = (data: any) => {
@@ -261,88 +272,126 @@ export default function CaseForm() {
                 </div>
               )}
             />
-            <Controller
-              name="generalDetails.branchCodeId"
-              control={control}
-              rules={{ required: "Branch is required" }}
-              render={({ field, fieldState }) => (
-                <div className="flex flex-col w-full">
-                  <Select
-                    required
-                    value={field.value}
-                    onValueChange={(val) => {
-                      field.onChange(val);
-                      setB(val);
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select Branch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <div className="p-2">
+            {user?.role !== "superadmin" && (
+              <Controller
+                name="generalDetails.branchCodeId"
+                control={control}
+                rules={{ required: "Branch is required" }}
+                render={({ field, fieldState }) => (
+                  <div className="flex flex-col w-full">
+                    {user?.role === "employee" ? (
+                      <div className="flex flex-col w-full">
                         <Input
-                          placeholder="Search a Branch"
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          className="mb-2"
+                          readOnly
+                          value={
+                            branches.find((branch) => branch.branchCode === user.branchCode)?.name
+                          }
+                          className="bg-gray-100 cursor-not-allowed"
                         />
+                        {/* Hidden input, but do NOT spread `field`, only needed name + value */}
+                        <input type="hidden" name={field.name} value={user.branchCode} />
                       </div>
-                      {branches.map((branch) => (
-                        <SelectItem
-                          key={branch?.branchCode}
-                          value={branch?.branchCode || "default"}
+                    ) : (
+                      <div className="flex flex-col w-full">
+                        <Select
+                          required
+                          value={field.value}
+                          onValueChange={(val) => {
+                            field.onChange(val);
+                            setB(val);
+                          }}
                         >
-                          {branch.name} - {branch?.branchCode}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
-            <Controller
-              name="generalDetails.employeeCodeId"
-              control={control}
-              rules={{ required: "Employee is required" }}
-              render={({ field, fieldState }) => (
-                <div className="flex flex-col w-full">
-                  <Select
-                    required
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select Employee" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <div className="p-2">
-                        <Input
-                          placeholder="Search a Employee"
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          className="mb-2"
-                        />
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Branch" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <div className="p-2">
+                              <Input
+                                placeholder="Search a Branch"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="mb-2"
+                              />
+                            </div>
+                            {branches.map((branch) => (
+                              <SelectItem
+                                key={branch?.branchCode}
+                                value={branch?.branchCode || "default"}
+                              >
+                                {branch.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                      {branchEmp.map((emp) => (
-                        <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
-                          {emp?.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
+                    )}
+
+                    {fieldState.error && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />)}
+            {user?.role !== "superadmin" && (
+              <Controller
+                name="generalDetails.employeeCodeId"
+                control={control}
+                rules={{ required: "Employee is required" }}
+                render={({ field, fieldState }) => (
+                  <div className="flex flex-col w-full">
+                    {user?.role === "employee" ? (
+                      <>
+                        <Input
+                          readOnly
+                          value={
+                            branchEmp.find((emp) => emp.employeeCode === user.employeeCode)?.name
+                          }
+                          className="bg-gray-100 cursor-not-allowed"
+                        />
+                        {/* Hidden input to preserve value for submission */}
+                        <input type="hidden" name={field.name} value={user.employeeCode} />
+                      </>
+                    ) : (
+                      <>
+                        <Select
+                          required
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Employee" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <div className="p-2">
+                              <Input
+                                placeholder="Search an Employee"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="mb-2"
+                              />
+                            </div>
+                            {branchEmp.map((emp) => (
+                              <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
+                                {emp?.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {fieldState.error && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {fieldState.error.message}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              />
+            )}
+
+
             {/* Incentive Type - Only show for superadmin */}
             {user?.role === "superadmin" && (
               <Controller
