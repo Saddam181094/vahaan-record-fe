@@ -9,7 +9,7 @@ export default function GlobalLoader() {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-[9999] bg-black/30 flex items-center justify-center transition-opacity",
+        "fixed inset-0 z-[9999] bg-black/30 flex items-center justify-center min-h-[100vh] transition-opacity",
         isLoading ? "visible opacity-100" : "invisible opacity-0"
       )}
     >

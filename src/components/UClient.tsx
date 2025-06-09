@@ -192,7 +192,7 @@ export default function UClient() {
     ];
 
   return (
-    <div className="flex flex-col w-full bg-white px-6 py-4 min-h-screen">
+    <div className="flex flex-col w-full bg-white pr-6 py-4 min-h-[100vh]">
       <div className="flex gap-4 mb-4">
 <Button
   style={{

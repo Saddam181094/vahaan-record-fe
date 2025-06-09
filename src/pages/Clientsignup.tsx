@@ -68,7 +68,7 @@ export default function Signup () {
     // };
 
 return(
-  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 ">
+  <div className="flex flex-col items-center justify-center min-h-[100vh] bg-gradient-to-br from-blue-100 via-white to-purple-100 ">
     <Card className="w-full max-w-[98%] shadow-2xl rounded-2xl border-0 bg-white/80 backdrop-blur-md">
       <CardHeader className="text-center">
         <CardTitle className="text-3xl font-bold text-purple-700 mb-2">Sign Up</CardTitle>
