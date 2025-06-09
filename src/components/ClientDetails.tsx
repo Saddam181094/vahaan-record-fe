@@ -55,7 +55,7 @@ useEffect(() => {
     .then((res) => setCases(res?.data || []))
     .catch((err) => {
       console.error(err);
-      toast.showToast('Error:','No Cases assigned Yet', 'info');
+      toast.showToast('Warning:','No Cases assigned Yet', 'warning');
     })
     .finally(()=>setLoading(false));
 }, [client?.id]);

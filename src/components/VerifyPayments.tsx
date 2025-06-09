@@ -141,16 +141,16 @@ const paymentTableColumns = (
       cell: ({ row }) => (
         <div className="text-center space-x-2">
           <Button
-            variant="outline"
-            className="text-green-600 border-green-600 hover:bg-green-100"
+            variant="default"
+            style={{cursor:"pointer"}}
             title="Verify Payment"
             onClick={() => onVerify(row.original.id)}
           >
             ✓
           </Button>
           <Button
-            variant="outline"
-            className="text-red-600 border-red-600 hover:bg-red-100"
+            variant="destructive"
+            style={{cursor:"pointer"}}
             title="Reject Payment"
             onClick={() => onReject(row.original.id)}
           >
@@ -173,6 +173,13 @@ const verifyPayment = () => {
   const { setLoading } = useLoading();
   const [payments, setPayments] = useState<PaymentData[]>([]);
   const [selectedProofUrl, setSelectedProofUrl] = useState<string | null>(null);
+  const [actionDialog, setActionDialog] = useState<{
+  type: "verify" | "reject";
+  paymentId: string | null;
+}>({ type: "verify", paymentId: null });
+
+const [actionConfirmOpen, setActionConfirmOpen] = useState(false);
+
 
   useEffect(() => {
     setLoading(true);
@@ -188,26 +195,36 @@ const verifyPayment = () => {
 
 
   const onVerify = (paymentId: string) => {
-    setLoading(true);
-    verifyPayments(paymentId).then(() => {
-      toast.showToast('Affirmation', 'Verified the Payment', 'success');
-    }).catch((err) => {
-      toast.showToast('Error', err?.message, 'error');
-    }).finally(() => {
-      setLoading(false);
-    })
-  };
+  setActionDialog({ type: "verify", paymentId });
+  setActionConfirmOpen(true); // Open the confirmation dialog
+};
 
-  const onReject = (paymentId: string) => {
-    setLoading(true);
-    rejectPayment(paymentId).then(() => {
-      toast.showToast('Affirmation', 'Rejected the Payment', 'success');
-    }).catch((err) => {
-      toast.showToast('Error', err?.message, 'error');
-    }).finally(() => {
-      setLoading(false);
+const onReject = (paymentId: string) => {
+  setActionDialog({ type: "reject", paymentId });
+  setActionConfirmOpen(true); // Open the confirmation dialog
+};
+const handleConfirmAction = () => {
+  if (!actionDialog.paymentId) return;
+  setLoading(true);
+  const action = actionDialog.type === "verify" ? verifyPayments : rejectPayment;
+
+  action(actionDialog.paymentId)
+    .then(() => {
+      toast.showToast(
+        "Affirmation",
+        actionDialog.type === "verify" ? "Verified the Payment" : "Rejected the Payment",
+        "success"
+      );
     })
-  };
+    .catch((err) => {
+      toast.showToast("Error", err?.message, "error");
+    })
+    .finally(() => {
+      setLoading(false);
+      setActionConfirmOpen(false); // Close the dialog after action
+    });
+};
+
 
   const openProofDialog = (url: string) => {
     setSelectedProofUrl(url);
@@ -247,6 +264,32 @@ const verifyPayment = () => {
             </DialogContent>
           </Dialog>
         </div>
+
+  <Dialog open={actionConfirmOpen} onOpenChange={setActionConfirmOpen}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>
+        Confirm {actionDialog.type === "verify" ? "Verification" : "Rejection"}
+      </DialogTitle>
+      <DialogDescription>
+        Are you sure you want to {actionDialog.type === "verify" ? "verify" : "reject"} this payment?
+      </DialogDescription>
+    </DialogHeader>
+    <div className="flex justify-end gap-2 mt-4">
+      <Button style={{cursor:"pointer"}} variant="outline" onClick={() => setActionConfirmOpen(false)}>
+        Cancel
+      </Button>
+      <Button
+      style={{cursor:"pointer"}}
+        variant={actionDialog.type === "verify" ? "default" : "destructive"}
+        onClick={() => {handleConfirmAction}}
+      >
+        Confirm
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
+
         {/* Payment Table */}
         <div className="flex-grow overflow-auto">
 
@@ -265,7 +308,7 @@ const verifyPayment = () => {
                 />
               )}
               <div className="flex justify-end mt-4">
-                <Button variant="outline" onClick={closeProofDialog}>
+                <Button style={{cursor:"pointer"}} variant="outline" onClick={closeProofDialog}>
                   Close
                 </Button>
               </div>

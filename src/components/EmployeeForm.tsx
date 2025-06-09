@@ -27,7 +27,7 @@ import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { employeeTableColumns } from "@/lib/tables.data";
-import { useAuth } from "@/context/AuthContext";
+// import { useAuth } from "@/context/AuthContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Employee {
@@ -60,7 +60,7 @@ export default function EmployeeForm() {
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [search, setSearch] = useState("");
   const toast = useToast();
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   useEffect(() => {
     setLoading(true);
@@ -110,7 +110,7 @@ export default function EmployeeForm() {
 
   return (
     <div>
-      <Button style={{ cursor: "pointer" }} onClick={() => setDialogOpen(true)} className="mb-4">
+      <Button style={{ cursor: "pointer" }} onClick={() => setDialogOpen(true)} className="mb-4 bg-[#584FF7]">
         Add Employee
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

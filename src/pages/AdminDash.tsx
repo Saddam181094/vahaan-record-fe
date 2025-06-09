@@ -83,19 +83,31 @@ const AdminDashboard = () => {
         </div>
 
         {/* Expiry Stats Cards Section */}
-        <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-2">
-          <span className="col-span-full text-xl font-bold">Summary of the Cases</span>
-          {expiryStats.map((item) => (
-            <Card key={item.expiryType} className="shadow-md border border-muted">
-              <CardHeader className="text-lg font-semibold capitalize">
-                {item.expiryType.toLowerCase()}
-              </CardHeader>
-              <CardContent className="text-3xl font-bold text-primary">
-                {item.count}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+<div className="flex-grow">
+  <span className="col-span-full text-4xl font-bold mb-10 block">Summary of the Cases</span>
+  <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-2">
+    {expiryStats.map((item, index) => {
+      const isEven = index % 2 === 0;
+      const bgColor = isEven ? 'bg-[#584FF7]' : 'bg-[#1f2c4d]'; // Metallic tones
+      const textColor = 'text-white';
+
+      return (
+        <Card
+          key={item.expiryType}
+          className={`shadow-md border-0 ${bgColor} ${textColor} rounded-lg flex flex-col j`}
+        >
+          <CardHeader className="text-lg font-semibold">
+            {item.expiryType}
+          </CardHeader>
+          <CardContent className="text-4xl font-extrabold">
+            {item.count}
+          </CardContent>
+        </Card>
+      );
+    })}
+  </div>
+</div>
+
       </div>
     </SidebarProvider>
   );

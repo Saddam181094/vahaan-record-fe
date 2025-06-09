@@ -169,24 +169,55 @@ export default function UClient() {
        {
     id: "viewDetails",
     header: "View Details",
-    cell: ({ row }) => (
+    cell: ({ row }) => {
+      
+      if (currentTab === "verified")
+     { 
+      return (
       <Button
-      style={{cursor:"pointer"}}
-        variant="outline"
+      style={{cursor:"pointer",backgroundColor:"#584FF7",border: "1px solid #584FF7"}}
         size="sm"
+        color="white"
         onClick={() => navigate("/superadmin/clients/clientDetails", { state: { client: row.original } })}
       >
         View Details
       </Button>
-    ),
+    )
+    }
+    else{
+      <span>No Details Available Yet</span>
+    }
+    },
   },
     ];
 
   return (
     <div className="flex flex-col w-full bg-white px-6 py-4 min-h-screen">
       <div className="flex gap-4 mb-4">
-        <Button style={{ cursor: "pointer" }} onClick={() => setCurrentTab('unverified')} variant={currentTab === 'unverified' ? 'default' : 'outline'}>Unverified Clients</Button>
-        <Button style={{ cursor: "pointer" }} onClick={() => setCurrentTab('verified')} variant={currentTab === 'verified' ? 'default' : 'outline'}>Verified Clients</Button>
+<Button
+  style={{
+    cursor: "pointer",
+    backgroundColor: currentTab === "unverified" ? "#584FF7" : "#ffffff",
+    color: currentTab === "unverified" ? "#ffffff" : "#584FF7",
+    border: "1px solid #584FF7",
+  }}
+  onClick={() => setCurrentTab("unverified")}
+>
+  Unverified Clients
+</Button>
+
+<Button
+  style={{
+    cursor: "pointer",
+    backgroundColor: currentTab === "verified" ? "#584FF7" : "#ffffff",
+    color: currentTab === "verified" ? "#ffffff" : "#584FF7",
+    border: "1px solid #584FF7",
+  }}
+  onClick={() => setCurrentTab("verified")}
+>
+  Verified Clients
+</Button>
+
       </div>
 
       <DataTable columns={getClientColumns(currentTab, setSelectedClient, setDialogOpen)} data={clients} />
