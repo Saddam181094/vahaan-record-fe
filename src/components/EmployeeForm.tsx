@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -47,8 +47,7 @@ export default function EmployeeForm() {
     register,
     handleSubmit,
     reset,
-    setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<Employee>({ defaultValues: {} as Employee });
 
@@ -119,63 +118,89 @@ export default function EmployeeForm() {
             <DialogTitle>Add New Employee</DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
-            {["firstname", "lastname", "email", "role", "phone", "branchCode"].map((field) => (
-              <div key={field}>
-                {field === "branchCode" ? (
-                  <Select
-                    onValueChange={(value) => setValue("branchCode", value)}
-                    defaultValue={watch("branchCode")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a Branch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <div className="p-2">
-                        <Input
-                          placeholder="Search a Branch"
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          className="mb-2"
-                        />
-                      </div>
-                      {branch.map((resp) => (
-                        <SelectItem key={resp?.branchCode ?? ""} value={resp?.branchCode ?? ""}>
-                          {resp.name}
+<form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
+  {["firstname", "lastname", "email", "role", "phone", "branchCode"].map((field) => (
+    <div key={field}>
+      {field === "branchCode" ? (
+        <Controller
+          name="branchCode"
+          control={control}
+          rules={{ required: "Branch is required" }}
+          render={({ field: branchField, fieldState }) => (
+            <>
+              <Select
+                value={branchField.value}
+                onValueChange={(value) => branchField.onChange(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a Branch" />
+                </SelectTrigger>
+                <SelectContent>
+                  <div className="p-2">
+                    <Input
+                      placeholder="Search a Branch"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                    />
+                  </div>
+                  {branch.map((resp) => (
+                    <SelectItem key={resp?.branchCode ?? ""} value={resp?.branchCode ?? ""}>
+                      {resp.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {fieldState.error && (
+                <p className="text-red-600 text-sm">{fieldState.error.message}</p>
+              )}
+            </>
+          )}
+        />
+      ) : field === "role" ? (
+        <Controller
+          name="role"
+          control={control}
+          rules={{ required: "Role is required" }}
+          render={({ field: roleField, fieldState }) => (
+            <>
+              <Select
+                value={roleField.value}
+                onValueChange={(value) => roleField.onChange(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(UserRole).map(
+                    (role) =>
+                      !["superadmin", "client"].includes(role) && (
+                        <SelectItem key={role} value={role}>
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
                         </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : field === "role" ? (
-                  <Select
-                    onValueChange={(value) => setValue("role", value)}
-                    defaultValue={watch("role")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a Role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(UserRole).map((role) => (
-                        (!['superadmin','client'].includes(role)) && (
-                          <SelectItem key={role} value={role}>
-                            {role.charAt(0).toUpperCase() + role.slice(1)}
-                          </SelectItem>
-                        )
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Input
-                    {...register(field as keyof Employee, { required: true })}
-                    placeholder={field[0].toUpperCase() + field.slice(1)}
-                  />
-                )}
-                {errors[field as keyof Employee] && (
-                  <p className="text-red-600 text-sm">{field} is required</p>
-                )}
-              </div>
-            )
-            )}
+                      )
+                  )}
+                </SelectContent>
+              </Select>
+              {fieldState.error && (
+                <p className="text-red-600 text-sm">{fieldState.error.message}</p>
+              )}
+            </>
+          )}
+        />
+      ) : (
+        <>
+          <Input
+            {...register(field as keyof Employee, { required: true })}
+            placeholder={field[0].toUpperCase() + field.slice(1)}
+          />
+          {errors[field as keyof Employee] && (
+            <p className="text-red-600 text-sm">{field} is required</p>
+          )}
+        </>
+      )}
+    </div>
+  ))}
 
             <div className="flex justify-end gap-2">
               <Button style={{ cursor: "pointer" }} type="button" variant="outline" onClick={handleDiagClick}>

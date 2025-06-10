@@ -140,7 +140,7 @@ export default function CaseDescription() {
                 />
                 <RenderField
                     label="Application Date"
-                    value={gd?.applicationDate}
+                    value={formatDate(gd?.applicationDate ?? "")}
                 />
             </Section>
 

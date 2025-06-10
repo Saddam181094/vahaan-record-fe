@@ -30,7 +30,7 @@ import { AppSidebar } from "./app-sidebar";
 const paymentOptions = [
   { label: "Cash", value: "CASH" },
   { label: "UPI", value: "UPI" },
-  { label: "Cheque", value: "CHEQUE" },
+  { label: "Credit", value: "CREDIT" },
 ];
 
 type FormData = {
@@ -106,13 +106,17 @@ const Payment = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    setLoading(true);
-    const payload = {
-      caseAssignmentIds: caseIds,
-      amount: Number(totalAmount.toFixed(2)),
-      mode: data.paymentMethod,
-      paymentProofUrl: uploadedFileUrl || "",
-    };
+  setLoading(true);
+
+  const payload: any = {
+    caseAssignmentIds: caseIds,
+    amount: Number(totalAmount.toFixed(2)),
+    mode: data.paymentMethod,
+  };
+
+  if (data.paymentMethod !== "CREDIT") {
+    payload.paymentProofUrl = uploadedFileUrl || "";
+  }
 
     makePayment(payload)
       .then(() => {

@@ -44,12 +44,18 @@ export default function ClientCaseList() {
     setLoading(true);
     getClientCases()
       .then((resp) => {
-        setCases(resp?.data || []);
+        const caseData = resp?.data || [];
+      setCases(caseData);
+
+      if (caseData.length === 0) {
+        toast.showToast('Information:', 'No Cases to make Payment for', 'info');
+      }
       })
       .catch((err: any) => {
         toast.showToast("Error fetching cases", err.message || err, "error");
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false)});
   }, []);
 
   const toggleCard = (index: number) => {
@@ -118,6 +124,10 @@ const toggleSelect = (id: string) => {
 <div className="flex justify-between items-center mb-4">
   <h1 className="text-xl font-bold">Your Cases</h1>
   {!selectMode ? (
+
+    cases.length == 0 ? (<Button style={{cursor:"pointer"}} variant="default" disabled>
+      Make Payment
+    </Button>):
     <Button style={{cursor:"pointer"}} variant="default" onClick={() => setSelectMode(true)}>
       Make Payment
     </Button>
@@ -183,6 +193,7 @@ const toggleSelect = (id: string) => {
                 </div>
                 <div className="flex justify-end">
                   <Button
+                  style={{cursor:"pointer"}}
                     onClick={() =>
                       navigate(`/client/cases/${caseData.CaseNo}`, {
                         state: { id: caseData.id },

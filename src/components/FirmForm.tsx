@@ -68,11 +68,10 @@ const {setLoading} = useLoading();
   const handleToggle = async (Firm: string) => {
     setLoading(true);
     try {
-      console.log("Toggling Firm:", Firm);
       await toggleFirm(Firm);
-      console.log("Firm toggled successfully");
+      toast.showToast('Affirmation:','Firm Switched Successfully','info');
     } catch (err: any) {
-      console.error(err);
+      toast.showToast('Error:',err || 'Error occured in Flipping','error');
     } finally {
       setRefreshFlag((prev) => !prev); // Trigger a refresh
       setLoading(false);

@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -86,8 +86,7 @@ export default function AdminBranchForm() {
     register,
     handleSubmit,
     reset,
-    setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<Branch>({ defaultValues: {} as Branch });
 
@@ -178,40 +177,49 @@ export default function AdminBranchForm() {
                     placeholder={field[0].toUpperCase() + field.slice(1)}
                   />
                   {errors[field as keyof Branch] && (
-                    <p className="text-red-600 text-sm">{field} is required</p>
+                    <p className="text-red-600 text-sm">{field.toUpperCase()} is required</p>
                   )}
                 </div>
               )
             )}
-
-            <div>
-              <Select
-                value={watch("state")}
-                onValueChange={(value) => setValue("state", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a state" />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="p-2">
-                    <Input
-                      placeholder="Search a State"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="mb-2"
-                    />
-                  </div>
-                  {ind2.map((state) => (
-                    <SelectItem key={state} value={state}>
-                      {state}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.state && (
-                <p className="text-red-600 text-sm">State is required</p>
-              )}
+<div>
+  <Controller
+    name="state"
+    control={control}
+    rules={{ required: "State is required" }}
+    render={({ field, fieldState }) => (
+      <>
+        <Select
+          value={field.value}
+          onValueChange={(value) => field.onChange(value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a state" />
+          </SelectTrigger>
+          <SelectContent>
+            <div className="p-2">
+              <Input
+                placeholder="Search a State"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="mb-2"
+              />
             </div>
+            {ind2.map((state) => (
+              <SelectItem key={state} value={state}>
+                {state}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {fieldState.error && (
+          <p className="text-red-600 text-sm">{fieldState.error.message}</p>
+        )}
+      </>
+    )}
+  />
+</div>
+
 
             <div className="flex justify-end gap-2">
               <Button style={{cursor:"pointer"}} type="button" variant="outline" onClick={handleDiagClick}>
