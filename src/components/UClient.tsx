@@ -30,6 +30,17 @@ export interface NewClient {
   firmName: string;
   isVerified: boolean;
   creditLimit?: number;
+  users:{
+    id:string;
+    branchCode?:string;
+    employeeCode?:string;
+    firstName:string;
+    lastname:string;
+    email:string;
+    phoneNo:string;
+    role:string;
+    isVerified:string;
+  }[]
 }
 
 export default function UClient() {

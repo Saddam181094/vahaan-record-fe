@@ -168,6 +168,7 @@ export default function CaseForm() {
 
   const [refreshFlag] = useState(false);
 
+
   useEffect(() => {
     setLoading(true);
     // console.log(user);
@@ -222,6 +223,7 @@ export default function CaseForm() {
   }, [user, setValue]);
 
 
+  const filteredfirms = firms.filter(f => f.name.toLowerCase().includes(search.toLowerCase()));
 
   // Add a submit handler function
   const onSubmit = (data: any) => {
@@ -231,17 +233,25 @@ export default function CaseForm() {
       toast.showToast('Affirmation', resp?.message, 'success')
     })
       .catch((err: any) => {
-        toast.showToast('Error fetching:', err, 'error');
+        toast.showToast('Error:', err?.message, 'error');
       })
       .finally(() => {
         setLoading(false);
-          reset();
-          navigate(`/${user?.role}/cases`);
-          setLoading(false);
-          reset();
+        reset();
+        navigate(`/${user?.role}/cases`);
+        setLoading(false);
+        reset();
       });
   };
 
+
+function parseCamelCase(str:string) {
+  return str
+    // Insert space before uppercase letters that follow lowercase letters
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    // Convert entire string to uppercase
+    .toUpperCase();
+}
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8 p-6">
       {/* General Details */}
@@ -708,7 +718,7 @@ export default function CaseForm() {
                   <Select
                     required
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {setValue("transactionDetail.hptId", value); setSearch('')}}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select" />
@@ -720,15 +730,18 @@ export default function CaseForm() {
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
                           className="mb-2"
+                          onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
+                          onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                         />
                       </div>
-                      {firms.map((firm) => (
+                      {filteredfirms.map((firm) => (
                         <SelectItem key={firm.id} value={firm.id}>
                           {firm.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+
                   {fieldState.error && (
                     <p className="text-red-500 text-xs mt-1">
                       {fieldState.error.message}
@@ -846,7 +859,7 @@ export default function CaseForm() {
                     setValue(`transactionDetail.${key}` as any, val)
                   }
                 />
-                <Label>{key.toUpperCase()}</Label>
+                <Label>{parseCamelCase(key)}</Label>
               </div>
             ))}
 

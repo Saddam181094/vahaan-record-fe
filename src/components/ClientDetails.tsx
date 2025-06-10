@@ -46,13 +46,13 @@ export default function ClientDetails() {
     };
 
 useEffect(() => {
-  if (!client?.id) {
+  if (!client.users[0]?.id) {
     toast.showToast('Error:', 'No Valid Id Provided', 'error');
     return;
   }
   setLoading(true);
-  getCasebyClient(client.id)
-    .then((res) => setCases(res?.data || []))
+  getCasebyClient(client.users[0]?.id)
+    .then((res) => setCases(res?.data?.cases || []))
     .catch((err) => {
       console.error(err);
       toast.showToast('Warning:','No Cases assigned Yet', 'warning');
@@ -103,12 +103,13 @@ useEffect(() => {
           <p className="text-sm text-muted-foreground">
             {client.email} | {client.mobileNo}
           </p>
+          <p className="text-sm text-muted-foreground">
+            {client.firmName} {client.address1}, {client.address2}, {client.city} {client.state} {client.pincode}
+          </p>
         </CardHeader>
         <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-          <RenderField label="Firm" value={client.firmName} />
-          <RenderField label="Address" value={`${client.address1}, ${client.city}`} />
-          <RenderField label="Pincode" value={client.pincode} />
-          <RenderField label="Credit Limit" value={`₹${client?.creditLimit ?? "N/A"}`} />
+
+ 
         </CardContent>
       </Card>
 

@@ -185,7 +185,13 @@ const [actionConfirmOpen, setActionConfirmOpen] = useState(false);
     setLoading(true);
     getUnPayments()
       .then((resp) => {
-        setPayments(resp?.data);
+        const responseData = resp?.data
+        setPayments(responseData);
+
+        if(responseData.length == 0)
+        {
+          toast.showToast('Information','No new Payments to verify','info')
+        }
       })
       .catch((error) => {
         toast.showToast('Error:', error, 'error')
@@ -282,7 +288,7 @@ const handleConfirmAction = () => {
       <Button
       style={{cursor:"pointer"}}
         variant={actionDialog.type === "verify" ? "default" : "destructive"}
-        onClick={() => {handleConfirmAction}}
+        onClick={handleConfirmAction}
       >
         Confirm
       </Button>

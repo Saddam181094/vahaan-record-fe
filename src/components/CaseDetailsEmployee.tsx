@@ -52,6 +52,9 @@ export default function CaseDetails() {
     </Card>
   );
 
+  const formatDate = (dateStr: string | undefined) =>
+    dateStr?.split("T")[0] ?? null;
+
   const RenderField = ({
   label,
   value,
@@ -143,23 +146,23 @@ export default function CaseDetails() {
       <Section title="Expire Details">
         <RenderField
           label="Insurance Expiry"
-          value={expireDetail?.insuranceExpiry ?? null}
+          value={formatDate(expireDetail?.insuranceExpiry) ?? null}
         />
         <RenderField
           label="PUC Expiry"
-          value={expireDetail?.pucExpiry ?? null}
+          value={formatDate(expireDetail?.pucExpiry) ?? null}
         />
         <RenderField
           label="Fitness Expiry"
-          value={expireDetail?.fitnessExpiry ?? null}
+          value={formatDate(expireDetail?.fitnessExpiry) ?? null}
         />
         <RenderField
           label="Tax Expiry"
-          value={expireDetail?.taxExpiry ?? null}
+          value={formatDate(expireDetail?.taxExpiry) ?? null}
         />
         <RenderField
           label="Permit Expiry"
-          value={expireDetail?.permitExpiry ?? null}
+          value={formatDate(expireDetail?.permitExpiry) ?? null}
         />
       </Section>
 

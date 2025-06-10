@@ -115,7 +115,7 @@ export const updateCaseID = async (Id: any, data: Case) => {
 export const verifyPayments = async (Id: any) => {
   const config = getConfig();
 
-  return axios.patch(`${url}/case/verify-payment/${Id}`, config)
+  return axios.patch(`${url}/case/verify-payment/${Id}`,{}, config)
     .then((resp) => {
       return resp.data;
     })
@@ -128,7 +128,7 @@ export const verifyPayments = async (Id: any) => {
 export const rejectPayment = async (Id: any) => {
   const config = getConfig();
 
-  return axios.patch(`${url}/case/reject-payment/${Id}`, config)
+  return axios.patch(`${url}/case/reject-payment/${Id}`,{}, config)
     .then((resp) => {
       return resp.data;
     })
