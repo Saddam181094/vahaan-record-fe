@@ -60,13 +60,15 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
 
 export const employeeCaseTableColumns: ColumnDef<CaseDetails>[] = [
   {
-    accessorKey: "CaseNo",
+    // accessorKey: "CaseNo",
     header: "No.",
-    cell: ({ row }) => `# ${row.original.CaseNo}`,
+    accessorFn: (row) => `#${row?.CaseNo}`,
+    cell: ({ row }) => `#${row.original.CaseNo}`,
   },
   {
     id: "vehicleNo",
     header: "Vehicle No.",
+    accessorFn: (row) => row.vehicleDetail?.vehicleNo ?? "-",
     cell: ({ row }) => row.original.vehicleDetail?.vehicleNo ?? "-",
   },
   {

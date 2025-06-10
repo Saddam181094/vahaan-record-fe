@@ -21,7 +21,7 @@ export interface CaseDetails {
   CaseNo: string;
   vehicleDetail: vehicleDetail;
   createdBy: createdBy;
-  assignedTo?:AssignedTo;
+  assignedTo?: AssignedTo;
   status: string;
 }
 export interface createdBy {
@@ -35,17 +35,18 @@ export interface AssignedTo {
   firstName: string;
   lastName: string;
   email: string;
-  role : string;
+  role: string;
 }
 export interface vehicleDetail {
   vehicleNo: string;
 }
 
 
-function AssignDialog({ caseNo, caseId, disabled,clients }: { caseNo: string, caseId: string, disabled?: boolean,clients:any[] }) {
+function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: string, caseId: string, disabled?: boolean, clients: any[], setFlag: React.Dispatch<React.SetStateAction<boolean>> }) {
   const [open, setOpen] = useState(false);
   const { setLoading } = useLoading();
   // const [refreshFlag] = useState(false);
+
   const [search, setSearch] = useState("");
   const toast = useToast();
 
@@ -65,7 +66,10 @@ function AssignDialog({ caseNo, caseId, disabled,clients }: { caseNo: string, ca
       }).catch((err: any) => {
         toast.showToast('Error Assigning Case', err, 'error');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setFlag(f => !f);
+      });
     setOpen(false);
     reset();
   };
@@ -135,8 +139,9 @@ export default function CaseDes() {
   const { setLoading } = useLoading();
   const toast = useToast();
   // console.log(cases);
+  const [flag, setFlag] = useState(true);
 
-    useEffect(() => {
+  useEffect(() => {
     setLoading(true);
     getActiveClients()
       .then((resp) => {
@@ -156,22 +161,23 @@ export default function CaseDes() {
       .then((resp) => setCases(resp?.data))
       .catch((err: any) => console.error("Error fetching cases:", err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [flag]);
 
   return (
     <div>
       {
         <>
-        <Button
-        style={{cursor:"pointer"}}
-          variant="default"
-          className="mb-4"
-          onClick={() => {
-            setLoading(true);
-            navigate("/superadmin/cases/new")}}
-        >
-          Add New Case
-        </Button>
+          <Button
+            style={{ cursor: "pointer" }}
+            variant="default"
+            className="mb-4"
+            onClick={() => {
+              setLoading(true);
+              navigate("/superadmin/cases/new")
+            }}
+          >
+            Add New Case
+          </Button>
           <DataTable
             data={cases}
             columns={[...caseTableColumns,
@@ -212,6 +218,7 @@ export default function CaseDes() {
                           caseNo={caseData.CaseNo}
                           caseId={caseData.id}
                           clients={clients}
+                          setFlag={setFlag}
                         />
                       )}
                   </div>

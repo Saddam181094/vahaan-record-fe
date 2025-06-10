@@ -216,7 +216,7 @@ export default function CaseForm() {
   useEffect(() => {
     if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
       setValue("generalDetails.branchCodeId", user.branchCode);
-      setValue("generalDetails.employeeCodeId", user.employeeCode);
+      setValue("generalDetails.employeeCodeId", user.id);
       setB(user.branchCode); // ✅ only this triggers the next effect
     }
   }, [user, setValue]);
@@ -234,13 +234,11 @@ export default function CaseForm() {
         toast.showToast('Error fetching:', err, 'error');
       })
       .finally(() => {
-        if (user?.role === "superadmin") {
+        setLoading(false);
+          reset();
+          navigate(`/${user?.role}/cases`);
           setLoading(false);
           reset();
-          navigate('/superadmin/cases');
-        }
-        setLoading(false);
-        reset();
       });
   };
 
