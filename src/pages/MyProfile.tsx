@@ -18,7 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 import { changePassword } from "@/service/auth.service";
 import { useLoading } from "@/components/LoadingContext";
 import { useToast } from "@/context/ToastContext";
-import { Progress } from "@/components/ui/progress";
+// import { Progress } from "@/components/ui/progress";
 
 
 export interface PasswordFormInputs {
@@ -66,6 +66,16 @@ const MyProfile: React.FC = () => {
         })
     };
 
+    const utilized = Number(user?.utilizedCredit) || 0;
+    const limit = Number(user?.creditLimit) || 1; // avoid divide-by-zero
+
+    const percentage = (utilized / limit) * 100;
+
+    const getProgressColor = (value: number) => {
+        if (value >= 100) return "bg-red-500";
+        if (value >= 80) return "bg-orange-500";
+        return "bg-green-500";
+    };
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -217,16 +227,23 @@ const MyProfile: React.FC = () => {
                             <h2 className="text-xl font-semibold">Credit Summary</h2>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm font-medium">
-                                    <span>Utilized: ₹{utilizedLimit.toLocaleString()}</span>
-                                    <span>Total Limit: ₹{creditLimit.toLocaleString()}</span>
+                                    <span>Utilized: ₹{user.utilizedCredit}</span>
+                                    <span>Total Limit: ₹{user.creditLimit}</span>
                                 </div>
-                                <Progress
-                                    value={(utilizedLimit / creditLimit) * 100}
+                                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div
+                                        className={`h-full ${getProgressColor(percentage)} transition-all duration-500`}
+                                        style={{ width: `${percentage}%` }}
+                                    />
+                                </div>
+                                {/* <Progress
+                                    value={percentage}
                                     className="h-3"
                                     style={{
                                         backgroundColor: "#e5e7eb",
                                     }}
-                                />
+                                   
+                                /> */}
 
                                 <div
                                     className="mt-1 text-right text-xs text-muted-foreground"
