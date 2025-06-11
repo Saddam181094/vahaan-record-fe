@@ -87,6 +87,7 @@ export default function AdminBranchForm() {
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<Branch>({ defaultValues: {} as Branch });
 
@@ -109,7 +110,7 @@ export default function AdminBranchForm() {
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Some Error in Fetching Branches', err, 'error');
+        toast.showToast('Error:', err?.message || 'Some Error in Fetching Branches', 'error');
         // console.error("Error fetching branches:", err);
       })
       .finally(() => {
@@ -123,7 +124,7 @@ export default function AdminBranchForm() {
       const newBranch = await createBranch(data);
       setBranches([...branches, newBranch]);
       setDialogOpen(false);
-      toast.showToast('Affirmation','Branch Successfully created.','success');
+      toast.showToast('Success','Branch Successfully created.','success');
       setRefreshFlag((prev) => !prev);
       reset();
     } catch (err: any) {
@@ -143,9 +144,9 @@ export default function AdminBranchForm() {
     setLoading(true);
     try {
       await toggleBranch(branch);
-      toast.showToast('Affirmation','Branch Switched Succesfully', 'success');
+      toast.showToast('Success','Branch Switched Succesfully', 'success');
     } catch (err: any) {
-      toast.showToast('Some Error in Fetching Branches', err, 'error');
+      toast.showToast('Error:', err?.message || 'Some Error in switching Branches', 'error');
       // console.error(err);
     } finally {
       setRefreshFlag((prev) => !prev);
@@ -191,7 +192,11 @@ export default function AdminBranchForm() {
       <>
         <Select
           value={field.value}
-          onValueChange={(value) => field.onChange(value)}
+          onValueChange={(value) => {
+            setValue("state",value);
+            setSearch('');
+            }}
+          
         >
           <SelectTrigger>
             <SelectValue placeholder="Select a state" />
@@ -203,6 +208,8 @@ export default function AdminBranchForm() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="mb-2"
+                onClick={(e) => e.stopPropagation()} 
+                onKeyDown={(e) => e.stopPropagation()} 
               />
             </div>
             {ind2.map((state) => (

@@ -25,7 +25,7 @@ export default function CaseDetails() {
     getCaseID(id).then((resp) => {
       setCaseData(resp?.data);
     }).catch((err:any)=>{
-      toast.showToast('Error fetching:',err,'error');
+      toast.showToast('Error:',err?.message || 'Error during fetch caseData','error');
     })
     .finally(() => setLoading(false));
   }, [id, navigate]);

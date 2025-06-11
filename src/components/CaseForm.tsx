@@ -177,7 +177,7 @@ export default function CaseForm() {
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching:', err, 'error');
+        toast.showToast('Error:',err?.message || 'Error during fetch of Branches','error');
         // console.error("Error fetching branches:", err);
       })
       .finally(() => {
@@ -194,7 +194,7 @@ export default function CaseForm() {
         setbranchEmp(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching:', err, 'error');
+        toast.showToast('Error:',err?.message || 'Error during fetch of employee.','error');
       })
       .finally(() => {
         setLoading(false);
@@ -209,7 +209,7 @@ export default function CaseForm() {
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching:', err, 'error');
+       toast.showToast('Error:',err?.message || 'Error during fetch of Firms','error');
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
@@ -230,10 +230,10 @@ export default function CaseForm() {
     // handle form submission, e.g., send data to API
     setLoading(true);
     createCase(data).then((resp) => {
-      toast.showToast('Affirmation', resp?.message, 'success')
+      toast.showToast('Success', resp?.message, 'success')
     })
       .catch((err: any) => {
-        toast.showToast('Error:', err?.message, 'error');
+        toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');
       })
       .finally(() => {
         setLoading(false);
@@ -761,7 +761,7 @@ function parseCamelCase(str:string) {
                   <Select
                     required
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {setValue("transactionDetail.hpaId", value); setSearch('')}}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select" />
@@ -773,9 +773,11 @@ function parseCamelCase(str:string) {
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
                           className="mb-2"
+                          onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
+                          onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                         />
                       </div>
-                      {firms.map((firm) => (
+                      {filteredfirms.map((firm) => (
                         <SelectItem key={firm.id} value={firm.id}>
                           {firm.name}
                         </SelectItem>

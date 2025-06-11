@@ -65,6 +65,8 @@ export async function login(
       role: responseData.data.user.role as UserRole,
       branchCode: responseData.data.user.branchCode,
       employeeCode:  responseData.data.user.employeeCode,
+      creditLimit:responseData.data.user.creditLimit,
+      utilizedCredit:responseData.data.user.utilizedCredit
     };
 
     const token = responseData.data.access_token;

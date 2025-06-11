@@ -14,6 +14,7 @@ export const branchTableColumns: ColumnDef<Branch>[] = [
   {
     id: "address",
     header: "Address",
+    accessorFn: (row) => `${row.address1}, ${row.address2}, ${row.city}, ${row.state}, ${row.pincode}`,
     cell: ({ row }) => {
       const branch = row.original;
       return `${branch.address1}, ${branch.address2}, ${branch.city}, ${branch.state}, ${branch.pincode}`;
@@ -25,16 +26,19 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
   {
     // accessorKey: "CaseNo",
     header: "Case No.",
+    accessorFn: (row) => `#${row?.CaseNo}`,
     cell: ({ row }) => "#" + `${row.original.CaseNo}`,
   },
   {
     id: "vehicleNo",
     header: "Vehicle No.",
+    accessorFn: (row) =>`${row.vehicleDetail.vehicleNo}`,
     cell: ({ row }) => row.original.vehicleDetail?.vehicleNo ?? "-",
   },
   {
     id: "createdBy",
     header: "Created By",
+    accessorFn: (row)=>`${row.createdBy.firstName} ${row.createdBy.lastName}`,
     cell: ({ row }) => {
       const { firstName, lastName, employeeCode } = row.original.createdBy;
       return employeeCode
@@ -46,16 +50,21 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
     accessorKey: "status",
     header: "Status",
   },
-  {
-    id: "assignedTo",
-    header: "Assigned To",
-    cell: ({ row }) => {
-      const assignedTo = row.original?.assignedTo;
-      return assignedTo
-        ? `${assignedTo.firstName} ${assignedTo.lastName}`
-        : "-";
-    },
+{
+  id: "assignedTo",
+  header: "Assigned To",
+  accessorFn: (row) =>
+    row.assignedTo
+      ? `${row.assignedTo.firstName} ${row.assignedTo.lastName}`
+      : "-",
+  cell: ({ row }) => {
+    const assignedTo = row.original?.assignedTo;
+    return assignedTo
+      ? `${assignedTo.firstName} ${assignedTo.lastName}`
+      : "-";
   },
+}
+
 ];
 
 export const employeeCaseTableColumns: ColumnDef<CaseDetails>[] = [
@@ -81,6 +90,7 @@ export const employeeTableColumns: ColumnDef<Employee>[] = [
   {
     id: "name",
     header: "Name",
+    accessorFn: (row)=>`${row.firstName} ${row.lastName}`,
     cell: ({ row }) => {
       const { firstName, lastName } = row.original;
       return `${firstName} ${lastName}`;

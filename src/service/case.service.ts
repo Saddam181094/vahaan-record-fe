@@ -145,8 +145,6 @@ export const assignCase = async (caseId: string, clientId: string) => {
     caseId,
     clientId
   };
-
-  console.log(data);
   return axios.post(`${url}/case/assign`, data, config)
     .then((resp) => {
       return resp.data;

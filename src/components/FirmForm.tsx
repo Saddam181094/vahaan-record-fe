@@ -44,7 +44,8 @@ const {setLoading} = useLoading();
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-      toast.showToast('Error fetching:',err,'error');
+        toast.showToast('Error:',err?.message || 'Error during fetch of Firms','error');
+
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
@@ -56,10 +57,11 @@ const {setLoading} = useLoading();
       setfirms([...firms, newFirm]);
       setDialogOpen(false);
       setRefreshFlag((prev) => !prev); // Trigger a refresh
-      toast.showToast('Affirmation:','Successfully created a Firm','success');
+      toast.showToast('Success:','Successfully created a Firm','success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
-     toast.showToast('Error fetching:',err,'error');
+        toast.showToast('Error:',err?.message || 'Error during Creation of Firm','error');
+
     } finally {
       setLoading(false);
     }
@@ -69,7 +71,7 @@ const {setLoading} = useLoading();
     setLoading(true);
     try {
       await toggleFirm(Firm);
-      toast.showToast('Affirmation:','Firm Switched Successfully','info');
+      toast.showToast('Success:','Firm Switched Successfully','info');
     } catch (err: any) {
       toast.showToast('Error:',err || 'Error occured in Flipping','error');
     } finally {

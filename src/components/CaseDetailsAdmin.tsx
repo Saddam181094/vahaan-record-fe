@@ -80,7 +80,7 @@ export default function CaseDescription() {
         // console.log(resp?.data);
         setCaseData(resp?.data);
       }).catch((err: any) => {
-        toast.showToast('Error fetching:', err, 'error');
+        toast.showToast('Error:', err?.message || 'Some error Occured during fetch', 'error');
       })
       .finally(() => setLoading(false));
   }, [id, navigate]);
@@ -120,7 +120,7 @@ export default function CaseDescription() {
       };
 
       await updateCaseID(id, casePayload);
-      toast.showToast('Affirmation', 'Case Successfully Updated', 'success');
+      toast.showToast('Success', 'Case Successfully Updated', 'success');
       reset(casePayload);
       setEditMode(false);
     } catch (err: any) {

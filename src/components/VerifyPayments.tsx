@@ -59,6 +59,7 @@ const paymentTableColumns = (
     {
       // accessorKey: "paymentBy",
       header: "Paid By",
+      accessorFn:(row)=>`${row.paymentBy}`,
       cell: ({ row }) => {
         const { name, phoneNo, id } = row.original.paymentBy;
         return id ? `${name} | ${phoneNo}` : ``;
@@ -194,7 +195,7 @@ const [actionConfirmOpen, setActionConfirmOpen] = useState(false);
         }
       })
       .catch((error) => {
-        toast.showToast('Error:', error, 'error')
+        toast.showToast('Error:', error?.message || 'Error in fetching Unverified Payments', 'error')
       })
       .finally(() => setLoading(false));
   }, []);
@@ -217,13 +218,13 @@ const handleConfirmAction = () => {
   action(actionDialog.paymentId)
     .then(() => {
       toast.showToast(
-        "Affirmation",
+        "Success",
         actionDialog.type === "verify" ? "Verified the Payment" : "Rejected the Payment",
         "success"
       );
     })
     .catch((err) => {
-      toast.showToast("Error", err?.message, "error");
+      toast.showToast("Error", err?.message || 'Unable to proceed with the Process due to error', "error");
     })
     .finally(() => {
       setLoading(false);

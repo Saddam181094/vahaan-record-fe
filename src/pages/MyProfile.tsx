@@ -17,6 +17,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { changePassword } from "@/service/auth.service";
 import { useLoading } from "@/components/LoadingContext";
+import { useToast } from "@/context/ToastContext";
+import { Progress } from "@/components/ui/progress";
 
 
 export interface PasswordFormInputs {
@@ -28,7 +30,7 @@ export interface PasswordFormInputs {
 const MyProfile: React.FC = () => {
     const { setLoading } = useLoading();
     const [showDialog, setShowDialog] = useState(false);
-    const [message, setMessage] = useState("");
+    // const [message, setMessage] = useState("");
     const {
         register,
         handleSubmit,
@@ -38,22 +40,25 @@ const MyProfile: React.FC = () => {
     } = useForm<PasswordFormInputs>();
 
     const [open, setOpen] = useState(false);
-    const { logout,user } = useAuth();
+    const { logout, user } = useAuth();
     const handleLogout = () => {
         logout();
     };
+    const creditLimit = 100000;
+    const utilizedLimit = 45000;
 
+    const toast = useToast();
     const newPassword = watch("newPassword");
 
     const onSubmit = (data: PasswordFormInputs) => {
         if (data.newPassword !== data.confirmPassword) {
-            setMessage("New passwords do not match.");
+            toast.showToast('Error:', 'Passwords do not match!!', 'error')
             return;
         }
         setLoading(true);
         changePassword(data.currentPassword, data.newPassword).then(
             (resp) =>
-                console.log(resp?.data)
+                toast.showToast('Success', resp?.message, 'success')
         ).finally(() => {
             reset();
             setLoading(false);
@@ -79,7 +84,7 @@ const MyProfile: React.FC = () => {
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="flex justify-end gap-2">
-                                <Button style={{cursor:"pointer"}} variant="outline" onClick={() => setOpen(false)}>
+                                <Button style={{ cursor: "pointer" }} variant="outline" onClick={() => setOpen(false)}>
                                     Cancel
                                 </Button>
                                 <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={handleLogout}>
@@ -90,22 +95,27 @@ const MyProfile: React.FC = () => {
                     </Dialog>
                 </div>
 
-                <div className="flex justify-start w-full h-full">
+                <div className="flex flex-col md:flex-row justify-between w-full gap-6 px-4">
                     <div className="max-w-md w-full p-6">
                         <Card className="p-6 space-y-4">
                             <h2 className="text-xl font-semibold">My Profile</h2>
-                            <div>
-                                <p>
-                                    <strong>Name:</strong> {user?.name}
-                                </p>
-                                <p>
-                                    <strong>Email:</strong> {user?.email}
-                                </p>
-                                <p>
-                                    <strong>Email:</strong> {user?.role}
-                                </p>
+                            <div className="flex justify-center gap-10">
+                                <div className="flex justify-center">
+                                    <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                                    </div>
+                                </div>
+                                <div>
+                                    <p>
+                                        <strong>Name:</strong> {user?.name}
+                                    </p>
+                                    <p>
+                                        <strong>Email:</strong> {user?.email}
+                                    </p>
+                                    <p>
+                                        <strong>Role:</strong> {user?.role}
+                                    </p>
+                                </div>
                             </div>
-
                             <div className="mt-6 flex flex-col items-center">
                                 <Button
                                     style={{ cursor: "pointer" }}
@@ -200,12 +210,33 @@ const MyProfile: React.FC = () => {
                                     </DialogContent>
                                 </Dialog>
                             </div>
-
-                            {message && <p className="text-green-600 text-sm mt-4">{message}</p>}
                         </Card>
                     </div>
-                </div>
+                    {user?.role === 'client' ? (
+                        <Card className="p-6 space-y-4 sm:w-[80vw] mt-6 max-w-[90vw] md:w-[25vw] h-[40vh]">
+                            <h2 className="text-xl font-semibold">Credit Summary</h2>
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-sm font-medium">
+                                    <span>Utilized: ₹{utilizedLimit.toLocaleString()}</span>
+                                    <span>Total Limit: ₹{creditLimit.toLocaleString()}</span>
+                                </div>
+                                <Progress
+                                    value={(utilizedLimit / creditLimit) * 100}
+                                    className="h-3"
+                                    style={{
+                                        backgroundColor: "#e5e7eb",
+                                    }}
+                                />
 
+                                <div
+                                    className="mt-1 text-right text-xs text-muted-foreground"
+                                >
+                                    {(utilizedLimit / creditLimit * 100).toFixed(1)}% utilized
+                                </div>
+                            </div>
+                        </Card>)
+                        : null}
+                </div>
             </div>
         </SidebarProvider>
     );

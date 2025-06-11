@@ -47,6 +47,7 @@ export default function EmployeeForm() {
     register,
     handleSubmit,
     reset,
+    setValue,
     control,
     formState: { errors },
   } = useForm<Employee>({ defaultValues: {} as Employee });
@@ -61,6 +62,10 @@ export default function EmployeeForm() {
   const toast = useToast();
   // const { user } = useAuth();
 
+  const filteredBranch = branch.filter((temp)=>{
+    return temp.name.toLowerCase().includes(search.toLowerCase())
+  })
+
   useEffect(() => {
     setLoading(true);
     getEmployee()
@@ -68,7 +73,7 @@ export default function EmployeeForm() {
         setEmployee2(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching:', err, 'error');
+       toast.showToast('Error:',err?.message || 'Error during fetch of Employees','error');
       }).finally(() => setLoading(false));
 
   }, [refreshFlag]);
@@ -80,7 +85,7 @@ export default function EmployeeForm() {
         setBranch(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching:', err, 'error');
+        toast.showToast('Error:',err?.message || 'Error during fetch of Branch','error');
       })
       .finally(() => setLoading(false));
   }, [refreshFlag])
@@ -92,10 +97,10 @@ export default function EmployeeForm() {
       setEmployee([...Employee, newEmployee]);
       setDialogOpen(false);
       setRefreshFlag((prev) => !prev); // Trigger a refresh
-      toast.showToast('Affirmation', 'Created a New Employee', 'success');
+      toast.showToast('Success', 'Created a New Employee', 'success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
-      toast.showToast('Error fetching:', err, 'error');
+        toast.showToast('Error:',err?.message || 'Error occured while making a new Employee','error');
     } finally {
       setLoading(false);
     }
@@ -109,7 +114,7 @@ export default function EmployeeForm() {
 
   return (
     <div>
-      <Button style={{ cursor: "pointer" }} onClick={() => setDialogOpen(true)} className="mb-4 bg-[#584FF7]">
+      <Button style={{ cursor: "pointer" }} onClick={() => setDialogOpen(true)} className="mb-4 bg-black">
         Add Employee
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -130,7 +135,7 @@ export default function EmployeeForm() {
             <>
               <Select
                 value={branchField.value}
-                onValueChange={(value) => branchField.onChange(value)}
+                onValueChange={(value) => {setValue("branchCode",value); setSearch('')}}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a Branch" />
@@ -142,9 +147,11 @@ export default function EmployeeForm() {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       className="mb-2"
+                      onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
+                      onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                     />
                   </div>
-                  {branch.map((resp) => (
+                  {filteredBranch.map((resp) => (
                     <SelectItem key={resp?.branchCode ?? ""} value={resp?.branchCode ?? ""}>
                       {resp.name}
                     </SelectItem>

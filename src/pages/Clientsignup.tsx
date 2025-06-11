@@ -52,16 +52,20 @@ export default function Signup () {
         try {
           const newClient = await createClient(data);
           setClient([...client, newClient]);
-          toast.showToast('Affirmation:','ID created Successfully','success')
+          toast.showToast('Success:','ID created Successfully','success')
           reset();
         } catch (err: any) {
           // showerror(err);
-         toast.showToast('Error:',err,'warning');
+         toast.showToast('Error:',err?.message || 'Unable to Sign Up due to errors','warning');
           reset();
         } finally {
           setLoading(false);
         }
       };
+
+        const ind2 = indianStates.filter((hostel) =>
+              hostel.toLowerCase().includes(search.toLowerCase())
+          );
 
     // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     //     setForm({ ...form, [e.target.name]: e.target.value });
@@ -185,7 +189,7 @@ return(
             <div className="flex-1">
               <Label htmlFor="state" className="text-gray-700 font-medium">State</Label>
               <Select
-                onValueChange={(value) => setValue("state", value)}
+                onValueChange={(value) => {setValue("state", value);setSearch('')}}
                 defaultValue={watch("state")}
               >
                 <SelectTrigger className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400">
@@ -198,9 +202,11 @@ return(
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       className="mb-2"
+                      onClick={(e) => e.stopPropagation()} 
+                      onKeyDown={(e) => e.stopPropagation()} 
                     />
                   </div>
-                  {indianStates.map((state) => (
+                  {ind2.map((state) => (
                     <SelectItem key={state} value={state}>
                       {state}
                     </SelectItem>

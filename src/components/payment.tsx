@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,6 +65,7 @@ const Payment = () => {
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const { setLoading } = useLoading();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (amounts && amounts.length > 0) {
@@ -126,6 +127,7 @@ const Payment = () => {
         toast.showToast("Payment failed", error.message || "Something went wrong", "error");
       })
       .finally(() => {
+        navigate(-1);
         setLoading(false);
       });
   };

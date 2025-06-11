@@ -52,7 +52,7 @@ export default function ClientCaseList() {
       }
       })
       .catch((err: any) => {
-        toast.showToast("Error fetching cases", err.message || err, "error");
+        toast.showToast("Error:", err?.message || 'Error fetching your Cases', "error");
       })
       .finally(() => {
         setLoading(false)});
@@ -106,7 +106,7 @@ const toggleSelect = (id: string) => {
       });
     }, 1500); 
     } catch (err: any) {
-      toast.showToast("Payment failed", err.message || err, "error");
+      toast.showToast("Error:", err?.message || 'Payment failed due to an error', "error");
     } finally {
       setLoading(false);
     }

@@ -28,7 +28,8 @@ export function ForgotPasswordModal({open, onOpenChange}: ForgotPasswordModalPro
       const res = await forgotPassword(email)
       setMessage(res)
     } catch (err: any) {
-      toast.showToast('Error fetching:',err,'error');
+        toast.showToast('Error:',err?.message || 'Error during process Occured','error');
+
       // setError(err.message)
     } finally {
     toast.showToast('Submitting forgot password for:',email,'info');

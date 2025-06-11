@@ -64,7 +64,7 @@ export default function CaseDescription() {
                 setCaseData(resp?.data);
             })
             .catch((err:any)=>{
-                toast.showToast('Error fetching:',err,'error');
+                toast.showToast('Error:',err?.message || 'Error during fetch','error');
             })
             .finally(() => setLoading(false));
     }, [id, navigate]);

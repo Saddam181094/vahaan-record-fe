@@ -33,7 +33,7 @@ const AdminDashboard = () => {
         setExpiryStats(resp?.data?.data)
       })
       .catch((err)=>{
-        toast.showToast('Error:',err?.message,'error')
+        toast.showToast('Error:',err?.message || 'Summary was not fetched due to some error','error')
       }).finally(()=>{
         setLoading(false);
       })

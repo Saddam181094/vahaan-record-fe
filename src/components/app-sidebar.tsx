@@ -110,7 +110,7 @@ export function AppSidebar() {
                       {item.submenu.map((sub) => (
                         <SidebarMenuItem
                           key={sub.title}
-                          className={sub.url === currentPath ? "bg-[#584FF7] text-white rounded-lg hover:bg-[#584FF7]" : "hover:bg-[#584FF7] hover:text-white rounded-lg"}
+                          className={sub.url === currentPath ? "bg-black text-white rounded-lg hover:bg-black" : "hover:bg-black hover:text-white rounded-lg"}
                         >
                           <SidebarMenuButton asChild>
                             <Link to={sub.url ?? ""}>
@@ -125,7 +125,7 @@ export function AppSidebar() {
                 ) : (
                   <SidebarMenuItem
                     key={item.title}
-                    className={item.url === currentPath ? "bg-[#584FF7] text-white rounded-lg hover:bg-black" : "hover:bg-[#584FF7] hover:text-white rounded-lg"}
+                    className={item.url === currentPath ? "bg-black text-white rounded-lg hover:bg-black" : "hover:bg-black hover:text-white rounded-lg"}
                   >
                     <SidebarMenuButton asChild>
                       <Link to={item.url ?? ""}>

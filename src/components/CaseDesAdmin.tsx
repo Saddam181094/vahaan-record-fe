@@ -46,10 +46,12 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
   const [open, setOpen] = useState(false);
   const { setLoading } = useLoading();
   // const [refreshFlag] = useState(false);
-
   const [search, setSearch] = useState("");
   const toast = useToast();
 
+    const filteredClients = clients.filter((client) =>
+          (`${client.firstName} ${client.lastname}`.toLowerCase().includes(search.toLowerCase()))
+      );
   const { register, handleSubmit, setValue, watch, reset } = useForm<{ clientId: string }>({
     defaultValues: { clientId: "" },
   });
@@ -62,9 +64,9 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
     assignCase(caseId, data.clientId).
       then(() => {
         // console.log(resp?.data);
-        toast.showToast('Affirmation', 'Case Assigned Successfully.', 'success');
+        toast.showToast('Success', 'Case Assigned Successfully.', 'success');
       }).catch((err: any) => {
-        toast.showToast('Error Assigning Case', err, 'error');
+        toast.showToast('Error:', err?.message || 'Error Assigning Case', 'error');
       })
       .finally(() => {
         setLoading(false);
@@ -96,7 +98,7 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
             <Label htmlFor="clients" className="font-bold">Dealers</Label>
             <hr />
             <Select
-              onValueChange={(value) => setValue("clientId", value)}
+              onValueChange={(value) => {setValue("clientId", value); setSearch('');}}
               value={selectedClient}
             >
               <SelectTrigger id="clients" className="w-full">
@@ -109,9 +111,11 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="mb-2"
+                    onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
+                    onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                   />
                 </div>
-                {clients.map((client: any) => (
+                {filteredClients.map((client: any) => (
                   <SelectItem key={client.id} value={client.id} className="w-full">
                     {client.firstName} {client.lastName}
                   </SelectItem>
@@ -141,6 +145,9 @@ export default function CaseDes() {
   // console.log(cases);
   const [flag, setFlag] = useState(true);
 
+
+  
+
   useEffect(() => {
     setLoading(true);
     getActiveClients()
@@ -148,7 +155,7 @@ export default function CaseDes() {
         setClients(resp?.data || []);
       })
       .catch((err: any) => {
-        toast.showToast('Error fetching firms', err, 'error');
+        toast.showToast('Error:', err?.message || 'Error fetching firms', 'error');
         // console.error("Error fetching firms:", err);
         setClients([]);
       })

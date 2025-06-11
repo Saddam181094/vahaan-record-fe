@@ -54,8 +54,7 @@ useEffect(() => {
   getCasebyClient(client.users[0]?.id)
     .then((res) => setCases(res?.data?.cases || []))
     .catch((err) => {
-      console.error(err);
-      toast.showToast('Warning:','No Cases assigned Yet', 'warning');
+      toast.showToast('Warning:',err?.message || 'No Cases assigned Yet', 'warning');
     })
     .finally(()=>setLoading(false));
 }, [client?.id]);
@@ -71,6 +70,14 @@ useEffect(() => {
         <SidebarTrigger />
         <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
           <div className="flex justify-end mb-4">
+                        <Button
+      style={{cursor:"pointer"}}
+      variant="default"
+        className="sticky cursor-pointer z-50 mr-5 px-4 py-2 rounded bg-primary text-white hover:bg-primary/90 transition"
+        onClick={() => navigate(-1)}
+      >
+        ← Back
+      </Button>
             <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
               Logout
             </Button>

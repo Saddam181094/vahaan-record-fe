@@ -20,6 +20,8 @@ export interface User {
   isVerified: boolean;
   branchCode?: string;
   employeeCode?: string;
+  utilizedCredit?:string;
+  creditLimit?:string
 }
 
 interface AuthContextProps {
@@ -58,7 +60,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(user);
     setToken(token);
     auth.storeUserAndToken(user, token);
-    console.log()
 
       if (!user?.role) {
     console.error("User role is missing. Cannot navigate.");

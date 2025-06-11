@@ -23,7 +23,7 @@ export default function CaseDes() {
       .then((resp) => {
         setCases(resp?.data)})
       .catch((err: any) => {
-        toast.showToast('Error fetching cases:',err,'error');
+        toast.showToast('Error:',err?.message || 'Error fetching cases:','error');
         // console.error("Error fetching cases:", err)
         })
       .finally(() => setLoading(false));

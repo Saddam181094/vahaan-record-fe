@@ -69,7 +69,7 @@ export default function UClient() {
     }).
 
       catch((err: any) => {
-        toast.showToast("Error in Rejection:", err, "error");
+        toast.showToast("Error:", err?.message || 'Rejection was not done due to errors', "error");
       })
       .finally(() => {
         setLoading(false);
@@ -89,7 +89,8 @@ export default function UClient() {
         setVerifiedClients(verified);
         setUnverifiedClients(unverified);
       })
-      .catch((err: any) => toast.showToast('Error in Fetching:', err, 'error'))
+      .catch((err: any) =>         toast.showToast('Error:',err?.message || 'Error during fetch of Clients','error')
+)
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
@@ -105,7 +106,7 @@ export default function UClient() {
       setDialogOpen(false);
       setSelectedClient(null);
       setRefreshFlag((prev) => !prev);
-      toast.showToast('Affirmation:', 'Client Verified', 'success');
+      toast.showToast('Success:', 'Client Verified', 'success');
       setLoading(false);
     }
   };
@@ -186,7 +187,8 @@ export default function UClient() {
      { 
       return (
       <Button
-      style={{cursor:"pointer",backgroundColor:"#584FF7",border: "1px solid #584FF7"}}
+      style={{cursor:"pointer"}}
+      variant="default"
         size="sm"
         color="white"
         onClick={() => navigate("/superadmin/clients/clientDetails", { state: { client: row.original } })}
@@ -206,28 +208,21 @@ export default function UClient() {
     <div className="flex flex-col w-full bg-white pr-6 py-4 min-h-[100vh]">
       <div className="flex gap-4 mb-4">
 <Button
-  style={{
-    cursor: "pointer",
-    backgroundColor: currentTab === "unverified" ? "#584FF7" : "#ffffff",
-    color: currentTab === "unverified" ? "#ffffff" : "#584FF7",
-    border: "1px solid #584FF7",
-  }}
+  style={{ cursor: "pointer" }}
+  variant={currentTab === "unverified" ? "default" : "outline"}
   onClick={() => setCurrentTab("unverified")}
 >
   Unverified Clients
 </Button>
 
 <Button
-  style={{
-    cursor: "pointer",
-    backgroundColor: currentTab === "verified" ? "#584FF7" : "#ffffff",
-    color: currentTab === "verified" ? "#ffffff" : "#584FF7",
-    border: "1px solid #584FF7",
-  }}
+  style={{ cursor: "pointer" }}
+  variant={currentTab === "verified" ? "default" : "outline"}
   onClick={() => setCurrentTab("verified")}
 >
   Verified Clients
 </Button>
+
 
       </div>
 
