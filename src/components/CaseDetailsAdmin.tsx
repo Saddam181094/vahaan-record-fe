@@ -127,7 +127,7 @@ export default function CaseDescription() {
       // console.error(err);
       toast.showToast('Error in Updating:', err, 'error');
     } finally {
-      navigate(-1)
+      // navigate(-1)
       setLoading(false);
     }
   };
