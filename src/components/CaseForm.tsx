@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { indianStates } from "@/components/Branchform";
 import {
   Select,
   SelectTrigger,
@@ -32,6 +33,7 @@ export interface Case {
   vehicleDetail: VehicleDetail;
   expireDetail: ExpireDetail;
   transactionDetail: TransactionDetail;
+  ownerDetails: ownerDetails;
   expenseDetail: ExpenseDetail;
 }
 
@@ -39,7 +41,8 @@ export interface GeneralDetails {
   firmName: string;
   branchCodeId: string;
   employeeCodeId: string;
-  incentiveType: number;
+  incentiveAmount: string;
+  appointmentDate?: string;
 }
 
 export interface VehicleDetail {
@@ -48,6 +51,7 @@ export interface VehicleDetail {
   toRTO: string;
   chassisNo: string;
   engineNo: string;
+  rmaVehicleNo?: string;
 }
 
 export interface ExpireDetail {
@@ -73,11 +77,24 @@ export interface TransactionDetail {
   remarks: string;
 }
 
+export interface ownerDetails {
+  sellerName: string;
+  sellerAadharNo: string;
+  sellerAddress: string;
+  sellerState: string;
+  sellerPhoneNo: string;
+  buyerName: string;
+  buyerAadharNo: string;
+  buyerAddress: string;
+  buyerState: string;
+  buyerPhoneNo: string;
+}
+
 export interface ExpenseDetail {
-  pucCharges: string;
-  insuranceCharges: string;
-  otherCharges: string;
-  adminCharges: string;
+  pucCharges: number | string;
+  insuranceCharges: number | string;
+  otherCharges: number | string;
+  adminCharges: number | string;
 }
 
 export const TransactionTo = {
@@ -108,10 +125,12 @@ export default function CaseForm() {
         firmName: "",
         branchCodeId: "",
         employeeCodeId: "",
-        incentiveType: 1,
+        incentiveAmount: "",
+        appointmentDate: "",
       },
       vehicleDetail: {
         vehicleNo: "",
+        rmaVehicleNo: "",
         fromRTO: "",
         toRTO: "",
         chassisNo: "",
@@ -137,6 +156,18 @@ export default function CaseForm() {
         addressChange: false,
         drc: false,
         remarks: "",
+      },
+      ownerDetails: {
+        sellerName: "",
+        sellerAadharNo: "",
+        sellerAddress: "",
+        sellerState: "",
+        sellerPhoneNo: "",
+        buyerName: "",
+        buyerAadharNo: "",
+        buyerAddress: "",
+        buyerState: "",
+        buyerPhoneNo: "",
       },
       expenseDetail: {
         pucCharges: "",
@@ -168,6 +199,19 @@ export default function CaseForm() {
 
   const [refreshFlag] = useState(false);
 
+  const [searchSellerState, setSearchSellerState] = useState("");
+  const [searchBuyerState, setSearchBuyerState] = useState("");
+
+
+
+  const ind2 = indianStates.filter((hostel) =>
+    hostel.toLowerCase().includes((searchSellerState).toLowerCase())
+  );
+  const ind3 = indianStates.filter((hostel) =>
+    hostel.toLowerCase().includes((searchBuyerState).toLowerCase())
+  );
+
+
 
   useEffect(() => {
     setLoading(true);
@@ -177,7 +221,7 @@ export default function CaseForm() {
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error:',err?.message || 'Error during fetch of Branches','error');
+        toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
         // console.error("Error fetching branches:", err);
       })
       .finally(() => {
@@ -194,7 +238,7 @@ export default function CaseForm() {
         setbranchEmp(resp?.data);
       })
       .catch((err: any) => {
-        toast.showToast('Error:',err?.message || 'Error during fetch of employee.','error');
+        toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
       })
       .finally(() => {
         setLoading(false);
@@ -209,7 +253,7 @@ export default function CaseForm() {
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-       toast.showToast('Error:',err?.message || 'Error during fetch of Firms','error');
+        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
@@ -222,36 +266,38 @@ export default function CaseForm() {
     }
   }, [user, setValue]);
 
+  const [searchHPT, setSearchHPT] = useState("");
+  const [searchHPA, setSearchHPA] = useState("");
 
-  const filteredfirms = firms.filter(f => f.name.toLowerCase().includes(search.toLowerCase()));
+
+  const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
+
 
   // Add a submit handler function
   const onSubmit = (data: any) => {
-    // handle form submission, e.g., send data to API
     setLoading(true);
-    createCase(data).then((resp) => {
-      toast.showToast('Success', resp?.message, 'success')
-    })
+    createCase(data)
+      .then((resp) => {
+        toast.showToast('Success', resp?.message, 'success');
+        reset();
+        navigate(`/${user?.role}/cases`);
+      })
       .catch((err: any) => {
         toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');
       })
       .finally(() => {
         setLoading(false);
-        reset();
-        navigate(`/${user?.role}/cases`);
-        setLoading(false);
-        reset();
       });
   };
 
 
-function parseCamelCase(str:string) {
-  return str
-    // Insert space before uppercase letters that follow lowercase letters
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    // Convert entire string to uppercase
-    .toUpperCase();
-}
+  function parseCamelCase(str: string) {
+    return str
+      // Insert space before uppercase letters that follow lowercase letters
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      // Convert entire string to uppercase
+      .toUpperCase();
+  }
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8 p-6">
       {/* General Details */}
@@ -266,6 +312,9 @@ function parseCamelCase(str:string) {
               rules={{ required: "Firm Name is required" }}
               render={({ field, fieldState }) => (
                 <div className="flex flex-col w-full">
+                  <Label htmlFor="firmName" className="pb-2">
+                    Firm Name
+                  </Label>
                   <Input
                     required
                     placeholder="Firm Name"
@@ -403,30 +452,45 @@ function parseCamelCase(str:string) {
             {/* Incentive Type - Only show for superadmin */}
             {user?.role === "superadmin" && (
               <Controller
-                name="generalDetails.incentiveType"
+                name="generalDetails.incentiveAmount"
                 control={control}
-                render={({ field }) => (
+                rules={{ required: "Incentive Amount Can't be empty" }}
+                render={({ field, fieldState }) => (
                   <div className="flex flex-col w-full">
-                    <Select
-                      value={String(field.value)}
-                      onValueChange={(val) => field.onChange(Number(val))}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select Incentive Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">Type 1</SelectItem>
-                        <SelectItem value="2">Type 2</SelectItem>
-                        <SelectItem value="3">Type 3</SelectItem>
-                        <SelectItem value="4">Type 4</SelectItem>
-                        <SelectItem value="5">Type 5</SelectItem>
-                        <SelectItem value="6">Type 6</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="incentiveAmount" className="pb-2">
+                      Incentive Amount
+                    </Label>
+                    <Input
+                      required
+                      placeholder="Amount"
+                      className="w-full"
+                      {...field}
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldState.error.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />
             )}
+            <Controller
+              name="generalDetails.appointmentDate"
+              control={control}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="appointmentDate" className="pb-1">
+                    Appointment Date
+                  </Label>
+                  <DateInput
+                    id="appointmentDate"
+                    error={!!fieldState.error}
+                    {...field}
+                  />
+                </div>
+              )}
+            />
           </div>
         </CardContent>
       </Card>
@@ -457,6 +521,24 @@ function parseCamelCase(str:string) {
                       {errors.vehicleDetail.vehicleNo?.message}
                     </p>
                   )}
+                </div>
+              )}
+            />
+            <Controller
+              name="vehicleDetail.rmaVehicleNo"
+              control={control}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col flex-grow max-w-xs">
+                  <Label htmlFor="rmaVehicleNo" className="pb-2">
+                    RMA Vehicle No
+                  </Label>
+                  <Input
+                    id="rmaVehicleNo"
+                    placeholder="RMA Vehicle No"
+                    className={`input input-bordered ${fieldState.error ? "input-error" : ""
+                      }`}
+                    {...field}
+                  />
                 </div>
               )}
             />
@@ -684,7 +766,7 @@ function parseCamelCase(str:string) {
                 <div className="flex flex-col gap-1">
                   <Label className="py-2">To</Label>
                   <Select
-                    required
+                    {...field}
                     value={field.value}
                     onValueChange={(val) => field.onChange(val as TransactionTo)}
                   >
@@ -716,9 +798,9 @@ function parseCamelCase(str:string) {
                 <div className="flex flex-col gap-1">
                   <Label className="py-2">HPT ID</Label>
                   <Select
-                    required
+                    {...field}
                     value={field.value}
-                    onValueChange={(value) => {setValue("transactionDetail.hptId", value); setSearch('')}}
+                    onValueChange={(value) => { field.onChange(value); setSearchHPT('') }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select" />
@@ -727,8 +809,8 @@ function parseCamelCase(str:string) {
                       <div className="p-2">
                         <Input
                           placeholder="Search a Firm"
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
+                          value={searchHPT}
+                          onChange={(e) => setSearchHPT(e.target.value)}
                           className="mb-2"
                           onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
                           onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
@@ -760,8 +842,9 @@ function parseCamelCase(str:string) {
                   <Label className="py-2">HPA ID</Label>
                   <Select
                     required
+                    {...field}
                     value={field.value}
-                    onValueChange={(value) => {setValue("transactionDetail.hpaId", value); setSearch('')}}
+                    onValueChange={(value) => { field.onChange(value); setSearchHPA('') }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select" />
@@ -770,8 +853,8 @@ function parseCamelCase(str:string) {
                       <div className="p-2">
                         <Input
                           placeholder="Search a Firm"
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
+                          value={searchHPA}
+                          onChange={(e) => setSearchHPA(e.target.value)}
                           className="mb-2"
                           onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
                           onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
@@ -801,7 +884,7 @@ function parseCamelCase(str:string) {
                 <div className="flex flex-col gap-1">
                   <Label className="py-2">Number Plate</Label>
                   <Select
-                    required
+                    {...field}
                     value={field.value}
                     onValueChange={(val) => field.onChange(val as NumberPlate)}
                   >
@@ -878,6 +961,265 @@ function parseCamelCase(str:string) {
                 </div>
               )}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="grid gap-4 p-6">
+          <div className="text-xl font-semibold">Owner Details</div>
+          <hr />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div className="font-semibold mb-1">Seller Details</div>
+              <hr />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                <Controller
+                  name="ownerDetails.sellerName"
+                  control={control}
+                  render={({ field }) => (
+                  <div className="flex flex-col gap-1">
+                    <Label htmlFor="sellerName">Seller Name</Label>
+                    <Input id="sellerName" placeholder="Seller Name" {...field} />
+                  </div>
+                  )}
+                />
+                <Controller
+                  name="ownerDetails.sellerAadharNo"
+                  control={control}
+                  rules={{
+                  pattern: {
+                    value: /^\d{12}$/,
+                    message: "Aadhaar No must be a 12-digit number",
+                  },
+                  }}
+                  render={({ field, fieldState }) => (
+                  <div className="flex flex-col gap-1">
+                    <Label htmlFor="sellerAadharNo">Seller Aadhaar No</Label>
+                    <Input
+                    id="sellerAadharNo"
+                    placeholder="Seller Aadhaar No"
+                    maxLength={12}
+                    {...field}
+                    onChange={e => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      field.onChange(val);
+                    }}
+                    />
+                    {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                    )}
+                  </div>
+                  )}
+                />
+                <Controller
+                  name="ownerDetails.sellerAddress"
+                  control={control}
+                  render={({ field }) => (
+                  <div className="flex flex-col gap-1 md:col-span-2">
+                    <Label htmlFor="sellerAddress">Seller Address</Label>
+                    <Textarea id="sellerAddress" placeholder="Seller Address" {...field} />
+                  </div>
+                  )}
+                />
+                <Controller
+                  name="ownerDetails.sellerState"
+                  control={control}
+                  render={({ field }) => (
+                  <div className="flex flex-col gap-1">
+                    <Label htmlFor="sellerState">Seller State</Label>
+                    <Select
+                    {...field}
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setSearchSellerState('');
+                    }}
+                    >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <div className="p-2">
+                      <Input
+                        placeholder="Search a State"
+                        value={searchSellerState}
+                        onChange={(e) => setSearchSellerState(e.target.value)}
+                        className="mb-2"
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                      </div>
+                      {ind2.map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {state}
+                      </SelectItem>
+                      ))}
+                    </SelectContent>
+                    </Select>
+                  </div>
+                  )}
+                />
+                <Controller
+                  name="ownerDetails.sellerPhoneNo"
+                  control={control}
+                  rules={{
+                  pattern: {
+                    value: /^[6-9]\d{9}$/,
+                    message: "Phone No must be a valid 10-digit",
+                  },
+                  }}
+                  render={({ field, fieldState }) => (
+                  <div className="flex flex-col gap-1">
+                    <Label htmlFor="sellerPhoneNo">Seller Phone No</Label>
+                    <Input
+                    id="sellerPhoneNo"
+                    placeholder="Seller Phone No"
+                    maxLength={10}
+                    {...field}
+                    onChange={e => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      field.onChange(val);
+                    }}
+                    />
+                    {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                    )}
+                  </div>
+                  )}
+                />
+                </div>
+              </div>
+            <div>
+              <div className="font-semibold mb-1">Buyer Details</div>
+              <hr />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                <Controller
+                  name="ownerDetails.buyerName"
+                  control={control}
+                  render={({ field, }) => (
+                    <div className="flex flex-col gap-1">
+                      <Label htmlFor="buyerName">Buyer Name</Label>
+                      <Input id="buyerName" placeholder="Buyer Name" {...field} />
+                    </div>
+                  )}
+                />
+                 <Controller
+                  name="ownerDetails.buyerAadharNo"
+                  control={control}
+                  rules={{
+                  pattern: {
+                    value: /^\d{12}$/,
+                    message: "Aadhaar No must be a 12-digit number",
+                  },
+                  }}
+                  render={({ field, fieldState }) => (
+                  <div className="flex flex-col gap-1">
+                    <Label htmlFor="buyerAadharNo">Buyer Aadhaar No</Label>
+                    <Input
+                    id="buyerAadharNo"
+                    placeholder="Buyer Aadhaar No"
+                    maxLength={12}
+                    {...field}
+                    onChange={e => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      field.onChange(val);
+                    }}
+                    />
+                    {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                    )}
+                  </div>
+                  )}
+                />
+                <Controller
+                  name="ownerDetails.buyerAddress"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1 md:col-span-2">
+                      <Label htmlFor="buyerAddress">Buyer Address</Label>
+                      <Textarea id="buyerAddress" placeholder="Buyer Address" {...field} />
+                    </div>
+                  )}
+                />
+                <Controller
+                  name="ownerDetails.buyerState"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1">
+                      <Label htmlFor="buyerState">Buyer State</Label>
+                      <Select
+                        {...field}
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setSearchBuyerState('');
+                        }}
+
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a state" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <div className="p-2">
+                            <Input
+                              placeholder="Search a State"
+                              value={searchBuyerState}
+                              onChange={(e) => setSearchBuyerState(e.target.value)}
+                              className="mb-2"
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => e.stopPropagation()}
+                            />
+                          </div>
+                          {ind3.map((state) => (
+                            <SelectItem key={state} value={state}>
+                              {state}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                    </div>
+                  )}
+                />
+                <Controller
+                  name="ownerDetails.buyerPhoneNo"
+                  control={control}
+                  rules={{
+                  pattern: {
+                    value: /^[6-9]\d{9}$/,
+                    message: "Phone No must be a valid 10-digit",
+                  },
+                  }}
+                  render={({ field, fieldState }) => (
+                  <div className="flex flex-col gap-1">
+                    <Label htmlFor="buyerPhoneNo">Buyer Phone No</Label>
+                    <Input
+                    id="buyerPhoneNo"
+                    placeholder="Buyer Phone No"
+                    maxLength={10}
+                    {...field}
+                    onChange={e => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      field.onChange(val);
+                    }}
+                    />
+                    {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                    )}
+                  </div>
+                  )}
+                />
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

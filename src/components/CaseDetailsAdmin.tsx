@@ -7,8 +7,16 @@ import type {
   ExpenseDetail,
   ExpireDetail,
   VehicleDetail,
+  ownerDetails,
   Case,
 } from "@/components/CaseForm";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { getCaseID, updateCaseID } from "@/service/case.service";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -17,6 +25,11 @@ import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { DateInput } from "./ui/date-input";
 import { Switch } from "./ui/switch";
+import { Input } from "./ui/input";
+import { indianStates } from "./Branchform";
+import { getActiveFirm } from "@/service/firm.service";
+import type { Firm } from "./FirmForm";
+import { NumberPlate } from "@/components/CaseForm";
 // import CaseDetails from "./CaseDetailsEmployee";
 
 export interface FinalDetails {
@@ -26,6 +39,7 @@ export interface FinalDetails {
   expireDetail: ExpireDetail;
   transactionDetail: TransactionDetail;
   expenseDetail: ExpenseDetail;
+  ownerDetails?: ownerDetails;
   logs: Logs;
 }
 
@@ -48,11 +62,33 @@ export default function CaseDescription() {
   const id = location.state?.id;
   const state = location.state?.status;
   const { setLoading } = useLoading();
+  const [firms, setfirms] = useState<Firm[]>([]);
   const [refreshFlag] = useState(false);
   const [caseData, setCaseData] = useState<FinalDetails>();
   const [editMode, setEditMode] = useState(false);
   const [status, setStatus] = useState<string | undefined>();
   const toast = useToast();
+  const Numberplates = Object.values(NumberPlate);
+
+
+  const [searchSellerState, setSearchSellerState] = useState("");
+  const [searchBuyerState, setSearchBuyerState] = useState("");
+
+
+
+  const ind2 = indianStates.filter((hostel) =>
+    hostel.toLowerCase().includes((searchSellerState).toLowerCase())
+  );
+  const ind3 = indianStates.filter((hostel) =>
+    hostel.toLowerCase().includes((searchBuyerState).toLowerCase())
+  );
+
+  const [searchHPT, setSearchHPT] = useState("");
+  const [searchHPA, setSearchHPA] = useState("");
+
+
+  const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
+
 
   const {
     handleSubmit,
@@ -62,6 +98,19 @@ export default function CaseDescription() {
   } = useForm<FinalDetails>({
     // defaultValues: caseData,
   });
+
+  useEffect(() => {
+    setLoading(true);
+
+    getActiveFirm()
+      .then((resp) => {
+        setfirms(resp?.data);
+      })
+      .catch((err: any) => {
+        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+      })
+      .finally(() => setLoading(false));
+  }, [refreshFlag]);
 
   useEffect(() => {
     setStatus(state);
@@ -117,6 +166,7 @@ export default function CaseDescription() {
           data.transactionDetail
         ) as TransactionDetail,
         expenseDetail: stripIds(data.expenseDetail) as ExpenseDetail,
+        ownerDetails: stripIds(data.ownerDetails ?? {}) as ownerDetails,
       };
 
       await updateCaseID(id, casePayload);
@@ -125,7 +175,12 @@ export default function CaseDescription() {
       setEditMode(false);
     } catch (err: any) {
       // console.error(err);
-      toast.showToast('Error in Updating:', err, 'error');
+      if (err?.response?.status === 400) {
+        toast.showToast('Bad Request', 'Provide full owner details or none', 'error');
+      } else {
+        const errorMessage = err?.response?.data?.message || err?.message || 'Unknown error occurred.';
+        toast.showToast('Error in Updating', errorMessage, 'error');
+      }
     } finally {
       // navigate(-1)
       setLoading(false);
@@ -159,7 +214,11 @@ export default function CaseDescription() {
     }
   }, [caseData, reset]);
 
-
+  const getFirmNameById = (id: string | undefined) => {
+    if (!id) return "—";
+    const firm = firms.find(f => f.id === id);
+    return firm ? firm.name : id;
+  };
 
   const Section = ({
     title,
@@ -181,11 +240,21 @@ export default function CaseDescription() {
     value,
     name,
     type = "text",
+    options,
+    search,
+    setSearch,
+    getOptionValue = (opt) => opt,     // Default: return whole string
+    getOptionLabel = (opt) => opt,     // Default: return whole string
   }: {
     label: string;
     value: any;
     name: string;
     type?: string;
+    options?: any[];
+    search?: string;
+    setSearch?: (value: string) => void;
+    getOptionValue?: (opt: any) => string;
+    getOptionLabel?: (opt: any) => string;
   }) => (
     <div>
       <Label className="text-sm text-muted-foreground">{label}</Label>
@@ -216,6 +285,47 @@ export default function CaseDescription() {
                 }
                 onChange={(e) => field.onChange(e.target.value)}
               />
+            )}
+          />
+        ) : options ? (
+          <Controller
+            name={name as any}
+            control={control}
+            render={({ field }) => (
+              <>
+                {search !== undefined && setSearch && (
+                  <div className="mb-2">
+                    <Input
+                      placeholder="Search"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
+                )}
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || ""}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(options ?? [])
+                      .filter((opt) =>
+                        !search
+                          ? true
+                          : getOptionLabel(opt)
+                            .toLowerCase()
+                            .includes(search.toLowerCase())
+                      )
+                      .map((opt) => (
+                        <SelectItem key={getOptionValue(opt)} value={getOptionValue(opt)}>
+                          {getOptionLabel(opt)}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </>
             )}
           />
         ) : (
@@ -256,6 +366,7 @@ export default function CaseDescription() {
   const ed = caseData?.expireDetail;
   const td = caseData?.transactionDetail;
   const exd = caseData?.expenseDetail;
+  const owd = caseData?.ownerDetails;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
@@ -311,9 +422,15 @@ export default function CaseDescription() {
           name="generalDetail.firmName"
         />
         <RenderField
-          label="Incentive Type"
-          value={gd?.incentiveType}
-          name="generalDetail.incentiveType"
+          label="Incentive Amount"
+          value={gd?.incentiveAmount}
+          name="generalDetail.incentiveAmount"
+        />
+        <RenderField
+          label="Appointment"
+          value={formatDate(gd?.appointmentDate)}
+          name="generalDetail.appointmentDate"
+          type="date"
         />
       </Section>
 
@@ -385,6 +502,26 @@ export default function CaseDescription() {
           name="transactionDetail.to"
         />
         <RenderField
+          label="HPT ID"
+          value={editMode ? td?.hptId : getFirmNameById(td?.hptId)}
+          name="transactionDetail.hptId"
+          options={filteredfirms}
+          search={searchHPT}
+          setSearch={setSearchHPT}
+          getOptionValue={opt => opt.id}
+          getOptionLabel={opt => opt.name}
+        />
+        <RenderField
+          label="HPA ID"
+          value={editMode ? td?.hpaId : getFirmNameById(td?.hpaId)}
+          name="transactionDetail.hpaId"
+          options={filteredfirms}
+          search={searchHPA}
+          setSearch={setSearchHPA}
+          getOptionValue={opt => opt.id}
+          getOptionLabel={opt => opt.name}
+        />
+        <RenderField
           label="Fitness"
           value={getBoolStatus(td?.fitness)}
           name="transactionDetail.fitness"
@@ -418,6 +555,7 @@ export default function CaseDescription() {
           label="Number Plate Type"
           value={td?.numberPlate}
           name="transactionDetail.numberPlate"
+          options={Numberplates}
         />
         <RenderField
           label="Address Change"
@@ -436,6 +574,77 @@ export default function CaseDescription() {
           value={td?.remarks}
           name="transactionDetail.remarks"
         />
+      </Section>
+
+      <Section title="Owner Details">
+        <div className="md:col-span-1 lg:col-span-1">
+          <h2 className="font-semibold text-base">Seller Details</h2>
+          <hr />
+          <div className="space-y-3 mt-3">
+            <RenderField
+              label="Seller Name"
+              value={owd?.sellerName}
+              name="ownerDetails.sellerName"
+            />
+            <RenderField
+              label="Seller Aadhar Number"
+              value={owd?.sellerAadharNo}
+              name="ownerDetails.sellerAadharNo"
+            />
+            <RenderField
+              label="Seller Address"
+              value={owd?.sellerAddress}
+              name="ownerDetails.sellerAddress"
+            />
+            <RenderField
+              label="Seller State"
+              value={owd?.sellerState}
+              name="ownerDetails.sellerState"
+              options={ind2}
+              search={searchSellerState}
+              setSearch={setSearchSellerState}
+            />
+            <RenderField
+              label="Seller Mobile Number"
+              value={owd?.sellerPhoneNo}
+              name="ownerDetails.sellerPhoneNo"
+            />
+          </div>
+        </div>
+        <div className="md:col-span-1 lg:col-span-1">
+          <h2 className="font-semibold text-base">Buyer Details</h2>
+          <hr />
+          <div className="space-y-3 mt-3">
+            <RenderField
+              label="Buyer Name"
+              value={owd?.buyerName}
+              name="ownerDetails.buyerName"
+            />
+            <RenderField
+              label="Buyer Aadhar Number"
+              value={owd?.buyerAadharNo}
+              name="ownerDetails.buyerAadharNo"
+            />
+            <RenderField
+              label="Buyer Address"
+              value={owd?.buyerAddress}
+              name="ownerDetails.buyerAddress"
+            />
+            <RenderField
+              label="Buyer State"
+              value={owd?.buyerState}
+              name="ownerDetails.buyerState"
+              options={ind3}
+              search={searchBuyerState}
+              setSearch={setSearchBuyerState}
+            />
+            <RenderField
+              label="Buyer Mobile Number"
+              value={owd?.buyerPhoneNo}
+              name="ownerDetails.buyerPhoneNo"
+            />
+          </div>
+        </div>
       </Section>
 
       <Section title="Expense Details">
