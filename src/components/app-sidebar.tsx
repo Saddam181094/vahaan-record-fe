@@ -45,7 +45,7 @@ const items1: Record<string, SidebarItem[]> = {
       title: "Utilities",
       icon: Settings,
       submenu: [
-        { title: "Firm", url: "/superadmin/AddFirm", icon: Building2 },
+        { title: "HPA/HTP", url: "/superadmin/AddFirm", icon: Building2 },
         { title: "Branch", url: "/superadmin/AddBranch", icon: Building },
       ],
     },

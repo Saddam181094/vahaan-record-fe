@@ -15,7 +15,7 @@ import CaseForm from "@/pages/Case";
 import Allcases from "@/pages/AlCase";
 import AllCaseE from "@/pages/AlCaseE"
 import CaseDetails from "@/components/CaseDetailsAdmin"
-import CaseDetailsEmployee from "@/components/CaseDetailsEmployee"
+// import CaseDetailsEmployee from "@/components/CaseDetailsEmployee"
 import CaseDetailsC from "@/components/CaseDetailsClient"
 import ClientCases from "@/pages/ClientCases"
 import Profile from "@/pages/MyProfile"
@@ -150,7 +150,7 @@ export default function App() {
 
       <Route path="/employee/cases/:CaseNo" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
-          <CaseDetailsEmployee />
+          <CaseDetails/>
         </ProtectedRoute>
       } />
     

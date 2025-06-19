@@ -41,7 +41,7 @@ export interface GeneralDetails {
   firmName: string;
   branchCodeId: string;
   employeeCodeId: string;
-  incentiveAmount: string;
+  incentiveAmount?: string;
   appointmentDate?: string;
 }
 
@@ -313,7 +313,7 @@ export default function CaseForm() {
               render={({ field, fieldState }) => (
                 <div className="flex flex-col w-full">
                   <Label htmlFor="firmName" className="pb-2">
-                    Firm Name
+                    Firm Name <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     required
@@ -336,6 +336,9 @@ export default function CaseForm() {
                 rules={{ required: "Branch is required" }}
                 render={({ field, fieldState }) => (
                   <div className="flex flex-col w-full">
+                     <Label htmlFor="branchCodeId" className="pb-2">
+                      Branch Name
+                    </Label>
                     {user?.role === "employee" ? (
                       <div className="flex flex-col w-full">
                         <Input
@@ -398,6 +401,9 @@ export default function CaseForm() {
                 rules={{ required: "Employee is required" }}
                 render={({ field, fieldState }) => (
                   <div className="flex flex-col w-full">
+                     <Label htmlFor="employeeCodeId" className="pb-2">
+                      Employee Name
+                    </Label>
                     {user?.role === "employee" ? (
                       <>
                         <Input
@@ -454,8 +460,7 @@ export default function CaseForm() {
               <Controller
                 name="generalDetails.incentiveAmount"
                 control={control}
-                rules={{ required: "Incentive Amount Can't be empty" }}
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <div className="flex flex-col w-full">
                     <Label htmlFor="incentiveAmount" className="pb-2">
                       Incentive Amount
@@ -466,11 +471,6 @@ export default function CaseForm() {
                       className="w-full"
                       {...field}
                     />
-                    {fieldState.error && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {fieldState.error.message}
-                      </p>
-                    )}
                   </div>
                 )}
               />
@@ -507,7 +507,7 @@ export default function CaseForm() {
               render={({ field, fieldState }) => (
                 <div className="flex flex-col flex-grow max-w-xs">
                   <Label htmlFor="vehicleNo" className="pb-2">
-                    Vehicle No
+                    Vehicle No<span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="vehicleNo"
@@ -549,7 +549,7 @@ export default function CaseForm() {
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="fromRTO" className="pb-2">
-                    From RTO
+                    From RTO<span className="text-red-500">*</span>
                   </Label>
                   <Input id="fromRTO" placeholder="From RTO" {...field} />
                   {fieldState.error && (
@@ -567,7 +567,7 @@ export default function CaseForm() {
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="toRTO" className="pb-2">
-                    To RTO
+                    To RTO<span className="text-red-500">*</span>
                   </Label>
                   <Input id="toRTO" placeholder="To RTO" {...field} />
                   {fieldState.error && (
@@ -585,7 +585,7 @@ export default function CaseForm() {
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="chassisNo" className="pb-2">
-                    Chassis No
+                    Chassis No<span className="text-red-500">*</span>
                   </Label>
                   <Input id="chassisNo" placeholder="Chassis No" {...field} />
                   {fieldState.error && (
@@ -603,7 +603,7 @@ export default function CaseForm() {
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="engineNo" className="pb-2">
-                    Engine No
+                    Engine No<span className="text-red-500">*</span>
                   </Label>
                   <Input id="engineNo" placeholder="Engine No" {...field} />
                   {fieldState.error && (
@@ -633,7 +633,7 @@ export default function CaseForm() {
                     htmlFor="insuranceExpiry"
                     className="text-sm font-medium capitalize"
                   >
-                    Insurance Expiry
+                    Insurance Expiry<span className="text-red-500">*</span>
                   </Label>
                   <DateInput
                     id="insuranceExpiry"
@@ -658,7 +658,7 @@ export default function CaseForm() {
                     htmlFor="pucExpiry"
                     className="text-sm font-medium capitalize"
                   >
-                    PUC Expiry
+                    PUC Expiry<span className="text-red-500">*</span>
                   </Label>
                   <DateInput
                     id="pucExpiry"
@@ -683,7 +683,7 @@ export default function CaseForm() {
                     htmlFor="fitnessExpiry"
                     className="text-sm font-medium capitalize"
                   >
-                    Fitness Expiry
+                    Fitness Expiry<span className="text-red-500">*</span>
                   </Label>
                   <DateInput
                     id="fitnessExpiry"
@@ -708,7 +708,7 @@ export default function CaseForm() {
                     htmlFor="taxExpiry"
                     className="text-sm font-medium capitalize"
                   >
-                    Tax Expiry
+                    Tax Expiry<span className="text-red-500">*</span>
                   </Label>
                   <DateInput
                     id="taxExpiry"
@@ -733,7 +733,7 @@ export default function CaseForm() {
                     htmlFor="permitExpiry"
                     className="text-sm font-medium capitalize"
                   >
-                    Permit Expiry
+                    Permit Expiry<span className="text-red-500">*</span>
                   </Label>
                   <DateInput
                     id="permitExpiry"
@@ -764,7 +764,7 @@ export default function CaseForm() {
               rules={{ required: "To is required" }}
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
-                  <Label className="py-2">To</Label>
+                  <Label className="py-2">To<span className="text-red-500">*</span></Label>
                   <Select
                     {...field}
                     value={field.value}
@@ -796,7 +796,7 @@ export default function CaseForm() {
               rules={{ required: "HPT ID is required" }}
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
-                  <Label className="py-2">HPT ID</Label>
+                  <Label className="py-2">HPT ID<span className="text-red-500">*</span></Label>
                   <Select
                     {...field}
                     value={field.value}
@@ -839,7 +839,7 @@ export default function CaseForm() {
               rules={{ required: "HPA ID is required" }}
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
-                  <Label className="py-2">HPA ID</Label>
+                  <Label className="py-2">HPA ID<span className="text-red-500">*</span></Label>
                   <Select
                     required
                     {...field}
@@ -882,7 +882,7 @@ export default function CaseForm() {
               rules={{ required: "Number Plate is required" }}
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
-                  <Label className="py-2">Number Plate</Label>
+                  <Label className="py-2">Number Plate<span className="text-red-500">*</span></Label>
                   <Select
                     {...field}
                     value={field.value}
@@ -1244,7 +1244,7 @@ export default function CaseForm() {
                       <Label className="py-3" htmlFor={key}>
                         {key
                           .replace(/([A-Z])/g, " $1")
-                          .replace(/^./, (str) => str.toUpperCase())}
+                          .replace(/^./, (str) => str.toUpperCase())}<span className="text-red-500">*</span>
                       </Label>
                       <Input
                         required
@@ -1273,10 +1273,7 @@ export default function CaseForm() {
               <Controller
                 name="expenseDetail.adminCharges"
                 control={control}
-                rules={{
-                  required: "Admin Charges is required.",
-                }}
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <div className="flex flex-col gap-1">
                     <Label className="py-3" htmlFor="adminCharges">
                       Admin Charges
@@ -1293,11 +1290,6 @@ export default function CaseForm() {
                         field.onChange(val === "" ? "" : Number(val));
                       }}
                     />
-                    {fieldState.error && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {fieldState.error.message}
-                      </p>
-                    )}
                   </div>
                 )}
               />

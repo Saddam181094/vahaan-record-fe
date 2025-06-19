@@ -23,6 +23,7 @@ export interface CaseDetails {
   createdBy: createdBy;
   assignedTo?: AssignedTo;
   status: string;
+  generalDetail: GeneralDetail;
 }
 export interface createdBy {
   firstName: string;
@@ -39,6 +40,10 @@ export interface AssignedTo {
 }
 export interface vehicleDetail {
   vehicleNo: string;
+}
+
+export interface GeneralDetail{
+  appointmentDate?: string;
 }
 
 

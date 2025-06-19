@@ -21,18 +21,15 @@ export function ForgotPasswordModal({open, onOpenChange}: ForgotPasswordModalPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    // setError("")
-    setMessage("")
 
     try {
       const res = await forgotPassword(email)
       setMessage(res)
+          toast.showToast('Submitting forgot password for:',email,'info');
     } catch (err: any) {
         toast.showToast('Error:',err?.message || 'Error during process Occured','error');
-
       // setError(err.message)
     } finally {
-    toast.showToast('Submitting forgot password for:',email,'info');
     // console.log("Submitting forgot password for", email);
       setLoading(false);
     }

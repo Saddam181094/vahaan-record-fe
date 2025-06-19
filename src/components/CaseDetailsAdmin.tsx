@@ -25,11 +25,12 @@ import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { DateInput } from "./ui/date-input";
 import { Switch } from "./ui/switch";
-import { Input } from "./ui/input";
+// import { Input } from "./ui/input";
 import { indianStates } from "./Branchform";
 import { getActiveFirm } from "@/service/firm.service";
 import type { Firm } from "./FirmForm";
 import { NumberPlate } from "@/components/CaseForm";
+import { useAuth } from "@/context/AuthContext";
 // import CaseDetails from "./CaseDetailsEmployee";
 
 export interface FinalDetails {
@@ -68,6 +69,7 @@ export default function CaseDescription() {
   const [editMode, setEditMode] = useState(false);
   const [status, setStatus] = useState<string | undefined>();
   const toast = useToast();
+  const { user } = useAuth();
   const Numberplates = Object.values(NumberPlate);
 
 
@@ -172,6 +174,7 @@ export default function CaseDescription() {
       await updateCaseID(id, casePayload);
       toast.showToast('Success', 'Case Successfully Updated', 'success');
       reset(casePayload);
+      navigate(-1);
       setEditMode(false);
     } catch (err: any) {
       // console.error(err);
@@ -182,7 +185,6 @@ export default function CaseDescription() {
         toast.showToast('Error in Updating', errorMessage, 'error');
       }
     } finally {
-      // navigate(-1)
       setLoading(false);
     }
   };
@@ -242,7 +244,7 @@ export default function CaseDescription() {
     type = "text",
     options,
     search,
-    setSearch,
+    required,
     getOptionValue = (opt) => opt,     // Default: return whole string
     getOptionLabel = (opt) => opt,     // Default: return whole string
   }: {
@@ -252,12 +254,16 @@ export default function CaseDescription() {
     type?: string;
     options?: any[];
     search?: string;
+    required?: boolean;
     setSearch?: (value: string) => void;
     getOptionValue?: (opt: any) => string;
     getOptionLabel?: (opt: any) => string;
   }) => (
     <div>
-      <Label className="text-sm text-muted-foreground">{label}</Label>
+      <Label className="text-sm text-muted-foreground">{label}
+
+        {required && <span className="text-red-500">*</span>}
+      </Label>
       {editMode ? (
         type === "switch" ? (
           <Controller
@@ -293,15 +299,6 @@ export default function CaseDescription() {
             control={control}
             render={({ field }) => (
               <>
-                {search !== undefined && setSearch && (
-                  <div className="mb-2">
-                    <Input
-                      placeholder="Search"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
-                  </div>
-                )}
                 <Select
                   onValueChange={field.onChange}
                   value={field.value || ""}
@@ -328,16 +325,84 @@ export default function CaseDescription() {
               </>
             )}
           />
+        ) : type === "Mobile" ? (
+          <Controller
+            name={name as any}
+            control={control}
+            rules={{
+              pattern: {
+                value: /^[6-9]\d{9}$/,
+                message: "Enter a valid 10-digit Indian phone number",
+              },
+            }}
+            render={({ field, fieldState }) => (
+              <>
+                <input
+                  type={type}
+                  {...field}
+                  maxLength={10}
+                  onChange={e => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      field.onChange(val);
+                    }}
+                  className="border p-2 rounded-md w-full"
+                />
+                {fieldState.error && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {fieldState.error.message}
+                  </p>
+                )}
+              </>
+            )}
+          />
+        ) : type === "Aadhar" ? (
+          <Controller
+            name={name as any}
+            control={control}
+                  rules={{
+                  pattern: {
+                    value: /^\d{12}$/,
+                    message: "Aadhaar No must be a 12-digit number",
+                  },
+                  }}
+            render={({ field, fieldState }) => (
+              <>
+                <input
+                  type={type}
+                  {...field}
+                  maxLength={12}
+                  onChange={e => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      field.onChange(val);
+                    }}
+                  className="border p-2 rounded-md w-full"
+                />
+                {fieldState.error && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {fieldState.error.message}
+                  </p>
+                )}
+              </>
+            )}
+          />
         ) : (
           <Controller
             name={name as any}
             control={control}
-            render={({ field }) => (
-              <input
-                type={type}
-                {...field}
-                className="border p-2 rounded-md w-full"
-              />
+            rules={{ required }}
+            render={({ field, fieldState }) => (
+              <>
+                <input
+                  type={type}
+                  {...field}
+                  className="border p-2 rounded-md w-full"
+                />
+                {fieldState.error && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {fieldState.error.message}
+                  </p>
+                )}
+              </>
             )}
           />
         )
@@ -418,16 +483,18 @@ export default function CaseDescription() {
       <Section title="General Details">
         <RenderField
           label="Firm Name"
+          required
           value={gd?.firmName}
           name="generalDetail.firmName"
         />
+        {user?.role === "superadmin" &&
+          <RenderField
+            label="Incentive Amount"
+            value={gd?.incentiveAmount}
+            name="generalDetail.incentiveAmount"
+          />}
         <RenderField
-          label="Incentive Amount"
-          value={gd?.incentiveAmount}
-          name="generalDetail.incentiveAmount"
-        />
-        <RenderField
-          label="Appointment"
+          label="Appointment Date"
           value={formatDate(gd?.appointmentDate)}
           name="generalDetail.appointmentDate"
           type="date"
@@ -437,58 +504,73 @@ export default function CaseDescription() {
       <Section title="Vehicle Details">
         <RenderField
           label="Vehicle No"
+          required
           value={vd?.vehicleNo}
           name="vehicleDetail.vehicleNo"
         />
         <RenderField
           label="From RTO"
+          required
           value={vd?.fromRTO}
           name="vehicleDetail.fromRTO"
         />
         <RenderField
           label="To RTO"
+          required
           value={vd?.toRTO}
           name="vehicleDetail.toRTO"
         />
         <RenderField
           label="Chassis No"
+          required
           value={vd?.chassisNo}
           name="vehicleDetail.chassisNo"
         />
         <RenderField
           label="Engine No"
+          required
           value={vd?.engineNo}
           name="vehicleDetail.engineNo"
+        />
+        <RenderField
+          label="RMA Vehicle No"
+          value={vd?.rmaVehicleNo}
+          name="vehicleDetail.rmaVehicleNo"
         />
       </Section>
 
       <Section title="Expire Details">
         <RenderField
           label="Insurance Expiry"
+          required
           value={formatDate(ed?.insuranceExpiry)}
           name="expireDetail.insuranceExpiry"
           type="date"
         />
         <RenderField
           label="PUC Expiry"
+          required
           value={formatDate(ed?.pucExpiry)}
           name="expireDetail.pucExpiry"
           type="date"
         />
         <RenderField
           label="Fitness Expiry"
+          required
           value={formatDate(ed?.fitnessExpiry)}
           name="expireDetail.fitnessExpiry"
           type="date"
         />
         <RenderField
           label="Tax Expiry"
+          required
           value={formatDate(ed?.taxExpiry)}
           name="expireDetail.taxExpiry"
           type="date"
         />
         <RenderField
           label="Permit Expiry"
+          required
           value={formatDate(ed?.permitExpiry)}
           name="expireDetail.permitExpiry"
           type="date"
@@ -498,11 +580,13 @@ export default function CaseDescription() {
       <Section title="Transaction Details">
         <RenderField
           label="To RTO"
+          required
           value={td?.to}
           name="transactionDetail.to"
         />
         <RenderField
           label="HPT ID"
+          required
           value={editMode ? td?.hptId : getFirmNameById(td?.hptId)}
           name="transactionDetail.hptId"
           options={filteredfirms}
@@ -513,6 +597,7 @@ export default function CaseDescription() {
         />
         <RenderField
           label="HPA ID"
+          required
           value={editMode ? td?.hpaId : getFirmNameById(td?.hpaId)}
           name="transactionDetail.hpaId"
           options={filteredfirms}
@@ -553,6 +638,7 @@ export default function CaseDescription() {
         />
         <RenderField
           label="Number Plate Type"
+          required
           value={td?.numberPlate}
           name="transactionDetail.numberPlate"
           options={Numberplates}
@@ -576,98 +662,96 @@ export default function CaseDescription() {
         />
       </Section>
 
-      <Section title="Owner Details">
-        <div className="md:col-span-1 lg:col-span-1">
-          <h2 className="font-semibold text-base">Seller Details</h2>
-          <hr />
-          <div className="space-y-3 mt-3">
-            <RenderField
-              label="Seller Name"
-              value={owd?.sellerName}
-              name="ownerDetails.sellerName"
-            />
-            <RenderField
-              label="Seller Aadhar Number"
-              value={owd?.sellerAadharNo}
-              name="ownerDetails.sellerAadharNo"
-            />
-            <RenderField
-              label="Seller Address"
-              value={owd?.sellerAddress}
-              name="ownerDetails.sellerAddress"
-            />
-            <RenderField
-              label="Seller State"
-              value={owd?.sellerState}
-              name="ownerDetails.sellerState"
-              options={ind2}
-              search={searchSellerState}
-              setSearch={setSearchSellerState}
-            />
-            <RenderField
-              label="Seller Mobile Number"
-              value={owd?.sellerPhoneNo}
-              name="ownerDetails.sellerPhoneNo"
-            />
-          </div>
-        </div>
-        <div className="md:col-span-1 lg:col-span-1">
-          <h2 className="font-semibold text-base">Buyer Details</h2>
-          <hr />
-          <div className="space-y-3 mt-3">
-            <RenderField
-              label="Buyer Name"
-              value={owd?.buyerName}
-              name="ownerDetails.buyerName"
-            />
-            <RenderField
-              label="Buyer Aadhar Number"
-              value={owd?.buyerAadharNo}
-              name="ownerDetails.buyerAadharNo"
-            />
-            <RenderField
-              label="Buyer Address"
-              value={owd?.buyerAddress}
-              name="ownerDetails.buyerAddress"
-            />
-            <RenderField
-              label="Buyer State"
-              value={owd?.buyerState}
-              name="ownerDetails.buyerState"
-              options={ind3}
-              search={searchBuyerState}
-              setSearch={setSearchBuyerState}
-            />
-            <RenderField
-              label="Buyer Mobile Number"
-              value={owd?.buyerPhoneNo}
-              name="ownerDetails.buyerPhoneNo"
-            />
-          </div>
-        </div>
+      <Section title="Seller Details">
+        <RenderField
+          label="Seller Name"
+          value={owd?.sellerName}
+          name="ownerDetails.sellerName"
+        />
+        <RenderField
+          label="Seller Aadhar Number"
+          value={owd?.sellerAadharNo}
+          name="ownerDetails.sellerAadharNo"
+          type="Aadhar"
+        />
+        <RenderField
+          label="Seller Address"
+          value={owd?.sellerAddress}
+          name="ownerDetails.sellerAddress"
+        />
+        <RenderField
+          label="Seller State"
+          value={owd?.sellerState}
+          name="ownerDetails.sellerState"
+          options={ind2}
+          search={searchSellerState}
+          setSearch={setSearchSellerState}
+        />
+        <RenderField
+          label="Seller Mobile Number"
+          value={owd?.sellerPhoneNo}
+          name="ownerDetails.sellerPhoneNo"
+          type="Mobile"
+        />
+      </Section>
+      <Section title="Buyer Details">
+        <RenderField
+          label="Buyer Name"
+          value={owd?.buyerName}
+          name="ownerDetails.buyerName"
+        />
+        <RenderField
+          label="Buyer Aadhar Number"
+          value={owd?.buyerAadharNo}
+          name="ownerDetails.buyerAadharNo"
+          type="Aadhar"
+        />
+        <RenderField
+          label="Buyer Address"
+          value={owd?.buyerAddress}
+          name="ownerDetails.buyerAddress"
+        />
+        <RenderField
+          label="Buyer State"
+          value={owd?.buyerState}
+          name="ownerDetails.buyerState"
+          options={ind3}
+          search={searchBuyerState}
+          setSearch={setSearchBuyerState}
+        />
+        <RenderField
+          label="Buyer Mobile Number"
+          value={owd?.buyerPhoneNo}
+          name="ownerDetails.buyerPhoneNo"
+          type="Mobile"
+        />
       </Section>
 
       <Section title="Expense Details">
         <RenderField
           label="PUC Charges"
+          required
           value={exd?.pucCharges}
           name="expenseDetail.pucCharges"
         />
         <RenderField
           label="Insurance Charges"
+          required
           value={exd?.insuranceCharges}
           name="expenseDetail.insuranceCharges"
         />
         <RenderField
           label="Other Charges"
+          required
           value={exd?.otherCharges}
           name="expenseDetail.otherCharges"
         />
-        <RenderField
-          label="Admin Charges"
-          value={exd?.adminCharges}
-          name="expenseDetail.adminCharges"
-        />
+        {user?.role === "superadmin" &&
+          <RenderField
+            label="Admin Charges"
+            value={exd?.adminCharges}
+            name="expenseDetail.adminCharges"
+          />}
       </Section>
     </form>
   );

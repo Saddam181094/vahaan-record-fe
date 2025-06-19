@@ -112,6 +112,20 @@ export const updateCaseID = async (Id: any, data: Case) => {
     });
 }
 
+export const verifyCase = async (Id: any) => {
+  const config = getConfig();
+  const data = {};
+
+  return axios.patch(`${url}/case/verify/${Id}`, data , config)
+    .then((resp) => {
+      return resp.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during patch:", error);
+      throw error;
+    });
+}
+
 export const verifyPayments = async (Id: any) => {
   const config = getConfig();
 
