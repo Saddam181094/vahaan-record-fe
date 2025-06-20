@@ -63,6 +63,22 @@ export const getAllCasesE = async () => {
     });
 };
 
+export const getCasesbyEmployee = async ( filterType: string,
+  fromDate: string,
+  toDate: string, id:string) => {
+  const config = getConfig();
+  const data = {filterType,fromDate,toDate}
+
+  return axios
+    .post(`${url}/case/employee/${id}`, data , config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
 export const getAdminCases = async () => {
   const config = getConfig();
   return axios

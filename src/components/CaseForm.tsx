@@ -43,6 +43,7 @@ export interface GeneralDetails {
   employeeCodeId: string;
   incentiveAmount?: string;
   appointmentDate?: string;
+  applicationNo?:string;
 }
 
 export interface VehicleDetail {
@@ -127,6 +128,7 @@ export default function CaseForm() {
         employeeCodeId: "",
         incentiveAmount: "",
         appointmentDate: "",
+        applicationNo:undefined,
       },
       vehicleDetail: {
         vehicleNo: "",
@@ -466,7 +468,6 @@ export default function CaseForm() {
                       Incentive Amount
                     </Label>
                     <Input
-                      required
                       placeholder="Amount"
                       className="w-full"
                       {...field}
@@ -491,6 +492,22 @@ export default function CaseForm() {
                 </div>
               )}
             />
+            <Controller
+                name="generalDetails.applicationNo"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col w-full">
+                    <Label htmlFor="applicationNo" className="pb-2">
+                      Application No
+                    </Label>
+                    <Input
+                      placeholder="No."
+                      className="w-full"
+                      {...field}
+                    />
+                  </div>
+                )}
+              />
           </div>
         </CardContent>
       </Card>

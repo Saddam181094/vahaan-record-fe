@@ -1,6 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useReactToPrint } from "react-to-print";
+// import type { UseReactToPrintOptions } from "react-to-print";
 import type {
   GeneralDetails,
   TransactionDetail,
@@ -31,6 +33,7 @@ import { getActiveFirm } from "@/service/firm.service";
 import type { Firm } from "./FirmForm";
 import { NumberPlate } from "@/components/CaseForm";
 import { useAuth } from "@/context/AuthContext";
+import { Button } from "./ui/button";
 // import CaseDetails from "./CaseDetailsEmployee";
 
 export interface FinalDetails {
@@ -237,6 +240,109 @@ export default function CaseDescription() {
     </Card>
   );
 
+  const Section2 = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="mb-6">
+    <h2 className="text-lg font-bold mb-2 border-b pb-1">{title}</h2>
+    <div className="grid grid-cols-2 gap-4">{children}</div>
+  </div>
+);
+
+  const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => (
+    <div className="mb-2">
+      <span className="font-semibold">{label}:</span> {value || "-"}
+    </div>
+  );
+  const PrintableCaseDetails = ({
+    caseNo,
+    generalDetail,
+    vehicleDetail,
+    expireDetail,
+    transactionDetail,
+    ownerDetails,
+    expenseDetail,
+  }: any) => {
+    const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : "-");
+    const getBool = (val?: boolean) => (val ? "Yes" : "No");
+
+    return (
+      <div id="printable-content" className="p-6 text-sm leading-relaxed">
+        {/* Letterhead */}
+        <div className="mb-6 text-center border-b pb-4">
+          <img
+            src="/Group.svg"
+            alt="Letterhead"
+            className="mx-auto mb-2 max-h-24 object-contain"
+          />
+          <h1 className="text-xl font-bold">Case Details</h1>
+          <p className="text-gray-600">Case No: {caseNo}</p>
+        </div>
+
+        <Section2 title="General Details">
+          <PrintField label="Firm Name" value={generalDetail?.firmName} />
+          <PrintField label="Appointment Date" value={formatDate(generalDetail?.appointmentDate)} />
+          <PrintField label="Application No." value={generalDetail?.applicationNo} />
+          <PrintField label="Incentive Amount" value={generalDetail?.incentiveAmount} />
+        </Section2>
+
+        <Section2 title="Vehicle Details">
+          <PrintField label="Vehicle No" value={vehicleDetail?.vehicleNo} />
+          <PrintField label="From RTO" value={vehicleDetail?.fromRTO} />
+          <PrintField label="To RTO" value={vehicleDetail?.toRTO} />
+          <PrintField label="Chassis No" value={vehicleDetail?.chassisNo} />
+          <PrintField label="Engine No" value={vehicleDetail?.engineNo} />
+          <PrintField label="RMA Vehicle No" value={vehicleDetail?.rmaVehicleNo} />
+        </Section2>
+
+        <Section2 title="Expire Details">
+          <PrintField label="Insurance Expiry" value={formatDate(expireDetail?.insuranceExpiry)} />
+          <PrintField label="PUC Expiry" value={formatDate(expireDetail?.pucExpiry)} />
+          <PrintField label="Fitness Expiry" value={formatDate(expireDetail?.fitnessExpiry)} />
+          <PrintField label="Tax Expiry" value={formatDate(expireDetail?.taxExpiry)} />
+          <PrintField label="Permit Expiry" value={formatDate(expireDetail?.permitExpiry)} />
+        </Section2>
+
+        <Section2 title="Transaction Details">
+          <PrintField label="To RTO" value={transactionDetail?.to} />
+          <PrintField label="HPT Firm" value={transactionDetail?.hptFirmName} />
+          <PrintField label="HPA Firm" value={transactionDetail?.hpaFirmName} />
+          <PrintField label="Fitness" value={getBool(transactionDetail?.fitness)} />
+          <PrintField label="RRF" value={getBool(transactionDetail?.rrf)} />
+          <PrintField label="RMA" value={getBool(transactionDetail?.rma)} />
+          <PrintField label="Alteration" value={getBool(transactionDetail?.alteration)} />
+          <PrintField label="Conversion" value={getBool(transactionDetail?.conversion)} />
+          <PrintField label="Number Plate" value={transactionDetail?.numberPlate} />
+          <PrintField label="Address Change" value={getBool(transactionDetail?.addressChange)} />
+          <PrintField label="DRC" value={getBool(transactionDetail?.drc)} />
+          <PrintField label="Remarks" value={transactionDetail?.remarks} />
+        </Section2>
+
+        <Section2 title="Seller Details">
+          <PrintField label="Seller Name" value={ownerDetails?.sellerName} />
+          <PrintField label="Seller Aadhar" value={ownerDetails?.sellerAadharNo} />
+          <PrintField label="Seller Address" value={ownerDetails?.sellerAddress} />
+          <PrintField label="Seller State" value={ownerDetails?.sellerState} />
+          <PrintField label="Seller Phone" value={ownerDetails?.sellerPhoneNo} />
+        </Section2>
+
+        <Section2 title="Buyer Details">
+          <PrintField label="Buyer Name" value={ownerDetails?.buyerName} />
+          <PrintField label="Buyer Aadhar" value={ownerDetails?.buyerAadharNo} />
+          <PrintField label="Buyer Address" value={ownerDetails?.buyerAddress} />
+          <PrintField label="Buyer State" value={ownerDetails?.buyerState} />
+          <PrintField label="Buyer Phone" value={ownerDetails?.buyerPhoneNo} />
+        </Section2>
+
+        <Section2 title="Expense Details">
+          <PrintField label="PUC Charges" value={expenseDetail?.pucCharges} />
+          <PrintField label="Insurance Charges" value={expenseDetail?.insuranceCharges} />
+          <PrintField label="Other Charges" value={expenseDetail?.otherCharges} />
+          <PrintField label="Admin Charges" value={expenseDetail?.adminCharges} />
+        </Section2>
+      </div>
+    );
+  };
+
+
   const RenderField = ({
     label,
     value,
@@ -342,9 +448,9 @@ export default function CaseDescription() {
                   {...field}
                   maxLength={10}
                   onChange={e => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      field.onChange(val);
-                    }}
+                    const val = e.target.value.replace(/\D/g, "");
+                    field.onChange(val);
+                  }}
                   className="border p-2 rounded-md w-full"
                 />
                 {fieldState.error && (
@@ -359,12 +465,12 @@ export default function CaseDescription() {
           <Controller
             name={name as any}
             control={control}
-                  rules={{
-                  pattern: {
-                    value: /^\d{12}$/,
-                    message: "Aadhaar No must be a 12-digit number",
-                  },
-                  }}
+            rules={{
+              pattern: {
+                value: /^\d{12}$/,
+                message: "Aadhaar No must be a 12-digit number",
+              },
+            }}
             render={({ field, fieldState }) => (
               <>
                 <input
@@ -372,9 +478,9 @@ export default function CaseDescription() {
                   {...field}
                   maxLength={12}
                   onChange={e => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      field.onChange(val);
-                    }}
+                    const val = e.target.value.replace(/\D/g, "");
+                    field.onChange(val);
+                  }}
                   className="border p-2 rounded-md w-full"
                 />
                 {fieldState.error && (
@@ -433,7 +539,11 @@ export default function CaseDescription() {
   const exd = caseData?.expenseDetail;
   const owd = caseData?.ownerDetails;
 
+const contentRef = useRef<HTMLDivElement>(null);
+const reactToPrintFn = useReactToPrint({ contentRef });
+
   return (
+    <>
     <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <button
@@ -445,6 +555,11 @@ export default function CaseDescription() {
           ← Back
         </button>
 
+
+
+      <Button type="button" onClick={reactToPrintFn} className="bg-primary text-white">
+        🖨️ Print PDF
+      </Button>
         {status?.toLowerCase() === "assigned" ? null : (
           !editMode ? (
             <button
@@ -478,6 +593,7 @@ export default function CaseDescription() {
         )}
       </div>
 
+
       <h1 className="text-2xl font-bold mb-4">Case Details: #{caseNo}</h1>
 
       <Section title="General Details">
@@ -498,6 +614,11 @@ export default function CaseDescription() {
           value={formatDate(gd?.appointmentDate)}
           name="generalDetail.appointmentDate"
           type="date"
+        />
+        <RenderField
+          label="Application No."
+          value={gd?.applicationNo}
+          name="generalDetail.applicationNo"
         />
       </Section>
 
@@ -754,5 +875,21 @@ export default function CaseDescription() {
           />}
       </Section>
     </form>
+  <div ref={contentRef} className="print:block hidden">
+ <PrintableCaseDetails
+    caseNo={caseNo}
+    generalDetail={gd}
+    vehicleDetail={vd}
+    expireDetail={ed}
+    transactionDetail={{
+      ...td,
+      hptFirmName: getFirmNameById(td?.hptId),
+      hpaFirmName: getFirmNameById(td?.hpaId),
+    }}
+    ownerDetails={owd}
+    expenseDetail={exd}
+  />
+</div>
+    </>
   );
 }

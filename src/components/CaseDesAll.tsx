@@ -145,7 +145,7 @@ export interface CaseFilterType {
     APPOINTMENT_DATE: "appointmentDate",
 };
 
-interface FilterFormValues {
+export interface FilterFormValues {
     filterType: CaseFilterType[keyof CaseFilterType]; // "applicationDate" | "appointmentDate"
     fromDate: string;
     toDate: string;
@@ -312,6 +312,7 @@ const applyFilter = async (data: FilterFormValues) => {
               return (
                 <div className="flex gap-4">
                   <button
+                  style={{cursor:"pointer"}}
                     onClick={() =>
                       navigate(`/superadmin/cases/${caseData.CaseNo}`, {
                         state: { id: caseData.id, status: caseData.status },

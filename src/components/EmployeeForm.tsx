@@ -27,12 +27,14 @@ import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { employeeTableColumns } from "@/lib/tables.data";
+import { useNavigate } from "react-router-dom";
 // import { useAuth } from "@/context/AuthContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Employee {
   id?: string;
   branchCode?: string;
+  employeeCode?:string;
   firstName: string;
   lastName: string;
   email: string;
@@ -60,6 +62,7 @@ export default function EmployeeForm() {
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [search, setSearch] = useState("");
   const toast = useToast();
+  const navigate = useNavigate();
   // const { user } = useAuth();
 
   const filteredBranch = branch.filter((temp)=>{
@@ -221,8 +224,27 @@ export default function EmployeeForm() {
         </DialogContent>
       </Dialog>
 
-      <DataTable columns={[...employeeTableColumns
-      ]} data={Employee2} />
+      <DataTable columns={[...employeeTableColumns,
+      
+      {
+    id: "viewDetails",
+    header: "View Details",
+    cell: ({ row }) => {
+      return (
+      <Button
+      style={{cursor:"pointer"}}
+      variant="default"
+        size="sm"
+        color="white"
+        onClick={() => navigate("/superadmin/employee/employeeDetails", { state: { employee: row.original } })}
+      >
+        View Details
+      </Button>
+    )
+    }
+  },
+  
+  ]} data={Employee2} />
     </div>
   );
 }
