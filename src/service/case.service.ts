@@ -20,10 +20,14 @@ export const createCase = async (CaseData: any) => {
     });
 };
 
-export const getAllCases = async () => {
+export const getAllCases = async ( filterType: string,
+  fromDate: string,
+  toDate: string,) => {
   const config = getConfig();
+  const data = {filterType,fromDate,toDate}
+
   return axios
-    .get(url + "/case/all", config)
+    .post(url + "/case/all", data,config)
     .then((response) => {
       return response.data;
     })
@@ -50,6 +54,19 @@ export const getAllCasesE = async () => {
   const config = getConfig();
   return axios
     .get(url + "/case/employee", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
+export const getAdminCases = async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/case/admin", config)
     .then((response) => {
       return response.data;
     })

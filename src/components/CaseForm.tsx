@@ -280,7 +280,7 @@ export default function CaseForm() {
       .then((resp) => {
         toast.showToast('Success', resp?.message, 'success');
         reset();
-        navigate(`/${user?.role}/cases`);
+        navigate(-1);
       })
       .catch((err: any) => {
         toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');

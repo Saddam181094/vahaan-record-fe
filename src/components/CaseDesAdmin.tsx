@@ -1,20 +1,15 @@
 import { useState, useEffect } from "react";
 import { useLoading } from "./LoadingContext";
-import { getAllCases } from "@/service/case.service";
+import { getAdminCases, verifyCase } from "@/service/case.service";
 import { useNavigate } from "react-router-dom";
-import { Label } from "@radix-ui/react-label";
-import { FaEye } from "react-icons/fa";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { getActiveClients } from "@/service/client.service";
 import { useForm } from "react-hook-form";
 import CaseDetails from "./CaseDetailsAdmin";
-import { assignCase } from "@/service/case.service";
 import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { caseTableColumns } from "@/lib/tables.data";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 export interface CaseDetails {
   id: string;
@@ -42,101 +37,8 @@ export interface vehicleDetail {
   vehicleNo: string;
 }
 
-export interface GeneralDetail{
+export interface GeneralDetail {
   appointmentDate?: string;
-}
-
-
-function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: string, caseId: string, disabled?: boolean, clients: any[], setFlag: React.Dispatch<React.SetStateAction<boolean>> }) {
-  const [open, setOpen] = useState(false);
-  const { setLoading } = useLoading();
-  // const [refreshFlag] = useState(false);
-  const [search, setSearch] = useState("");
-  const toast = useToast();
-
-    const filteredClients = clients.filter((client) =>
-          (`${client.firstName} ${client.lastname}`.toLowerCase().includes(search.toLowerCase()))
-      );
-  const { register, handleSubmit, setValue, watch, reset } = useForm<{ clientId: string }>({
-    defaultValues: { clientId: "" },
-  });
-
-  const selectedClient = watch("clientId");
-
-  const onSubmit = (data: { clientId: string }) => {
-
-    setLoading(true);
-    assignCase(caseId, data.clientId).
-      then(() => {
-        // console.log(resp?.data);
-        toast.showToast('Success', 'Case Assigned Successfully.', 'success');
-      }).catch((err: any) => {
-        toast.showToast('Error:', err?.message || 'Error Assigning Case', 'error');
-      })
-      .finally(() => {
-        setLoading(false);
-        setFlag(f => !f);
-      });
-    setOpen(false);
-    reset();
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={(val) => { setOpen(val); if (!val) reset(); }}>
-      <DialogTrigger asChild>
-        <Button
-          variant="default"
-          size="sm"
-          className="ml-2"
-          style={{ cursor: "pointer" }}
-          disabled={disabled}
-        >
-          Assign
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Assign Case {caseNo} to Dealer</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="clients" className="font-bold">Dealers</Label>
-            <hr />
-            <Select
-              onValueChange={(value) => {setValue("clientId", value); setSearch('');}}
-              value={selectedClient}
-            >
-              <SelectTrigger id="clients" className="w-full">
-                <SelectValue placeholder="Select Dealer" />
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                <div className="p-2">
-                  <Input
-                    placeholder="Search a State"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="mb-2"
-                    onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
-                    onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
-                  />
-                </div>
-                {filteredClients.map((client: any) => (
-                  <SelectItem key={client.id} value={client.id} className="w-full">
-                    {client.firstName} {client.lastName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {/* Register the field for react-hook-form */}
-            <input type="hidden" {...register("clientId", { required: true })} />
-          </div>
-          <DialogFooter>
-            <Button style={{ cursor: "pointer" }} type="submit" disabled={!selectedClient}>Submit</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
 }
 
 // Inside your TableCell, after the FaEye button:
@@ -144,35 +46,44 @@ export default function CaseDes() {
   useForm<CaseDetails>();
   const navigate = useNavigate();
   const [cases, setCases] = useState<CaseDetails[]>([]);
-  const [clients, setClients] = useState<any[]>([]);
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { setLoading } = useLoading();
   const toast = useToast();
+  const [flag] = useState(false); // For re-rendering
   // console.log(cases);
-  const [flag, setFlag] = useState(true);
 
 
-  
+  const handleVerify = () => {
+    setLoading(true);
+    if (!selectedCaseId) {
+      toast.showToast('Error:', 'No Valid CaseId is Provided', 'error')
+      setLoading(false);
+    };
+
+    verifyCase(selectedCaseId).then(() => {
+      toast.showToast('Affirmation', 'Case verified Succesfully', 'success');
+      setDialogOpen(false);
+
+    }).catch((err: any) => {
+      toast.showToast("Error", err?.message || 'Verification error Occured', 'error');
+    }).finally(() => {
+      setLoading(false);
+    })
+  };
 
   useEffect(() => {
     setLoading(true);
-    getActiveClients()
-      .then((resp) => {
-        setClients(resp?.data || []);
-      })
-      .catch((err: any) => {
-        toast.showToast('Error:', err?.message || 'Error fetching firms', 'error');
-        // console.error("Error fetching firms:", err);
-        setClients([]);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    getAllCases()
-      .then((resp) => setCases(resp?.data))
-      .catch((err: any) => console.error("Error fetching cases:", err))
-      .finally(() => setLoading(false));
+    getAdminCases()
+      .then((resp) => 
+      {
+        setCases(resp?.data);
+        setLoading(false);
+      }
+        )
+      .catch((err: any) =>  toast.showToast("Error", err?.message || 'Error fetching Branches', 'error'))
+      .finally(() => {
+        setLoading(false)});
   }, [flag]);
 
   return (
@@ -191,58 +102,69 @@ export default function CaseDes() {
             Add New Case
           </Button>
           <DataTable
-            data={cases}
             columns={[...caseTableColumns,
             {
-              header: "Action",
-              accessorKey: "action",
-              cell: ({ row }: any) => {
-                const caseData = row.original;
+              id: "verify",
+              header: "Verify",
+              cell: ({ row }) => {
+                const data = row.original;
+                const isDisabled = !data?.generalDetail?.appointmentDate;
+
                 return (
-                  <div className="flex center flex-row gap-4">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigate(`/superadmin/cases/${caseData.CaseNo}`, {
-                          state: { id: caseData.id, status: caseData.status },
-                        })
-                      }
-                      title="View Details"
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        fontSize: "1.2rem",
-                        color: "#000",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.color = "#007bff")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.color = "#000")
-                      }
-                    >
-                      <FaEye />
-                    </button>
-                    {caseData.status?.toLowerCase() !== "assigned" &&
-                      caseData.status?.toLowerCase() !== "created" && (
-                        <AssignDialog
-                          caseNo={caseData.CaseNo}
-                          caseId={caseData.id}
-                          clients={clients}
-                          setFlag={setFlag}
-                        />
-                      )}
-                  </div>
+                  <Button
+                    variant="outline"
+                    style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
+                    disabled={isDisabled}
+                    onClick={() => {
+                      // console.log(data.id);
+                      setSelectedCaseId(data.id);
+                      setDialogOpen(true);
+                    }}
+                  >
+                    Verify
+                  </Button>
                 );
               },
+
             },
             ]}
+            data={cases.filter((items) => String(items.status) === 'Created')}
           />
 
 
         </>
       }
+
+      <Dialog open={dialogOpen} onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          setDialogOpen(false);
+          setSelectedCaseId(null);
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Verify Case</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to verify case <b>{cases.find(c => c.id === selectedCaseId)?.CaseNo}</b>?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="secondary"
+              style={{ cursor: "pointer" }}
+              onClick={() => setDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              style={{ cursor: "pointer" }}
+              onClick={handleVerify}
+            >
+              Approve
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -8,7 +8,8 @@ import {
   UserRoundPen,
   PcCase,
   User,
-  IndianRupee
+  IndianRupee,
+  BriefcaseConveyorBelt
 } from "lucide-react";
 import {
   Sidebar,
@@ -45,13 +46,14 @@ const items1: Record<string, SidebarItem[]> = {
       title: "Utilities",
       icon: Settings,
       submenu: [
-        { title: "HPA/HTP", url: "/superadmin/AddFirm", icon: Building2 },
+        { title: "HPT/HPA", url: "/superadmin/AddFirm", icon: Building2 },
         { title: "Branch", url: "/superadmin/AddBranch", icon: Building },
       ],
     },
     { title: "Employees", url: "/superadmin/AddEmployee", icon: CircleUser },
     { title: "Clients", url: "/superadmin/clients", icon: UserRoundPen },
-    { title: "All-Cases", url: "/superadmin/cases", icon: PcCase },
+    { title: "My-Cases", url: "/superadmin/cases/Mycases", icon: PcCase },
+    { title: "Verified-Cases", url: "/superadmin/cases/all", icon: BriefcaseConveyorBelt},
     { title: "Payments", url: "/superadmin/VerifyPayments", icon: IndianRupee },
     { title: "My Profile", url: "/superadmin/Profile", icon: User },
   ],
