@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/context/ToastContext";
 import { useLoading } from "@/components/LoadingContext";
-import type { ExpiryData } from "./AdminDash";
+// import type { ExpiryData } from "./AdminDash";
 import { allCaseColumns, type CaseData } from "@/lib/tables.data";
 import { getSummary } from "@/service/case.service";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -27,7 +27,7 @@ const EmployeeDashboard = () => {
 
     const toast = useToast();
     const { setLoading } = useLoading();
-    const [expiryStats, setExpiryStats] = useState<ExpiryData[]>([]);
+    const [expiryStats, setExpiryStats] = useState<any[]>([]);
     const [selectedCases, setSelectedCases] = useState<CaseData[]>([]);
     const [selectedType, setSelectedType] = useState<string | null>(null);
   
