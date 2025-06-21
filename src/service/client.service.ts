@@ -39,6 +39,20 @@ export const getClient = async () => {
     });
 };
 
+export const clientTransaction = async (fromDate: string,toDate:string,id:string) => {
+  const config = getConfig();
+  const data = {fromDate,toDate}
+  return axios
+    .post(`${url}/client/transaction-history/${id}`,data, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
 export const makePayment = async (data:any) => {
   const config = getConfig();
   return axios

@@ -107,11 +107,12 @@ const MyProfile: React.FC = () => {
 
                 <div className="flex flex-col md:flex-row justify-between w-full gap-6 px-4">
                     <div className="max-w-md w-full p-6">
-                        <Card className="p-6 space-y-4">
+                        <Card className="p-4 space-y-4">
                             <h2 className="text-xl font-semibold">My Profile</h2>
                             <div className="flex justify-center gap-10">
                                 <div className="flex justify-center">
-                                    <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                                    <div className="lg:h-24 lg:w-24 h-10 w-10 rounded-full bg-gray-200 flex text-gray-500 text-sm">
+
                                     </div>
                                 </div>
                                 <div>
@@ -223,9 +224,9 @@ const MyProfile: React.FC = () => {
                         </Card>
                     </div>
                     {user?.role === 'client' ? (
-                        <Card className="p-6 space-y-4 sm:w-[80vw] mt-6 max-w-[90vw] md:w-[25vw] h-[40vh]">
-                            <h2 className="text-xl font-semibold">Credit Summary</h2>
-                            <div className="space-y-2">
+                        <div className="flex-1 flex items-center justify-end p-6">
+                            <Card className="p-6 space-y-2 w-full max-w-xs">
+                                <h2 className="text-xl font-semibold">Credit Summary</h2>
                                 <div className="flex justify-between text-sm font-medium">
                                     <span>Utilized: ₹{user.utilizedCredit}</span>
                                     <span>Total Limit: ₹{user.creditLimit}</span>
@@ -236,23 +237,14 @@ const MyProfile: React.FC = () => {
                                         style={{ width: `${percentage}%` }}
                                     />
                                 </div>
-                                {/* <Progress
-                                    value={percentage}
-                                    className="h-3"
-                                    style={{
-                                        backgroundColor: "#e5e7eb",
-                                    }}
-                                   
-                                /> */}
-
                                 <div
                                     className="mt-1 text-right text-xs text-muted-foreground"
                                 >
                                     {(utilized / limit * 100).toFixed(1)}% utilized
                                 </div>
-                            </div>
-                        </Card>)
-                        : null}
+                            </Card>
+                        </div>
+                    ) : null}
                 </div>
             </div>
         </SidebarProvider>

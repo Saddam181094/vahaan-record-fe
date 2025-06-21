@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLoading } from "./LoadingContext";
 import { getAllCases } from "@/service/case.service";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "@radix-ui/react-label";
 import { FaEye } from "react-icons/fa";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -113,7 +113,7 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
                             <SelectContent className="w-full">
                                 <div className="p-2">
                                     <Input
-                                        placeholder="Search a State"
+                                        placeholder="Search a Dealer"
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
                                         className="mb-2"
@@ -143,6 +143,11 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
 export interface CaseFilterType {
     APPLICATION_DATE: "applicationDate",
     APPOINTMENT_DATE: "appointmentDate",
+      PUC_EXPIRY : 'pucExpiry',
+  INSURANCE_EXPIRY : 'insuranceExpiry',
+  FITNESS_EXPIRY : 'fitnessExpiry',
+  TAX_EXPIRY : 'taxExpiry',
+  PERMIT_EXPIRY : 'permitExpiry',
 };
 
 export interface FilterFormValues {
@@ -196,7 +201,33 @@ export default function CaseDes() {
       .finally(() => setLoading(false));
   }, []);
 
+const location = useLocation();
+const { state } = location;
+
   useEffect(() => {
+
+    if(state?.type){
+      switch (state.type) {
+        case "PUC":
+        setValue("filterType","pucExpiry" );
+          break;
+        case "INSURANCE":
+          setValue("filterType","insuranceExpiry" );
+          break;
+        case "FITNESS":
+          setValue("filterType","fitnessExpiry" );
+          break;
+        case "TAX":
+          setValue("filterType","taxExpiry" );
+          break;
+        case "PERMIT":
+          setValue("filterType","permitExpiry" );
+          break;
+        default:
+          setValue("filterType", "applicationDate");
+          break;
+    }
+    }
     const { fromDate, toDate, filterType } = getValues();
     if (!fromDate || !toDate) return;
 
@@ -246,6 +277,11 @@ const applyFilter = async (data: FilterFormValues) => {
                   {Object.entries({
                     APPLICATION_DATE: "applicationDate",
                     APPOINTMENT_DATE: "appointmentDate",
+                    PUC_EXPIRY: "pucExpiry",
+                    INSURANCE_EXPIRY: "insuranceExpiry",
+                    FITNESS_EXPIRY: "fitnessExpiry",
+                    TAX_EXPIRY: "taxExpiry",
+                    PERMIT_EXPIRY: "permitExpiry",
                   }).map(([key, value]: [string, string]) => (
                     <SelectItem key={key} value={value}>
                       {key.replace(/_/g, " ").toLowerCase().replace(/(^|\s)\S/g, (l: string) => l.toUpperCase())}

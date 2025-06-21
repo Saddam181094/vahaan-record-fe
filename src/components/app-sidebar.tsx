@@ -58,8 +58,8 @@ const items1: Record<string, SidebarItem[]> = {
     { title: "My Profile", url: "/superadmin/Profile", icon: User },
   ],
   client: [
-    { title: "Home", url: "/client", icon: Home },
-    { title: "Cases", url: "/client/cases", icon: UserRoundPen },
+    { title: "My Cases", url: "/client/cases", icon: UserRoundPen },
+    { title: "My Transactions", url: "/client/Transactions", icon: IndianRupee },
     { title: "My Profile", url: "/client/Profile", icon: User },
   ],
   employee: [

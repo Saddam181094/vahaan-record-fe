@@ -16,6 +16,14 @@ export type CaseData = {
   };
 };
 
+  export type Transaction = {
+    id: string;
+    Amount: string;
+    mode: string;
+    paymentDate: string;
+    status: string;
+  };
+
 export const branchTableColumns: ColumnDef<Branch>[] = [
   {
     accessorKey: "name",
@@ -75,6 +83,29 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
   },
 }
 
+];
+
+export const clientTransactioncolumns: ColumnDef<Transaction>[] = [
+  
+  {
+    // accessorKey: "Amount",
+    header: "Amount (₹)",
+    cell: ({ row }) => `₹${parseFloat(row.original.Amount).toFixed(2)}`,
+  },
+  {
+    accessorKey: "mode",
+    header: "Mode",
+    cell: ({ row }) => (row.original.mode).toUpperCase(),
+  },
+  {
+    // accessorKey: "paymentDate",
+    header: "Date",
+     cell: ({ row }) => new Date(row.original.paymentDate).toLocaleDateString(),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
 ];
 
 export const allCaseColumns:ColumnDef<CaseData>[] = [

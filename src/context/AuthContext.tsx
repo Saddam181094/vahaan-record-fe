@@ -66,6 +66,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return;
   }
 
+  if(user.role === "client"){
+    navigate(`/${user.role}/cases`);
+  }
+    
+    else
     navigate(`/${user.role}`);
     };
     

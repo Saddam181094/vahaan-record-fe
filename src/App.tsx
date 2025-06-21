@@ -4,7 +4,6 @@ import { UserRole } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import LoginPage from "@/pages/Login";
 import AdminDashboard from "@/pages/AdminDash";
-import UserDashboard from "@/pages/UserDash";
 import EmployeeDashboard from "@/pages/EmployeeDash";
 import AddBranch from "@/pages/AdBranch";
 import AddFirm from "@/pages/AdFirm";
@@ -24,6 +23,7 @@ import VerifyPayments from "@/components/VerifyPayments"
 import ClientDetails from "./components/ClientDetails";
 import AlCaseA from "@/pages/AlCaseA"
 import EmployeeDetails from "@/components/EmployeeDetails"
+import ClientTransactions from "@/components/ClientTransactions"
 // import { Loader } from "lucide-react";
 export default function App() {
   return (
@@ -112,12 +112,6 @@ export default function App() {
 
       {/* Super Admin Routes */}
 
-      <Route path="/client" element={
-        <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
-          <UserDashboard />
-        </ProtectedRoute>
-      } />
-
       <Route path="/client/cases" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
           <ClientCases/>
@@ -139,6 +133,12 @@ export default function App() {
       <Route path="/client/payment" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
           <Payment/>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/client/Transactions" element={
+        <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
+          <ClientTransactions/>
         </ProtectedRoute>
       } />
 

@@ -210,6 +210,11 @@ const filteredCases = cases.filter((c) => {
   </Button>
 </div>
 
+{filteredCases.length === 0 && (
+  <div className="text-center text-muted-foreground py-10 text-sm border rounded-md">
+    No cases found in "{activeTab}".
+  </div>
+)}
 
 
       {filteredCases

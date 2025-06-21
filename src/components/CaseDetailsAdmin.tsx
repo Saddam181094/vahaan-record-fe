@@ -261,96 +261,6 @@ const Section2 = ({
       <span className="font-semibold">{label}:</span> {value || "-"}
     </div>
   );
-  const PrintableCaseDetails = ({
-    caseNo,
-    generalDetail,
-    vehicleDetail,
-    expireDetail,
-    transactionDetail,
-    ownerDetails,
-    expenseDetail,
-  }: any) => {
-    const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : "-");
-    const getBool = (val?: boolean) => (val ? "Yes" : "No");
-
-    return (
-      <div id="printable-content" className="p-12 text-sm leading-relaxed">
-        {/* Letterhead */}
-        <div className="mb-6 border-b pb-4">
-          <img
-            src="/Group.svg"
-            alt="Letterhead"
-            className="mb-5 max-h-24"
-          />
-          <h1 className="text-xl font-bold mt-5">Case Details</h1>
-          <p className="text-gray-600">Case No: #{caseNo}</p>
-        </div>
-
-        <Section2 title="General Details">
-          <PrintField label="Firm Name" value={generalDetail?.firmName} />
-          <PrintField label="Appointment Date" value={formatDate(generalDetail?.appointmentDate)} />
-          <PrintField label="Application No." value={generalDetail?.applicationNo} />
-          <PrintField label="Incentive Amount" value={generalDetail?.incentiveAmount} />
-        </Section2>
-
-        <Section2 title="Vehicle Details">
-          <PrintField label="Vehicle No" value={vehicleDetail?.vehicleNo} />
-          <PrintField label="From RTO" value={vehicleDetail?.fromRTO} />
-          <PrintField label="To RTO" value={vehicleDetail?.toRTO} />
-          <PrintField label="Chassis No" value={vehicleDetail?.chassisNo} />
-          <PrintField label="Engine No" value={vehicleDetail?.engineNo} />
-          <PrintField label="RMA Vehicle No" value={vehicleDetail?.rmaVehicleNo} />
-        </Section2>
-
-        <Section2 title="Expire Details">
-          <PrintField label="Insurance Expiry" value={formatDate(expireDetail?.insuranceExpiry)} />
-          <PrintField label="PUC Expiry" value={formatDate(expireDetail?.pucExpiry)} />
-          <PrintField label="Fitness Expiry" value={formatDate(expireDetail?.fitnessExpiry)} />
-          <PrintField label="Tax Expiry" value={formatDate(expireDetail?.taxExpiry)} />
-          <PrintField label="Permit Expiry" value={formatDate(expireDetail?.permitExpiry)} />
-        </Section2>
-
-        <Section2 title="Transaction Details" className="break-before-page mt-10">
-          <PrintField label="To RTO" value={transactionDetail?.to} />
-          <PrintField label="HPT Firm" value={transactionDetail?.hptFirmName} />
-          <PrintField label="HPA Firm" value={transactionDetail?.hpaFirmName} />
-          <PrintField label="Fitness" value={getBool(transactionDetail?.fitness)} />
-          <PrintField label="RRF" value={getBool(transactionDetail?.rrf)} />
-          <PrintField label="RMA" value={getBool(transactionDetail?.rma)} />
-          <PrintField label="Alteration" value={getBool(transactionDetail?.alteration)} />
-          <PrintField label="Conversion" value={getBool(transactionDetail?.conversion)} />
-          <PrintField label="Number Plate" value={transactionDetail?.numberPlate} />
-          <PrintField label="Address Change" value={getBool(transactionDetail?.addressChange)} />
-          <PrintField label="DRC" value={getBool(transactionDetail?.drc)} />
-          <PrintField label="Remarks" value={transactionDetail?.remarks} />
-        </Section2>
-
-        <Section2 title="Seller Details">
-          <PrintField label="Seller Name" value={ownerDetails?.sellerName} />
-          <PrintField label="Seller Aadhar" value={ownerDetails?.sellerAadharNo} />
-          <PrintField label="Seller Address" value={ownerDetails?.sellerAddress} />
-          <PrintField label="Seller State" value={ownerDetails?.sellerState} />
-          <PrintField label="Seller Phone" value={ownerDetails?.sellerPhoneNo} />
-        </Section2>
-
-        <Section2 title="Buyer Details">
-          <PrintField label="Buyer Name" value={ownerDetails?.buyerName} />
-          <PrintField label="Buyer Aadhar" value={ownerDetails?.buyerAadharNo} />
-          <PrintField label="Buyer Address" value={ownerDetails?.buyerAddress} />
-          <PrintField label="Buyer State" value={ownerDetails?.buyerState} />
-          <PrintField label="Buyer Phone" value={ownerDetails?.buyerPhoneNo} />
-        </Section2>
-
-        <Section2 title="Expense Details">
-          <PrintField label="PUC Charges" value={expenseDetail?.pucCharges} />
-          <PrintField label="Insurance Charges" value={expenseDetail?.insuranceCharges} />
-          <PrintField label="Other Charges" value={expenseDetail?.otherCharges} />
-          <PrintField label="Admin Charges" value={expenseDetail?.adminCharges} />
-        </Section2>
-      </div>
-    );
-  };
-
 
   const RenderField = ({
     label,
@@ -550,6 +460,99 @@ const Section2 = ({
 
 const contentRef = useRef<HTMLDivElement>(null);
 const reactToPrintFn = useReactToPrint({ contentRef });
+
+  const PrintableCaseDetails = ({
+    caseNo,
+    generalDetail,
+    vehicleDetail,
+    expireDetail,
+    transactionDetail,
+    ownerDetails,
+    expenseDetail,
+  }: any) => {
+    const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : "-");
+    const getBool = (val?: boolean) => (val ? "Yes" : "No");
+
+    return (
+      <div id="printable-content" className="p-12 text-sm leading-relaxed">
+        {/* Letterhead */}
+        <div className="mb-6 border-b pb-4">
+          <img
+            src="/Group.svg"
+            alt="Letterhead"
+            className="mb-5 max-h-24"
+          />
+          <h1 className="text-xl font-bold mt-5">Case Details</h1>
+          <p className="text-gray-600">Case No: #{caseNo}</p>
+        </div>
+
+        <Section2 title="General Details">
+          <PrintField label="Firm Name" value={generalDetail?.firmName} />
+          <PrintField label="Appointment Date" value={formatDate(generalDetail?.appointmentDate)} />
+          <PrintField label="Application No." value={generalDetail?.applicationNo} />
+          <PrintField label="Incentive Amount" value={generalDetail?.incentiveAmount} />
+        </Section2>
+
+        <Section2 title="Vehicle Details">
+          <PrintField label="Vehicle No" value={vehicleDetail?.vehicleNo} />
+          <PrintField label="From RTO" value={vehicleDetail?.fromRTO} />
+          <PrintField label="To RTO" value={vehicleDetail?.toRTO} />
+          <PrintField label="Chassis No" value={vehicleDetail?.chassisNo} />
+          <PrintField label="Engine No" value={vehicleDetail?.engineNo} />
+          <PrintField label="RMA Vehicle No" value={vehicleDetail?.rmaVehicleNo} />
+        </Section2>
+
+        <Section2 title="Expire Details">
+          <PrintField label="Insurance Expiry" value={formatDate(expireDetail?.insuranceExpiry)} />
+          <PrintField label="PUC Expiry" value={formatDate(expireDetail?.pucExpiry)} />
+          <PrintField label="Fitness Expiry" value={formatDate(expireDetail?.fitnessExpiry)} />
+          <PrintField label="Tax Expiry" value={formatDate(expireDetail?.taxExpiry)} />
+          <PrintField label="Permit Expiry" value={formatDate(expireDetail?.permitExpiry)} />
+        </Section2>
+
+        <Section2 title="Transaction Details" className="break-before-page mt-10">
+          <PrintField label="To RTO" value={transactionDetail?.to} />
+          <PrintField label="HPT Firm" value={transactionDetail?.hptFirmName} />
+          <PrintField label="HPA Firm" value={transactionDetail?.hpaFirmName} />
+          <PrintField label="Fitness" value={getBool(transactionDetail?.fitness)} />
+          <PrintField label="RRF" value={getBool(transactionDetail?.rrf)} />
+          <PrintField label="RMA" value={getBool(transactionDetail?.rma)} />
+          <PrintField label="Alteration" value={getBool(transactionDetail?.alteration)} />
+          <PrintField label="Conversion" value={getBool(transactionDetail?.conversion)} />
+          <PrintField label="Number Plate" value={transactionDetail?.numberPlate} />
+          <PrintField label="Address Change" value={getBool(transactionDetail?.addressChange)} />
+          <PrintField label="DRC" value={getBool(transactionDetail?.drc)} />
+          <PrintField label="Remarks" value={transactionDetail?.remarks} />
+        </Section2>
+
+{owd && (<>
+        <Section2 title="Seller Details">
+          <PrintField label="Seller Name" value={ownerDetails?.sellerName} />
+          <PrintField label="Seller Aadhar" value={ownerDetails?.sellerAadharNo} />
+          <PrintField label="Seller Address" value={ownerDetails?.sellerAddress} />
+          <PrintField label="Seller State" value={ownerDetails?.sellerState} />
+          <PrintField label="Seller Phone" value={ownerDetails?.sellerPhoneNo} />
+        </Section2>
+
+        <Section2 title="Buyer Details">
+          <PrintField label="Buyer Name" value={ownerDetails?.buyerName} />
+          <PrintField label="Buyer Aadhar" value={ownerDetails?.buyerAadharNo} />
+          <PrintField label="Buyer Address" value={ownerDetails?.buyerAddress} />
+          <PrintField label="Buyer State" value={ownerDetails?.buyerState} />
+          <PrintField label="Buyer Phone" value={ownerDetails?.buyerPhoneNo} />
+        </Section2>
+</>
+)}
+        <Section2 title="Expense Details">
+          <PrintField label="PUC Charges" value={expenseDetail?.pucCharges} />
+          <PrintField label="Insurance Charges" value={expenseDetail?.insuranceCharges} />
+          <PrintField label="Other Charges" value={expenseDetail?.otherCharges} />
+          <PrintField label="Admin Charges" value={expenseDetail?.adminCharges} />
+        </Section2>
+      </div>
+    );
+  };
+
 
   return (
     <>
@@ -792,7 +795,11 @@ const reactToPrintFn = useReactToPrint({ contentRef });
         />
       </Section>
 
-      <Section title="Seller Details">
+
+
+      {owd && (
+        <>     
+        <Section title="Seller Details">
         <RenderField
           label="Seller Name"
           value={owd?.sellerName}
@@ -824,6 +831,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           type="Mobile"
         />
       </Section>
+
       <Section title="Buyer Details">
         <RenderField
           label="Buyer Name"
@@ -856,6 +864,9 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           type="Mobile"
         />
       </Section>
+      </>
+      )}
+
 
       <Section title="Expense Details">
         <RenderField
@@ -884,7 +895,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           />}
       </Section>
     </form>
-  <div ref={contentRef} className="text-sm leading-relaxed">
+  <div ref={contentRef} className="print:block hidden text-sm leading-relaxed">
  <PrintableCaseDetails
     caseNo={caseNo}
     generalDetail={gd}

@@ -8,102 +8,116 @@ import { Button } from "@/components/ui/button";
 import { getSummary } from "@/service/case.service";
 import { useToast } from "@/context/ToastContext";
 import { useLoading } from "@/components/LoadingContext";
-import { DataTable } from "@/components/DataTable";
-import { allCaseColumns, type CaseData } from "@/lib/tables.data";
+import { useNavigate } from "react-router-dom";
 
-export type ExpiryData = {
+type ExpiryData = {
   expiryType: string;
   count: number;
-  cases: CaseData[];
 };
 
 const AdminDashboard = () => {
   const [open, setOpen] = useState(false);
   const { logout } = useAuth();
-  const toast = useToast();
-  const { setLoading } = useLoading();
-
   const [expiryStats, setExpiryStats] = useState<ExpiryData[]>([]);
-  const [selectedCases, setSelectedCases] = useState<CaseData[]>([]);
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    getSummary()
-      .then((resp) => {
-        const data = resp?.data?.data || [];
-        setExpiryStats(data);
-
-        // Default selection: first card's cases
-        if (data.length > 0) {
-          setSelectedCases(data[0].cases);
-          setSelectedType(data[0].expiryType);
-        }
-      })
-      .catch((err) => {
-        toast.showToast("Error:", err?.message || "Summary fetch failed", "error");
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleCardClick = (expiryType: string, cases: CaseData[]) => {
-    setSelectedCases(cases);
-    setSelectedType(expiryType);
+  const toast = useToast();
+  const {setLoading} = useLoading();
+  const handleLogout = () => {
+    logout();
   };
+
+  const navigate = useNavigate();
+
+const handleClick = (data:any) => {
+  const type = data;
+  navigate(`/superadmin/cases/all`, { state: { type } });
+}
+
+  // Simulate API fetch (replace this with actual API call)
+  useEffect(() => {
+    // replace this with your actual API service
+    setLoading(true);
+      getSummary()
+      .then((resp)=>{
+        setExpiryStats(resp?.data?.data)
+      })
+      .catch((err)=>{
+        toast.showToast('Error:',err?.message || 'Summary was not fetched due to some error','error')
+      }).finally(()=>{
+        setLoading(false);
+      })
+  }, []);
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-
-      <div className="flex flex-col w-full bg-white px-6 py-4 min-h-screen">
+      <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
         <div className="flex justify-end mb-4">
-          <Button variant="destructive" style={{cursor:"pointer"}} onClick={() => setOpen(true)}>Logout</Button>
+          <Button
+            style={{ cursor: "pointer" }}
+            variant="destructive"
+            className="cursor-pointer hover:bg-red-800"
+            onClick={() => setOpen(true)}
+          >
+            Logout
+          </Button>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Confirm Logout</DialogTitle>
-                <DialogDescription>Are you sure you want to logout?</DialogDescription>
+                <DialogDescription>
+                  Are you sure you want to logout?
+                </DialogDescription>
               </DialogHeader>
               <div className="flex justify-end gap-2 mt-4">
-                <Button variant="outline" style={{cursor:"pointer"}} onClick={() => setOpen(false)}>Cancel</Button>
-                <Button variant="destructive" onClick={logout}>Logout</Button>
+                <Button
+                  style={{ cursor: "pointer" }}
+                  variant="outline"
+                  onClick={() => setOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  style={{ cursor: "pointer" }}
+                  variant="destructive"
+                  className="cursor-pointer hover:bg-red-800"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
 
-        <span className="text-4xl font-bold mb-12">Summary of the Cases</span>
+        {/* Expiry Stats Cards Section */}
+<div className="flex-grow">
+  <span className="col-span-full text-4xl font-bold mb-10 block">Summary of the Cases</span>
+  <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-2">
+    {expiryStats.map((item, index) => {
+      const isEven = index % 2 === 0;
+      const bgColor = isEven ? 'bg-[#584FF7]' : 'bg-[#1f2c4d]'; // Metallic tones
+      const textColor = 'text-white';
 
-        {/* Main Layout */}
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left: Cards - 25% */}
-          <div className="w-full lg:w-1/4 space-y-4">
-            {expiryStats.map((item, index) => {
-              const isSelected = selectedType === item.expiryType;
-              const bgColor = index % 2 === 0 ? 'bg-[#584FF7]' : 'bg-[#1f2c4d]';
-              const textColor = 'text-white';
+      return (
+        <Card
+          key={item.expiryType}
+          className={`shadow-md border-0 ${bgColor} ${textColor} rounded-lg flex flex-col j`}
+          onClick={()=> handleClick(item.expiryType)}
+          style={{ cursor: "pointer" }}
+        >
+          <CardHeader className="text-lg font-semibold">
+            {item.expiryType}
+          </CardHeader>
+          <CardContent className="text-4xl font-extrabold">
+            {item.count}
+          </CardContent>
+        </Card>
+      );
+    })}
+  </div>
+</div>
 
-              return (
-                <Card
-                  key={item.expiryType}
-                  className={`cursor-pointer border-0 rounded-lg shadow-md ${bgColor} ${textColor} ${
-                    isSelected ? 'ring-5 ring-blue-800' : ''
-                  }`}
-                  onClick={() => handleCardClick(item.expiryType, item.cases)}
-                >
-                  <CardHeader className="text-lg font-semibold">{item.expiryType}</CardHeader>
-                  <CardContent className="text-4xl font-extrabold">{item.count}</CardContent>
-                </Card>
-              );
-            })}
-          </div>
-
-          {/* Right: Table - 75% */}
-          <div className="w-full lg:w-3/4">
-            <DataTable columns={allCaseColumns} data={selectedCases} />
-          </div>
-        </div>
       </div>
     </SidebarProvider>
   );
