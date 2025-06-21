@@ -6,6 +6,16 @@ import { type CaseDetails } from "@/components/CaseDesAdmin";
 import type { Employee } from "@/components/EmployeeForm";
 import type { Firm } from "@/components/FirmForm";
 
+export type CaseData = {
+  id: string;
+  caseNo: number;
+  createdAt: string;
+  expiryDate: string;
+  vehicleDetail: {
+    vehicleNo: string;
+  };
+};
+
 export const branchTableColumns: ColumnDef<Branch>[] = [
   {
     accessorKey: "name",
@@ -65,6 +75,29 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
   },
 }
 
+];
+
+export const allCaseColumns:ColumnDef<CaseData>[] = [
+  {
+    // accessorKey: "caseNo",
+    accessorFn: (row) => `#${row?.caseNo}`,
+    header: "Case No",
+  },
+  {
+    accessorKey: "vehicleDetail.vehicleNo",
+    header: "Vehicle No",
+    cell: ({ row }) => row.original.vehicleDetail.vehicleNo,
+  },
+  {
+    // accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+  },
+  {
+    // accessorKey: "expiryDate",
+    header: "Expiry Date",
+    cell: ({ row }) => new Date(row.original.expiryDate).toLocaleDateString(),
+  },
 ];
 
 export const employeeCaseTableColumns: ColumnDef<CaseDetails>[] = [

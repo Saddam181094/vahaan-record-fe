@@ -240,12 +240,21 @@ export default function CaseDescription() {
     </Card>
   );
 
-  const Section2 = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <div className="mb-6">
+const Section2 = ({
+  title,
+  children,
+  className = "",
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div className={`mb-6 ${className}`}>
     <h2 className="text-lg font-bold mb-2 border-b pb-1">{title}</h2>
     <div className="grid grid-cols-2 gap-4">{children}</div>
   </div>
 );
+
 
   const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => (
     <div className="mb-2">
@@ -265,16 +274,16 @@ export default function CaseDescription() {
     const getBool = (val?: boolean) => (val ? "Yes" : "No");
 
     return (
-      <div id="printable-content" className="p-6 text-sm leading-relaxed">
+      <div id="printable-content" className="p-12 text-sm leading-relaxed">
         {/* Letterhead */}
-        <div className="mb-6 text-center border-b pb-4">
+        <div className="mb-6 border-b pb-4">
           <img
             src="/Group.svg"
             alt="Letterhead"
-            className="mx-auto mb-2 max-h-24 object-contain"
+            className="mb-5 max-h-24"
           />
-          <h1 className="text-xl font-bold">Case Details</h1>
-          <p className="text-gray-600">Case No: {caseNo}</p>
+          <h1 className="text-xl font-bold mt-5">Case Details</h1>
+          <p className="text-gray-600">Case No: #{caseNo}</p>
         </div>
 
         <Section2 title="General Details">
@@ -301,7 +310,7 @@ export default function CaseDescription() {
           <PrintField label="Permit Expiry" value={formatDate(expireDetail?.permitExpiry)} />
         </Section2>
 
-        <Section2 title="Transaction Details">
+        <Section2 title="Transaction Details" className="break-before-page mt-10">
           <PrintField label="To RTO" value={transactionDetail?.to} />
           <PrintField label="HPT Firm" value={transactionDetail?.hptFirmName} />
           <PrintField label="HPA Firm" value={transactionDetail?.hpaFirmName} />
@@ -875,7 +884,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           />}
       </Section>
     </form>
-  <div ref={contentRef} className="print:block hidden">
+  <div ref={contentRef} className="text-sm leading-relaxed">
  <PrintableCaseDetails
     caseNo={caseNo}
     generalDetail={gd}

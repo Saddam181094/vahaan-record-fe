@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { indianStates } from "@/components/Branchform";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { createClient } from "@/service/client.service";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Select,
   SelectTrigger,
@@ -46,13 +46,15 @@ export default function Signup () {
     const {setLoading} = useLoading();
     const [search,setSearch] = useState("");
     const toast = useToast();
+    const navigate = useNavigate();
     // const [serror, showerror] = useState<String>("");
       const onsubmit: SubmitHandler<NewClient> = async (data: NewClient) => {
         setLoading(true);
         try {
           const newClient = await createClient(data);
           setClient([...client, newClient]);
-          toast.showToast('Success:','ID created Successfully','success')
+          toast.showToast('Success:','ID created Successfully','success');
+          navigate(-1);
           reset();
         } catch (err: any) {
           // showerror(err);
@@ -73,7 +75,7 @@ export default function Signup () {
 
 return(
   <div className="flex flex-col items-center justify-center min-h-[100vh] bg-gradient-to-br from-blue-100 via-white to-purple-100 ">
-    <Card className="w-full max-w-[98%] shadow-2xl rounded-2xl border-0 bg-white/80 backdrop-blur-md">
+    <Card className="w-full lg:max-w-[40%] md:max-w-[98%] shadow-2xl rounded-2xl border-0 bg-white/80 backdrop-blur-md">
       <CardHeader className="text-center">
         <CardTitle className="text-3xl font-bold text-purple-700 mb-2">Sign Up</CardTitle>
         <p className="text-gray-500 text-base">Create your account for Vahaan Record</p>

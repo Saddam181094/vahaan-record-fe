@@ -70,7 +70,7 @@ export const getCasesbyEmployee = async ( filterType: string,
   const data = {filterType,fromDate,toDate}
 
   return axios
-    .post(`${url}/case/employee/${id}`, data , config)
+    .post(`${url}/case/employee-detail/${id}`, data , config)
     .then((response) => {
       return response.data;
     })

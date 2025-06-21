@@ -154,3 +154,13 @@ input[type="number"] {
   }
 }
 
+@media print {
+  body {
+    margin: 0;
+  }
+
+  #printable-content {
+    padding: 1in; /* This adds 1 inch spacing on all sides */
+    box-sizing: border-box;
+  }
+}

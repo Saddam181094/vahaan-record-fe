@@ -44,8 +44,8 @@ const MyProfile: React.FC = () => {
     const handleLogout = () => {
         logout();
     };
-    const creditLimit = 100000;
-    const utilizedLimit = 45000;
+    // const creditLimit = 100000;
+    // const utilizedLimit = 45000;
 
     const toast = useToast();
     const newPassword = watch("newPassword");
@@ -248,7 +248,7 @@ const MyProfile: React.FC = () => {
                                 <div
                                     className="mt-1 text-right text-xs text-muted-foreground"
                                 >
-                                    {(utilizedLimit / creditLimit * 100).toFixed(1)}% utilized
+                                    {(utilized / limit * 100).toFixed(1)}% utilized
                                 </div>
                             </div>
                         </Card>)
