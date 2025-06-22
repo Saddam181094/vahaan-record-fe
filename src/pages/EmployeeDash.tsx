@@ -83,7 +83,7 @@ const EmployeeDashboard = () => {
             </DialogContent>
           </Dialog>
         </div>
-        <div className="flex-grow">
+        <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
                  <span className="text-4xl font-bold mb-12">Summary of the Cases</span>
 
         {/* Main Layout */}

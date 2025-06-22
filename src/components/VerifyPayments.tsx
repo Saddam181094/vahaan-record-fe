@@ -298,7 +298,7 @@ const handleConfirmAction = () => {
 </Dialog>
 
         {/* Payment Table */}
-        <div className="flex-grow overflow-auto">
+        <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto overflow-auto">
 
           <DataTable columns={paymentTableColumns(openProofDialog, onVerify, onReject)} data={payments} />
           {/* Proof Dialog */}

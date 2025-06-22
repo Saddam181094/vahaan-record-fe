@@ -224,6 +224,7 @@ export default function EmployeeForm() {
         </DialogContent>
       </Dialog>
 
+<div className="flex w-full h-[99vh] overflow-hidden">
       <DataTable columns={[...employeeTableColumns,
       
       {
@@ -245,6 +246,7 @@ export default function EmployeeForm() {
   },
   
   ]} data={Employee2} />
+  </div>
     </div>
   );
 }

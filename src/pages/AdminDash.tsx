@@ -91,9 +91,9 @@ const handleClick = (data:any) => {
         </div>
 
         {/* Expiry Stats Cards Section */}
-<div className="flex-grow">
+<div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
   <span className="col-span-full text-4xl font-bold mb-10 block">Summary of the Cases</span>
-  <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-2">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-2">
     {expiryStats.map((item, index) => {
       const isEven = index % 2 === 0;
       const bgColor = isEven ? 'bg-[#584FF7]' : 'bg-[#1f2c4d]'; // Metallic tones

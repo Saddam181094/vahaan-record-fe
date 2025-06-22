@@ -142,23 +142,21 @@ const PrintableCaseDetails = ({
           <table className="w-full text-left border border-collapse border-gray-300 text-xs">
             <thead className="bg-gray-100">
               <tr>
-                <th className="border px-3 py-2">#</th>
-                <th className="border px-3 py-2">Amount</th>
-                <th className="border px-3 py-2">Mode</th>
                 <th className="border px-3 py-2">Date</th>
-                <th className="border px-3 py-2">Status</th>
+                <th className="border px-3 py-2">Remarks</th>
+                <th className="border px-3 py-2">Mode</th>
+                <th className="border px-3 py-2">Amount</th>
               </tr>
             </thead>
             <tbody>
-              {transactions.map((txn:any, index:any) => (
-                <tr key={index}>
-                  <td className="border px-3 py-2">{index + 1}</td>
-                  <td className="border px-3 py-2">₹{txn.Amount}</td>
-                  <td className="border px-3 py-2">{txn.mode}</td>
-                  <td className="border px-3 py-2">
+              {transactions.map((txn:any) => (
+                <tr >
+                <td className="border px-3 py-2">
                     {new Date(txn.paymentDate).toLocaleDateString()}
                   </td>
-                  <td className="border px-3 py-2 capitalize">{txn.status}</td>
+                  <td className="border px-3 py-2 capitalize">{txn.remark}</td>
+                  <td className="border px-3 py-2">{txn.mode}</td>
+                  <td className="border px-3 py-2">₹{txn.Amount}</td>
                 </tr>
               ))}
             </tbody>
@@ -174,12 +172,12 @@ const PrintableCaseDetails = ({
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarTrigger />
-                <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
+                <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto mr-5">
                     <div className="flex justify-end mb-4">
-                        <Button type="button" onClick={reactToPrintFn} className="bg-primary text-white mr-5">
+                        <Button type="button" onClick={reactToPrintFn} className="bg-primary text-white m-5">
                             🖨️ Print PDF
                         </Button>
-                        <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
+                        <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer m-5 hover:bg-red-800" onClick={() => setOpen(true)}>
                             Logout
                         </Button>
                         <Dialog open={open} onOpenChange={setOpen}>
@@ -204,10 +202,12 @@ const PrintableCaseDetails = ({
 
                     {/* Extract clientDetails from the first transaction if available */}
 
-                    <form onSubmit={handleSubmit(applyFilter)} className="flex gap-4 items-end">
-                        {/* Filter Type */}
+                    <form
+                        onSubmit={handleSubmit(applyFilter)}
+                        className="flex flex-wrap gap-4 items-end md:flex-nowrap"
+                    >
                         {/* From Date */}
-                        <div className="flex flex-col space-y-1">
+                        <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
                             <Label htmlFor="fromDate" className="text-sm font-medium capitalize">
                                 From Date<span className="text-red-500">*</span>
                             </Label>
@@ -226,7 +226,7 @@ const PrintableCaseDetails = ({
                         </div>
 
                         {/* To Date */}
-                        <div className="flex flex-col space-y-1">
+                        <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
                             <Label htmlFor="toDate" className="text-sm font-medium capitalize">
                                 To Date<span className="text-red-500">*</span>
                             </Label>
@@ -244,7 +244,7 @@ const PrintableCaseDetails = ({
                             />
                         </div>
 
-                        <Button type="submit" className="mt-2">
+                        <Button type="submit" className="mt-2 w-full md:w-auto">
                             Filter
                         </Button>
                     </form>

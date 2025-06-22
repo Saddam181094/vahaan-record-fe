@@ -21,16 +21,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
+import { useState } from "react";
 import {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@/components/ui/collapsible";
-
-
+import { useSidebar } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useLocation } from "react-router-dom";
+// import { useState } from "react";
 
 type SidebarItem = {
   title: string;
@@ -80,68 +80,86 @@ export function AppSidebar() {
   const items = role ? items1[role] || [] : [];
   const location = useLocation();
   const currentPath = location.pathname;
+  // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { state } = useSidebar()
+  const isCollapsed = state === "collapsed"
+
+  // Track open state for each collapsible menu by index
+  const [openMenus, setOpenMenus] = useState<{ [key: number]: boolean }>(() => {
+    const initial: { [key: number]: boolean } = {};
+    items.forEach((item, idx) => {
+      if (item.submenu) {
+        initial[idx] = item.submenu.some(sub => sub.url === currentPath);
+      }
+    });
+    return initial;
+  });
+
+  const handleToggle = (idx: number) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
 
   return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Vaahan Record</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item, index) =>
-                item.submenu ? (
-                  <Collapsible
-                    key={index + 1}
-                    defaultOpen={item.submenu.some((sub) => sub.url === currentPath)}
-                  >
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton>
-                          <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center gap-2">
-                              <item.icon />
-                              <span>{item.title}</span>
-                            </div>
-                            <ChevronDown className="transition-transform group-data-[state=open]:rotate-180" />
-                          </div>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    </CollapsibleTrigger>
-
-                    <CollapsibleContent className="pl-6">
-                      {item.submenu.map((sub) => (
-                        <SidebarMenuItem
-                          key={sub.title}
-                          className={sub.url === currentPath ? "bg-black text-white rounded-lg hover:bg-black" : "hover:bg-black hover:text-white rounded-lg"}
-                        >
-                          <SidebarMenuButton asChild>
-                            <Link to={sub.url ?? ""}>
-                              <sub.icon />
-                              <span>{sub.title}</span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </CollapsibleContent>
-                  </Collapsible>
-                ) : (
-                  <SidebarMenuItem
-                    key={item.title}
-                    className={item.url === currentPath ? "bg-black text-white rounded-lg hover:bg-black" : "hover:bg-black hover:text-white rounded-lg"}
-                  >
-                    <SidebarMenuButton asChild>
-                      <Link to={item.url ?? ""}>
-                        <item.icon className="h-3 w-3" />
-                        <span>{item.title}</span>
-                      </Link>
+<Sidebar>
+  <SidebarContent>
+    <SidebarGroup>
+      <SidebarGroupLabel>Vaahan Record</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map((item, idx) =>
+            item.submenu ? (
+              <Collapsible
+                key={idx+1}
+                open={openMenus[idx] && !isCollapsed}
+              >
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuItem onClick={() => handleToggle(idx)}>
+                    <SidebarMenuButton>
+                      <item.icon />
+                      {item.title}
+                      <ChevronDown className={`ml-auto transition-transform ${openMenus[idx] ? "rotate-180" : ""}`} />
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                )
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent className="pl-6">
+                  {item.submenu.map((sub) => (
+                    <SidebarMenuItem
+                      key={sub.title}
+                      className={sub.url === currentPath ? "bg-black text-white rounded-lg" : ""}
+                    >
+                      <SidebarMenuButton asChild>
+                        <Link to={sub.url ?? ""}>
+                          <sub.icon />
+                          {sub.title}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            ) : (
+              <SidebarMenuItem
+                key={item.title}
+                className={item.url === currentPath ? "bg-black text-white rounded-lg" : ""}
+              >
+                <SidebarMenuButton asChild>
+                  <Link to={item.url ?? ""}>
+                    <item.icon />
+                    {item.title}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          )}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  </SidebarContent>
+</Sidebar>
+
   );
 }

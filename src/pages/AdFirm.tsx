@@ -48,7 +48,7 @@ const AddFirm = () => {
               </DialogContent>
             </Dialog>
           </div>
-          <div className="flex-grow">
+          <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
             <FirmForm />
           </div>
         </div>

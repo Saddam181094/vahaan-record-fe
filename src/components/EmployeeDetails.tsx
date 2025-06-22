@@ -157,7 +157,7 @@ export default function ClientDetails() {
                         </DialogContent>
                     </Dialog>
                 </div>
-                <div className="flex-grow p-6 space-y-6">
+                <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto p-6 space-y-6">
                     {/* Top Client Info Card */}
                     <Card>
                         <CardHeader>
@@ -178,10 +178,12 @@ export default function ClientDetails() {
                     </Card>
 
                     {/* Case Cards */}
-
-                    <form onSubmit={handleSubmit(applyFilter)} className="flex gap-4 items-end">
+                    <form
+                        onSubmit={handleSubmit(applyFilter)}
+                        className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end w-full"
+                    >
                         {/* Filter Type */}
-                        <div className="flex flex-col space-y-1">
+                        <div className="flex flex-col space-y-1 w-full sm:w-auto">
                             <Label className="text-sm font-medium">
                                 Filter Type<span className="text-red-500">*</span>
                             </Label>
@@ -190,7 +192,7 @@ export default function ClientDetails() {
                                 name="filterType"
                                 render={({ field }) => (
                                     <Select onValueChange={field.onChange} value={field.value}>
-                                        <SelectTrigger className="w-[200px]">
+                                        <SelectTrigger className="w-full sm:w-[200px]">
                                             <SelectValue placeholder="Select Filter" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -199,7 +201,10 @@ export default function ClientDetails() {
                                                 APPOINTMENT_DATE: "appointmentDate",
                                             }).map(([key, value]: [string, string]) => (
                                                 <SelectItem key={key} value={value}>
-                                                    {key.replace(/_/g, " ").toLowerCase().replace(/(^|\s)\S/g, (l: string) => l.toUpperCase())}
+                                                    {key
+                                                        .replace(/_/g, " ")
+                                                        .toLowerCase()
+                                                        .replace(/(^|\s)\S/g, (l: string) => l.toUpperCase())}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -209,7 +214,7 @@ export default function ClientDetails() {
                         </div>
 
                         {/* From Date */}
-                        <div className="flex flex-col space-y-1">
+                        <div className="flex flex-col space-y-1 w-full sm:w-auto">
                             <Label htmlFor="fromDate" className="text-sm font-medium capitalize">
                                 From Date<span className="text-red-500">*</span>
                             </Label>
@@ -222,13 +227,14 @@ export default function ClientDetails() {
                                         id="fromDate"
                                         value={field.value}
                                         onChange={(e: any) => field.onChange(e.target.value)}
+                                        className="w-full"
                                     />
                                 )}
                             />
                         </div>
 
                         {/* To Date */}
-                        <div className="flex flex-col space-y-1">
+                        <div className="flex flex-col space-y-1 w-full sm:w-auto">
                             <Label htmlFor="toDate" className="text-sm font-medium capitalize">
                                 To Date<span className="text-red-500">*</span>
                             </Label>
@@ -241,14 +247,17 @@ export default function ClientDetails() {
                                         id="toDate"
                                         value={field.value}
                                         onChange={(e: any) => field.onChange(e.target.value)}
+                                        className="w-full"
                                     />
                                 )}
                             />
                         </div>
 
-                        <Button type="submit" className="mt-2">
-                            Filter
-                        </Button>
+                        <div className="w-full sm:w-auto flex items-end">
+                            <Button type="submit" className="w-full sm:w-auto mt-2 sm:mt-0">
+                                Filter
+                            </Button>
+                        </div>
                     </form>
 
 

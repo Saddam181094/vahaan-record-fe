@@ -100,7 +100,7 @@ useEffect(() => {
               </DialogContent>
             </Dialog>
           </div>
-    <div className="flex-grow p-6 space-y-6">
+    <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto p-6 space-y-6">
       {/* Top Client Info Card */}
       <Card>
         <CardHeader>

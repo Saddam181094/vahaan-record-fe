@@ -169,7 +169,7 @@ const Payment = () => {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex-grow space-y-8 px-4 py-6 bg-gray-50 rounded-md shadow-sm"
+          className="flex flex-col w-full h-full min-h-screen overflow-y-auto space-y-8 px-4 py-6 bg-gray-50 rounded-md shadow-sm"
         >
           <h2 className="text-2xl font-semibold mb-6 text-gray-900">
             Payment Summary

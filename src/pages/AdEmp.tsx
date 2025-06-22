@@ -18,7 +18,7 @@ const AddBranch = () => {
       <SidebarProvider>
         <AppSidebar />
         <SidebarTrigger />
-        <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
+        <div className="flex flex-col w-full bg-white pr-6 py-4 min-h-screen">
           <div className="flex justify-end mb-4">
             <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
               Logout
@@ -42,7 +42,7 @@ const AddBranch = () => {
               </DialogContent>
             </Dialog>
           </div>
-          <div className="flex-grow">
+          <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
             <EmployeeForm />
           </div>
         </div>
