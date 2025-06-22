@@ -39,6 +39,7 @@ export interface vehicleDetail {
 
 export interface GeneralDetail {
   appointmentDate?: string;
+  applicationNo?:string;
 }
 
 // Inside your TableCell, after the FaEye button:

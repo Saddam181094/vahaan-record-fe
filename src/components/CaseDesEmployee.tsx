@@ -98,7 +98,7 @@ export default function CaseDes() {
   header: "Verify",
   cell: ({ row }) => {
   const data = row.original;
-  const isDisabled = !data?.generalDetail?.appointmentDate;
+  const isDisabled = !data?.generalDetail?.appointmentDate && !data?.generalDetail?.applicationNo;
 
   return (
     <Button
@@ -119,7 +119,7 @@ export default function CaseDes() {
 },
 
         ]}
-        data={cases.filter((items)=> String(items.status) === 'Created')}
+        data={cases}
       />
       <Dialog open={dialogOpen} onOpenChange={(isOpen) => {
         if (!isOpen) {
