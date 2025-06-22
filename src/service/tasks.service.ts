@@ -44,7 +44,7 @@ export const updateTask = async (Id: any, task_title: string, task_text:string) 
   const config = getConfig();
   const data = {task_title,task_text}
 
-  return axios.patch(`${url}/task/update/${Id}`, data, config)
+  return axios.put(`${url}/task/update/${Id}`, data, config)
     .then((resp) => {
       return resp.data;
     })

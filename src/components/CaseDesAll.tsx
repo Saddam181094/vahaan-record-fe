@@ -17,6 +17,7 @@ import { DataTable } from "./DataTable";
 import { caseTableColumns } from "@/lib/tables.data";
 import { DateInput } from "./ui/date-input";
 
+
 export interface CaseDetails {
     id: string;
     CaseNo: string;
@@ -140,15 +141,17 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
     );
 }
 
-export interface CaseFilterType {
+export const CaseFilterType = {
     APPLICATION_DATE: "applicationDate",
     APPOINTMENT_DATE: "appointmentDate",
-      PUC_EXPIRY : 'pucExpiry',
-  INSURANCE_EXPIRY : 'insuranceExpiry',
-  FITNESS_EXPIRY : 'fitnessExpiry',
-  TAX_EXPIRY : 'taxExpiry',
-  PERMIT_EXPIRY : 'permitExpiry',
-};
+    PUC_EXPIRY: "pucExpiry",
+    INSURANCE_EXPIRY: "insuranceExpiry",
+    FITNESS_EXPIRY: "fitnessExpiry",
+    TAX_EXPIRY: "taxExpiry",
+    PERMIT_EXPIRY: "permitExpiry",
+} as const;
+
+export type CaseFilterType = typeof CaseFilterType;
 
 export interface FilterFormValues {
     filterType: CaseFilterType[keyof CaseFilterType]; // "applicationDate" | "appointmentDate"
@@ -168,7 +171,7 @@ export default function CaseDes() {
   const [clients, setClients] = useState<any[]>([]);
   const [flag, setFlag] = useState(true);
 
-  const { handleSubmit, setValue, getValues, control } = useForm<FilterFormValues>({
+  const { handleSubmit, setValue, getValues, control,watch } = useForm<FilterFormValues>({
     defaultValues: {
   filterType: "applicationDate",
   fromDate: "",
@@ -202,9 +205,10 @@ export default function CaseDes() {
   }, []);
 
 const location = useLocation();
-const { state } = location;
+const selectedFilterType = watch("filterType");
 
   useEffect(() => {
+const { state } = location;
 
     if(state?.type){
       switch (state.type) {
@@ -268,34 +272,26 @@ const applyFilter = async (data: FilterFormValues) => {
           <Label className="text-sm font-medium">
         Filter Type<span className="text-red-500">*</span>
           </Label>
-          <Controller
-        control={control}
-        name="filterType"
-        render={({ field }) => (
-          <Select onValueChange={field.onChange} value={field.value}>
-            <SelectTrigger className="w-full md:w-[200px]">
-          <SelectValue placeholder="Select Filter" />
-            </SelectTrigger>
-            <SelectContent>
-          {Object.entries({
-            APPLICATION_DATE: "applicationDate",
-            APPOINTMENT_DATE: "appointmentDate",
-            PUC_EXPIRY: "pucExpiry",
-            INSURANCE_EXPIRY: "insuranceExpiry",
-            FITNESS_EXPIRY: "fitnessExpiry",
-            TAX_EXPIRY: "taxExpiry",
-            PERMIT_EXPIRY: "permitExpiry",
-          }).map(([key, value]: [string, string]) => (
-            <SelectItem key={key} value={value}>
-              {key
-            .replace(/_/g, " ")
-            .toLowerCase()
-            .replace(/(^|\s)\S/g, (l: string) => l.toUpperCase())}
-            </SelectItem>
-          ))}
-            </SelectContent>
-          </Select>
-        )}
+ <Controller
+            control={control}
+            name="filterType"
+            render={({ field }) => (
+              <Select key={selectedFilterType} onValueChange={field.onChange} value={selectedFilterType}>
+                <SelectTrigger className="w-full md:w-[200px]">
+                  <SelectValue placeholder="Select Filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(CaseFilterType).map(([key, value]) => (
+                    <SelectItem key={key} value={value}>
+                      {key
+                        .replace(/_/g, " ")
+                        .toLowerCase()
+                        .replace(/(^|\s)\S/g, (l: string) => l.toUpperCase())}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           />
         </div>
 
