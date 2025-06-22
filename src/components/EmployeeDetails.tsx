@@ -254,7 +254,7 @@ export default function ClientDetails() {
                         </div>
 
                         <div className="w-full sm:w-auto flex items-end">
-                            <Button type="submit" className="w-full sm:w-auto mt-2 sm:mt-0">
+                            <Button type="submit" style={{cursor:"pointer"}} className="w-full sm:w-auto mt-2 sm:mt-0">
                                 Filter
                             </Button>
                         </div>
@@ -319,6 +319,7 @@ export default function ClientDetails() {
                                                     }
                                                     variant="outline"
                                                     size="sm"
+                                                    style={{cursor:"pointer"}}
                                                 >
                                                     View Details
                                                 </Button>

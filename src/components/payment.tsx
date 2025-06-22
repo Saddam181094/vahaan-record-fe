@@ -156,10 +156,10 @@ const Payment = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setOpen(false)}>
+                <Button variant="outline" style={{cursor:"pointer"}} onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button variant="destructive" onClick={handleLogout}>
+                <Button variant="destructive" style={{cursor:"pointer"}} onClick={handleLogout}>
                   Logout
                 </Button>
               </div>
@@ -251,6 +251,7 @@ const Payment = () => {
               {uploadedFileUrl && (
                 <div className="flex items-center space-x-4">
                   <Button
+                  style={{cursor:"pointer"}}
                     type="button"
                     variant="secondary"
                     onClick={() => setViewImageOpen(true)}
@@ -263,7 +264,7 @@ const Payment = () => {
           )}
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting} variant="default" className="px-8">
+            <Button type="submit" disabled={isSubmitting} style={{cursor:"pointer"}} variant="default" className="px-8">
               {isSubmitting ? "Processing..." : "Pay Now"}
             </Button>
           </div>
@@ -285,7 +286,7 @@ const Payment = () => {
                   alt="Uploaded Payment Proof"
                   className="rounded-md border max-h-96 object-contain"
                 />
-                <Button variant="outline" onClick={() => setViewImageOpen(false)}>
+                <Button variant="outline" style={{cursor:"pointer"}} onClick={() => setViewImageOpen(false)}>
                   Close Preview
                 </Button>
               </div>

@@ -569,7 +569,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
 
 
 
-      <Button type="button" onClick={reactToPrintFn} className="bg-primary text-white">
+      <Button type="button" style={{cursor:"pointer"}} onClick={reactToPrintFn} className="bg-primary text-white">
         🖨️ Print PDF
       </Button>
         {status?.toLowerCase() === "assigned" ? null : (

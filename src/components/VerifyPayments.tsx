@@ -261,10 +261,10 @@ const handleConfirmAction = () => {
                 <DialogDescription>Are you sure you want to logout?</DialogDescription>
               </DialogHeader>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setOpen(false)}>
+                <Button variant="outline" style={{cursor:"pointer"}} onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button variant="destructive" className="hover:bg-red-800" onClick={handleLogout}>
+                <Button variant="destructive" style={{cursor:"pointer"}} className="hover:bg-red-800" onClick={handleLogout}>
                   Logout
                 </Button>
               </div>

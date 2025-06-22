@@ -183,6 +183,7 @@ const filteredCases = cases.filter((c) => {
 
       <div className="flex gap-2 mb-4">
   <Button
+  style={{cursor:"pointer"}}
     variant={activeTab === "verified" ? "default" : "outline"}
     onClick={() => {
       setActiveTab("verified");
@@ -192,6 +193,7 @@ const filteredCases = cases.filter((c) => {
     Verified
   </Button>
   <Button
+  style={{cursor:"pointer"}}
     variant={activeTab === "under-verification" ? "default" : "outline"}
     onClick={() => {
       setActiveTab("under-verification");
@@ -201,6 +203,7 @@ const filteredCases = cases.filter((c) => {
     Under Verification
   </Button>
   <Button
+  style={{cursor:"pointer"}}
     variant={activeTab === "unpaid" ? "default" : "outline"}
     onClick={() => {
       setActiveTab("unpaid");

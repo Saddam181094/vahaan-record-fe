@@ -338,7 +338,7 @@ const applyFilter = async (data: FilterFormValues) => {
         </div>
 
         <div className="w-full md:w-auto flex-1">
-          <Button type="submit" className="mt-2 w-full md:w-auto">
+          <Button type="submit" style={{cursor:"pointer"}} className="mt-2 w-full md:w-auto">
         Filter
           </Button>
         </div>

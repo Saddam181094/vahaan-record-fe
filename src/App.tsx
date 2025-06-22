@@ -24,6 +24,8 @@ import ClientDetails from "./components/ClientDetails";
 import AlCaseA from "@/pages/AlCaseA"
 import EmployeeDetails from "@/components/EmployeeDetails"
 import ClientTransactions from "@/components/ClientTransactions"
+import Tasks from "@/pages/ToDoPage"
+import Bills from "@/components/ClientBills"
 // import { Loader } from "lucide-react";
 export default function App() {
   return (
@@ -62,6 +64,12 @@ export default function App() {
       <Route path="/superadmin/AddEmployee" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <AddEmployee />
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/superadmin/Tasks" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <Tasks/>
         </ProtectedRoute>
       } />
       <Route path="/superadmin/clients" element={
@@ -141,7 +149,11 @@ export default function App() {
           <ClientTransactions/>
         </ProtectedRoute>
       } />
-
+      <Route path="/client/Bills" element={
+        <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
+          <Bills/>
+        </ProtectedRoute>
+      } />
 
       {/* Super Admin Routes */}
       <Route path="/employee" element={
@@ -153,6 +165,11 @@ export default function App() {
       <Route path="/employee/cases/new" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
           <CaseForm />
+        </ProtectedRoute>
+      } />
+      <Route path="/employee/Tasks" element={
+        <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
+          <Tasks/>
         </ProtectedRoute>
       } />
 

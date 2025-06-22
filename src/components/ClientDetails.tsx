@@ -168,6 +168,7 @@ useEffect(() => {
                     }
                     variant="outline"
                     size="sm"
+                    style={{cursor:"pointer"}}
                   >
                     View Details
                   </Button>

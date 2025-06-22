@@ -9,7 +9,9 @@ import {
   PcCase,
   User,
   IndianRupee,
-  BriefcaseConveyorBelt
+  BriefcaseConveyorBelt,
+  ClipboardList,
+  ReceiptIndianRupee
 } from "lucide-react";
 import {
   Sidebar,
@@ -55,11 +57,13 @@ const items1: Record<string, SidebarItem[]> = {
     { title: "My-Cases", url: "/superadmin/cases/Mycases", icon: PcCase },
     { title: "Verified-Cases", url: "/superadmin/cases/all", icon: BriefcaseConveyorBelt},
     { title: "Payments", url: "/superadmin/VerifyPayments", icon: IndianRupee },
+    { title: "Tasks", url: "/superadmin/Tasks", icon: ClipboardList},
     { title: "My Profile", url: "/superadmin/Profile", icon: User },
   ],
   client: [
     { title: "My Cases", url: "/client/cases", icon: UserRoundPen },
     { title: "My Transactions", url: "/client/Transactions", icon: IndianRupee },
+    { title: "My Bills", url: "/client/Bills", icon: ReceiptIndianRupee },    
     { title: "My Profile", url: "/client/Profile", icon: User },
   ],
   employee: [
@@ -70,6 +74,7 @@ const items1: Record<string, SidebarItem[]> = {
         { title: "New Case", url: "/employee/cases/new", icon: CircleUser },
         { title: "Cases", url: "/employee/cases", icon: PcCase }]
     },
+    { title: "Tasks", url: "/employee/Tasks", icon: ClipboardList},
     { title: "My Profile", url: "/employee/Profile", icon: User },
   ],
 };
