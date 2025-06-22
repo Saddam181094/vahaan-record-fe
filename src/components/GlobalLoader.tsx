@@ -14,7 +14,7 @@ export default function GlobalLoader() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[9999] bg-black/30 flex items-center justify-center"
+          className="fixed inset-0 z-[9999]  bg-[#5156DB]/30 flex items-center justify-center"
         >
           <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
             <Loader2 className="h-10 w-10 text-white" />

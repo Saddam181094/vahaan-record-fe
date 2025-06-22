@@ -17,6 +17,7 @@ import { allCaseColumns, type CaseData } from "@/lib/tables.data";
 import { getSummary } from "@/service/case.service";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DataTable } from "@/components/DataTable";
+import { useNavigate } from "react-router-dom";
 
 const EmployeeDashboard = () => {
   const [open, setOpen] = useState(false);
@@ -30,6 +31,7 @@ const EmployeeDashboard = () => {
     const [expiryStats, setExpiryStats] = useState<any[]>([]);
     const [selectedCases, setSelectedCases] = useState<CaseData[]>([]);
     const [selectedType, setSelectedType] = useState<string | null>(null);
+    const navigate = useNavigate();
   
     useEffect(() => {
       setLoading(true);
@@ -50,10 +52,10 @@ const EmployeeDashboard = () => {
         .finally(() => setLoading(false));
     }, []);
   
-    const handleCardClick = (expiryType: string, cases: CaseData[]) => {
-      setSelectedCases(cases);
-      setSelectedType(expiryType);
-    };
+const handleClick = (data:any) => {
+  const type = data;
+  navigate(`/superadmin/cases/all`, { state: { type } });
+}
   
   return (
     <SidebarProvider>
@@ -83,39 +85,32 @@ const EmployeeDashboard = () => {
             </DialogContent>
           </Dialog>
         </div>
-        <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
-                 <span className="text-4xl font-bold mb-12">Summary of the Cases</span>
+<div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
+  <span className="col-span-full text-4xl font-bold mb-10 block">Summary of the Cases</span>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-2">
+    {expiryStats.map((item, index) => {
+      const isEven = index % 2 === 0;
+      const bgColor = isEven ? 'bg-[#584FF7]' : 'bg-[#1f2c4d]'; // Metallic tones
+      const textColor = 'text-white';
 
-        {/* Main Layout */}
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left: Cards - 25% */}
-          <div className="w-full lg:w-1/4 space-y-4">
-            {expiryStats.map((item, index) => {
-              const isSelected = selectedType === item.expiryType;
-              const bgColor = index % 2 === 0 ? 'bg-[#584FF7]' : 'bg-[#1f2c4d]';
-              const textColor = 'text-white';
-
-              return (
-                <Card
-                  key={item.expiryType}
-                  className={`cursor-pointer border-0 rounded-lg shadow-md ${bgColor} ${textColor} ${
-                    isSelected ? 'ring-5 ring-blue-800' : ''
-                  }`}
-                  onClick={() => handleCardClick(item.expiryType, item.cases)}
-                >
-                  <CardHeader className="text-lg font-semibold">{item.expiryType}</CardHeader>
-                  <CardContent className="text-4xl font-extrabold">{item.count}</CardContent>
-                </Card>
-              );
-            })}
-          </div>
-
-          {/* Right: Table - 75% */}
-          <div className="w-full lg:w-3/4">
-            <DataTable columns={allCaseColumns} data={selectedCases} />
-          </div>
-        </div>
-        </div>
+      return (
+        <Card
+          key={item.expiryType}
+          className={`shadow-md border-0 ${bgColor} ${textColor} rounded-lg flex flex-col j`}
+          onClick={()=> handleClick(item.expiryType)}
+          style={{ cursor: "pointer" }}
+        >
+          <CardHeader className="text-lg font-semibold">
+            {item.expiryType}
+          </CardHeader>
+          <CardContent className="text-4xl font-extrabold">
+            {item.count}
+          </CardContent>
+        </Card>
+      );
+    })}
+  </div>
+</div>
       </div>
     </SidebarProvider>
   );

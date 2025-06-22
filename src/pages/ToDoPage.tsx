@@ -156,7 +156,7 @@ toast.showToast('Error:',err?.message || 'Error occured while marking complete T
           <Button
             style={{ cursor: "pointer" }}
             onClick={() => setDialogOpen(true)}
-            className="mb-4 bg-black self-start"
+            className="mb-4  bg-[#5156DB] self-start"
           >
             Add Tasks
           </Button>

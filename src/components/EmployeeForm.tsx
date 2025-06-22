@@ -96,7 +96,7 @@ export default function EmployeeForm() {
   const onSubmit: SubmitHandler<Employee> = async (data: Employee) => {
     setLoading(true);
     try {
-      const newEmployee = await createEmployee(data);
+      const newEmployee = await createEmployee({...data, role:'employee'});
       setEmployee([...Employee, newEmployee]);
       setDialogOpen(false);
       setRefreshFlag((prev) => !prev); // Trigger a refresh
@@ -117,7 +117,7 @@ export default function EmployeeForm() {
 
   return (
     <div>
-      <Button style={{ cursor: "pointer" }} onClick={() => setDialogOpen(true)} className="mb-4 bg-black">
+      <Button style={{ cursor: "pointer" }} onClick={() => setDialogOpen(true)} className="mb-4  bg-[#5156DB]">
         Add Employee
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -127,7 +127,7 @@ export default function EmployeeForm() {
           </DialogHeader>
 
 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
-  {["firstname", "lastname", "email", "role", "phone", "branchCode"].map((field) => (
+  {["firstname", "lastname", "email", "phone", "branchCode"].map((field) => (
     <div key={field}>
       {field === "branchCode" ? (
         <Controller
