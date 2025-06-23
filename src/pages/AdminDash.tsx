@@ -42,7 +42,7 @@ const handleClick = (data:any) => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
+      <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ms-3">
         <div className="flex justify-end mb-4">
           {/* <Button
             style={{ cursor: "pointer" }}

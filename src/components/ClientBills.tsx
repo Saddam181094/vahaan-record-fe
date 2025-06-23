@@ -4,22 +4,29 @@ import { Button } from "@/components/ui/button";
 import { Label } from "./ui/label";
 import { Controller, useForm } from "react-hook-form";
 import { Select, SelectTrigger } from "@radix-ui/react-select";
-import { SelectContent, SelectItem, SelectValue } from "./ui/select";
+import {  SelectValue } from "./ui/select";
 import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
-import { CaseFilterType } from "./CaseDesAll";
+// import { useState } from "react";
+
+export interface Bill{
+     billId: string,
+     billMonth: string,
+     billYear:string,
+     billAmount:string,
+     BillDate:string,
+     Duedate:string,
+}
 
 const ClientBills = () => {
     const { handleSubmit, control, watch } = useForm<any>({
       defaultValues: {
-    filterType: "applicationDate",
-    fromDate: "",
-    toDate: "",
   },
     });
   const toast = useToast();
 
   // const [filteredCases, setFilteredCases] = useState<any[]>([]);
+  // const [bills,setBills] = useState<any[]>([]);
   const {setLoading} = useLoading();
 
   const applyFilter = async (data: any) => {
@@ -38,7 +45,7 @@ const ClientBills = () => {
       setLoading(false);
     }
   };
-  const selectedFilterType = watch("filterType");
+  const selectedFilterType = watch("filtertype");
 
 
   return (
@@ -46,31 +53,7 @@ const ClientBills = () => {
       <SidebarProvider>
         <AppSidebar />
         <SidebarTrigger />
-        <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
-          {/* <div className="flex justify-end mb-4"> */}
-                        {/* <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
-              Logout
-            </Button>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Confirm Logout</DialogTitle>
-                  <DialogDescription>
-                    Are you sure you want to logout?
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="flex justify-end gap-2">
-                  <Button style={{cursor:"pointer"}} variant="outline" onClick={() => setOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={handleLogout}>
-                    Logout
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>*/}
-
+        <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh]">
           <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
       <form
         onSubmit={handleSubmit(applyFilter)}
@@ -81,16 +64,16 @@ const ClientBills = () => {
           <Label className="text-sm font-medium">
         Filter Type<span className="text-red-500">*</span>
           </Label>
- <Controller
+          <Controller
             control={control}
             name="filterType"
             render={({ field }) => (
-              <Select key={selectedFilterType} onValueChange={field.onChange} value={selectedFilterType}>
+              <Select onValueChange={field.onChange} value={selectedFilterType}>
                 <SelectTrigger className="w-full md:w-[200px]">
                   <SelectValue placeholder="Select Filter" />
                 </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(CaseFilterType).map(([key, value]) => (
+                {/* <SelectContent>
+                  {Object.entries(Bill).map(([key, value]) => (
                     <SelectItem key={key} value={value}>
                       {key
                         .replace(/_/g, " ")
@@ -98,7 +81,7 @@ const ClientBills = () => {
                         .replace(/(^|\s)\S/g, (l: string) => l.toUpperCase())}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectContent> */}
               </Select>
             )}
           />

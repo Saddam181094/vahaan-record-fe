@@ -70,179 +70,120 @@ const MyProfile: React.FC = () => {
         if (value >= 80) return "bg-orange-500";
         return "bg-green-500";
     };
-    return (
-        <SidebarProvider>
-            <AppSidebar />
-            <SidebarTrigger />
-            <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
-                <div className="flex justify-end mb-4">
-                    {/* <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
-                        Logout
-                    </Button>
-                    <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Confirm Logout</DialogTitle>
-                                <DialogDescription>
-                                    Are you sure you want to logout?
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex justify-end gap-2">
-                                <Button style={{ cursor: "pointer" }} variant="outline" onClick={() => setOpen(false)}>
-                                    Cancel
-                                </Button>
-                                <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={handleLogout}>
-                                    Logout
-                                </Button>
-                            </div>
-                        </DialogContent>
-                    </Dialog> */}
-                </div>
+   return (
+  <SidebarProvider>
+    <AppSidebar />
+    <SidebarTrigger />
+    <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ms-3">
+      <div className="flex flex-col px-4">
+        <Card className="p-6 space-y-6 max-w-5xl w-full mx-auto">
+          <h2 className="text-xl font-semibold">My Profile</h2>
 
-                <div className="flex flex-col md:flex-row justify-between w-full gap-6 px-4">
-                    <div className="max-w-md w-full p-6">
-                        <Card className="p-4 space-y-4">
-                            <h2 className="text-xl font-semibold">My Profile</h2>
-                            <div className="flex justify-center gap-10">
-                                <div className="flex justify-center">
-                                    <div className="lg:h-24 lg:w-24 h-10 w-10 rounded-full bg-gray-200 flex text-gray-500 text-sm">
-
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>
-                                        <strong>Name:</strong> {user?.name}
-                                    </p>
-                                    <p>
-                                        <strong>Email:</strong> {user?.email}
-                                    </p>
-                                    <p>
-                                        <strong>Role:</strong> {user?.role}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="mt-6 flex flex-col items-center">
-                                <Button
-                                    style={{ cursor: "pointer" }}
-                                    variant="default"
-                                    className="w-full max-w-xs"
-                                    onClick={() => setShowDialog(true)}
-                                >
-                                    Change Password
-                                </Button>
-                                <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                                    <DialogContent className="sm:max-w-[400px] rounded-lg shadow-lg">
-                                        <DialogHeader>
-                                            <DialogTitle className="text-center text-lg font-bold">
-                                                Change Password
-                                            </DialogTitle>
-                                        </DialogHeader>
-                                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                                            <div>
-                                                <Label htmlFor="currentPassword" className="mb-1 block">
-                                                    Current Password
-                                                </Label>
-                                                <Input
-                                                    id="currentPassword"
-                                                    type="password"
-                                                    autoComplete="current-password"
-                                                    className="w-full"
-                                                    {...register("currentPassword", {
-                                                        required: "Current password is required",
-                                                    })}
-                                                />
-                                                {errors.currentPassword && (
-                                                    <p className="text-xs text-red-500 mt-1">
-                                                        {errors.currentPassword.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="newPassword" className="mb-1 block">
-                                                    New Password
-                                                </Label>
-                                                <Input
-                                                    id="newPassword"
-                                                    type="password"
-                                                    autoComplete="new-password"
-                                                    className="w-full"
-                                                    {...register("newPassword", {
-                                                        required: "New password is required",
-                                                    })}
-                                                />
-                                                {errors.newPassword && (
-                                                    <p className="text-xs text-red-500 mt-1">
-                                                        {errors.newPassword.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="confirmPassword" className="mb-1 block">
-                                                    Confirm New Password
-                                                </Label>
-                                                <Input
-                                                    id="confirmPassword"
-                                                    type="password"
-                                                    autoComplete="new-password"
-                                                    className="w-full"
-                                                    {...register("confirmPassword", {
-                                                        required: "Please confirm your new password",
-                                                        validate: (value) =>
-                                                            value === newPassword || "Passwords do not match",
-                                                    })}
-                                                />
-                                                {errors.confirmPassword && (
-                                                    <p className="text-xs text-red-500 mt-1">
-                                                        {errors.confirmPassword.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <DialogFooter className="flex justify-between gap-2 pt-2">
-                                                <Button
-                                                    style={{ cursor: "pointer" }}
-                                                    type="button"
-                                                    variant="outline"
-                                                    className="w-1/2"
-                                                    onClick={() => setShowDialog(false)}
-                                                >
-                                                    Cancel
-                                                </Button>
-                                                <Button style={{ cursor: "pointer" }} type="submit" className="w-1/2">
-                                                    Submit
-                                                </Button>
-                                            </DialogFooter>
-                                        </form>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
-                        </Card>
-                    </div>
-                    {user?.role === 'client' ? (
-                        <div className="flex-1 flex items-center justify-end p-6">
-                            <Card className="p-6 space-y-2 w-full max-w-xs">
-                                <h2 className="text-xl font-semibold">Credit Summary</h2>
-                                <div className="flex justify-between text-sm font-medium">
-                                    <span>Utilized: ₹{user.utilizedCredit}</span>
-                                    <span>Total Limit: ₹{user.creditLimit}</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                                    <div
-                                        className={`h-full ${getProgressColor(percentage)} transition-all duration-500`}
-                                        style={{ width: `${percentage}%` }}
-                                    />
-                                </div>
-                                <div
-                                    className="mt-1 text-right text-xs text-muted-foreground"
-                                >
-                                    {(utilized / limit * 100).toFixed(1)}% utilized
-                                </div>
-                            </Card>
-                        </div>
-                    ) : null}
-                </div>
+          {/* Avatar + Details + Credit Summary */}
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Avatar & Info */}
+            <div className="flex gap-4 flex-1 items-center">
+              <div className="h-16 w-16 md:h-24 md:w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xl font-bold">
+                {user?.name?.[0]?.toUpperCase()}
+              </div>
+              <div className="space-y-1">
+                <p><strong>Name:</strong> {user?.name}</p>
+                <p><strong>Email:</strong> {user?.email}</p>
+                <p><strong>Role:</strong> {user?.role}</p>
+              </div>
             </div>
-        </SidebarProvider>
-    );
+
+            {/* Credit Summary (if client) */}
+            {user?.role === "client" && (
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold mb-2">Credit Summary</h3>
+                <div className="flex justify-between text-sm font-medium">
+                  <span>Utilized: ₹{user.utilizedCredit}</span>
+                  <span>Total Limit: ₹{user.creditLimit}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden mt-2">
+                  <div
+                    className={`h-full ${getProgressColor(percentage)} transition-all duration-500`}
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+                <div className="mt-1 text-right text-xs text-muted-foreground">
+                  {(utilized / limit * 100).toFixed(1)}% utilized
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Change Password Button & Dialog */}
+          <div className="flex justify-center">
+            <Button
+              style={{ cursor: "pointer" }}
+              variant="default"
+              className="w-full max-w-xs"
+              onClick={() => setShowDialog(true)}
+            >
+              Change Password
+            </Button>
+          </div>
+
+          <Dialog open={showDialog} onOpenChange={setShowDialog}>
+            <DialogContent className="sm:max-w-[400px] rounded-lg shadow-lg">
+              <DialogHeader>
+                <DialogTitle className="text-center text-lg font-bold">
+                  Change Password
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                {["currentPassword", "newPassword", "confirmPassword"].map((field) => (
+                  <div key={field}>
+                    <Label htmlFor={field} className="mb-1 block capitalize">
+                      {field.replace(/([A-Z])/g, " $1")}
+                    </Label>
+                    <Input
+                      id={field}
+                      type="password"
+                      autoComplete="new-password"
+                      className="w-full"
+                      {...register("newPassword", {
+                        required: `${field.replace(/([A-Z])/g, " $1")} is required`,
+                        ...(field === "confirmPassword"
+                          ? {
+                              validate: (value) =>
+                                value === newPassword || "Passwords do not match",
+                            }
+                          : {}),
+                      })}
+                    />
+                    {errors.newPassword && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.newPassword?.message}
+                      </p>
+                    )}
+                  </div>
+                ))}
+                <DialogFooter className="flex justify-between gap-2 pt-2">
+                  <Button
+                    style={{ cursor: "pointer" }}
+                    type="button"
+                    variant="outline"
+                    className="w-1/2"
+                    onClick={() => setShowDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button style={{ cursor: "pointer" }} type="submit" className="w-1/2">
+                    Submit
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </Card>
+      </div>
+    </div>
+  </SidebarProvider>
+);
+
 };
 
 export default MyProfile;

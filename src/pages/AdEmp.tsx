@@ -9,7 +9,7 @@ const AddBranch = () => {
       <SidebarProvider>
         <AppSidebar />
         <SidebarTrigger />
-        <div className="flex flex-col w-full bg-white pr-6 py-4 min-h-screen">
+        <div className="flex flex-col w-full bg-white pr-6 lg:py-20 min-h-screen ms-3">
           <div className="flex justify-end mb-4">
             {/*             {/* <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
               Logout

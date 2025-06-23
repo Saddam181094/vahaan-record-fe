@@ -16,15 +16,12 @@ import { clientTransaction } from "@/service/client.service";
 import { clientTransactioncolumns } from "@/lib/tables.data";
 import { useReactToPrint } from "react-to-print";
 
-export interface ClientTransaction {
-
-}
-
 const Client = () => {
     const toast = useToast();
     const [filteredCases, setFilteredCases] = useState<any>();
     const { setLoading } = useLoading();
     const { user } = useAuth();
+    const [isDisabled,setisDisabled] = useState(true);
     const { handleSubmit, control, setValue } = useForm<FilterFormValues>({
         defaultValues: {
             filterType: "applicationDate",
@@ -42,6 +39,7 @@ const Client = () => {
         try {
             const response = await clientTransaction(fromDate, toDate, user?.id ?? "");
             setFilteredCases(response?.data || []);
+            setisDisabled(response?.data?.transactions?.length > 0);
         } catch (err) {
             //   console.error("Error fetching filtered cases:", err);
             toast.showToast("Error", "Failed to apply filter", "error");
@@ -69,6 +67,12 @@ const Client = () => {
         clientTransaction(defaultFrom, defaultTo, user?.id ?? "").then((response) => {
             setFilteredCases(response?.data || []);
             setLoading(false);
+
+             if (response?.data?.transactions?.length > 0) {
+                setisDisabled(true);
+            } else {
+                setisDisabled(false);
+            }
         }).
             catch((err: any) => {
                 //   console.error("Error fetching filtered cases:", err);
@@ -76,6 +80,7 @@ const Client = () => {
             }).finally(()=>{
                 setLoading(false);
             })
+           
     },
         [setValue]);
 
@@ -161,43 +166,18 @@ const PrintableCaseDetails = ({
   );
 };
 
-const isDisabled = filteredCases? true : false;
 
     return (
         <>
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarTrigger />
-                <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto mr-5">
-                    <div className="flex justify-end mb-4">
-                        <Button type="button" disabled={!isDisabled} style={{cursor:"pointer"}} onClick={reactToPrintFn} className="bg-primary text-white m-5">
-                            🖨️ Print PDF
-                        </Button>
-                        {/* <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer m-5 hover:bg-red-800" onClick={() => setOpen(true)}>
-                            Logout
-                        </Button>
-                        <Dialog open={open} onOpenChange={setOpen}>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Confirm Logout</DialogTitle>
-                                    <DialogDescription>
-                                        Are you sure you want to logout?
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="flex justify-end gap-2">
-                                    <Button style={{ cursor: "pointer" }} variant="outline" onClick={() => setOpen(false)}>
-                                        Cancel
-                                    </Button>
-                                    <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={handleLogout}>
-                                        Logout
-                                    </Button>
-                                </div>
-                            </DialogContent>
-                        </Dialog> */}
-                    </div>
+                <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ms-3">
 
                     {/* Extract clientDetails from the first transaction if available */}
-
+                        <Button type="button" disabled={!isDisabled}  style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={reactToPrintFn} className="w-fit bg-primary text-white mb-5">
+                            🖨️ Print PDF
+                        </Button>
                     <form
                         onSubmit={handleSubmit(applyFilter)}
                         className="flex flex-wrap gap-4 items-end md:flex-nowrap"
