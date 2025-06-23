@@ -522,7 +522,7 @@ export default function CaseForm() {
               control={control}
               rules={{ required: 'Vehicle No. is required' }}
               render={({ field, fieldState }) => (
-                <div className="flex flex-col flex flex-col w-full h-full min-h-screen overflow-y-auto max-w-xs">
+                <div className="flex flex-col w-full">
                   <Label htmlFor="vehicleNo" className="pb-2">
                     Vehicle No<span className="text-red-500">*</span>
                   </Label>
@@ -545,7 +545,7 @@ export default function CaseForm() {
               name="vehicleDetail.rmaVehicleNo"
               control={control}
               render={({ field, fieldState }) => (
-                <div className="flex flex-col flex flex-col w-full h-full min-h-screen overflow-y-auto max-w-xs">
+                <div className="flex flex-col w-full">
                   <Label htmlFor="rmaVehicleNo" className="pb-2">
                     RMA Vehicle No
                   </Label>

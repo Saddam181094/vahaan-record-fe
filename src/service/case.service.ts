@@ -36,7 +36,22 @@ export const getAllCases = async ( filterType: string,
       throw error;
     });
 };
+export const getEmployeeV = async ( filterType: string,
+  fromDate: string,
+  toDate: string,) => {
+  const config = getConfig();
+  const data = {filterType,fromDate,toDate}
 
+  return axios
+    .post(url + "/case/employee/verified", data,config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
 export const postIds = async (caseAssignmentIds:string[]) => {
   const config = getConfig();
   return axios
@@ -62,6 +77,7 @@ export const getAllCasesE = async () => {
       throw error;
     });
 };
+
 
 export const getCasesbyEmployee = async ( filterType: string,
   fromDate: string,

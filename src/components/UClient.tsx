@@ -241,11 +241,14 @@ export default function UClient() {
             <div className="flex flex-col gap-1">
               <Label htmlFor="creditLimit">Credit Limit</Label>
               <Input
-                id="creditLimit"
-                name="creditLimit"
-                type="text"
-                required
-                placeholder="Enter credit limit"
+              id="creditLimit"
+              name="creditLimit"
+              type="number"
+              required
+              placeholder="Enter credit limit"
+              pattern="[0-9]*"
+              inputMode="numeric"
+              min="0"
               />
             </div>
 
@@ -254,9 +257,12 @@ export default function UClient() {
               <Input
                 id="fixedPenalty"
                 name="fixedPenalty"
-                type="text"
+                type="number"
                 required
                 placeholder="Enter penalty amount"
+                pattern="[0-9]*"
+                inputMode="numeric"
+                min="0"
               />
             </div>
 

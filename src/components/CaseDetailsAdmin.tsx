@@ -553,7 +553,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
     );
   };
 
-
+const isDisabled = caseData? true : false;
   return (
     <>
     <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
@@ -569,7 +569,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
 
 
 
-      <Button type="button" style={{cursor:"pointer"}} onClick={reactToPrintFn} className="bg-primary text-white">
+      <Button type="button" disabled={!isDisabled} style={{cursor:"pointer"}} onClick={reactToPrintFn} className="bg-primary text-white">
         🖨️ Print PDF
       </Button>
         {status?.toLowerCase() === "assigned" ? null : (

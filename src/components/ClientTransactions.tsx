@@ -167,6 +167,8 @@ const PrintableCaseDetails = ({
   );
 };
 
+const isDisabled = filteredCases? true : false;
+
     return (
         <>
             <SidebarProvider>
@@ -174,7 +176,7 @@ const PrintableCaseDetails = ({
                 <SidebarTrigger />
                 <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto mr-5">
                     <div className="flex justify-end mb-4">
-                        <Button type="button" style={{cursor:"pointer"}} onClick={reactToPrintFn} className="bg-primary text-white m-5">
+                        <Button type="button" disabled={!isDisabled} style={{cursor:"pointer"}} onClick={reactToPrintFn} className="bg-primary text-white m-5">
                             🖨️ Print PDF
                         </Button>
                         <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer m-5 hover:bg-red-800" onClick={() => setOpen(true)}>

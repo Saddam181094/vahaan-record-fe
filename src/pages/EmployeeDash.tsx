@@ -54,7 +54,7 @@ const EmployeeDashboard = () => {
   
 const handleClick = (data:any) => {
   const type = data;
-  navigate(`/superadmin/cases/all`, { state: { type } });
+  navigate(`/employee/vcases`, { state: { type } });
 }
   
   return (

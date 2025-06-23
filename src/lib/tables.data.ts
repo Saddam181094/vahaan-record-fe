@@ -85,6 +85,46 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
 
 ];
 
+
+export const caseColumns: ColumnDef<any>[] = [
+  {
+    accessorKey: "CaseNo",
+    header: "Case No.",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      const date = new Date(row.original.createdAt);
+      return date.toLocaleString();
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
+    accessorKey: "generalDetail.applicationNo",
+    header: "Application No.",
+    cell: ({ row }) => row.original.generalDetail?.applicationNo ?? "N/A",
+  },
+  {
+    accessorKey: "generalDetail.appointmentDate",
+    header: "Appointment Date",
+    cell: ({ row }) => row.original.generalDetail?.appointmentDate ?? "N/A",
+  },
+  {
+    accessorKey: "generalDetail.incentiveAmount",
+    header: "Incentive Amount",
+    cell: ({ row }) => `₹ ${row.original.generalDetail?.incentiveAmount ?? "0.00"}`,
+  },
+  {
+    accessorKey: "vehicleDetail.vehicleNo",
+    header: "Vehicle No.",
+    cell: ({ row }) => row.original.vehicleDetail?.vehicleNo ?? "N/A",
+  },
+];
+
 export const clientTransactioncolumns: ColumnDef<Transaction>[] = [
   
   {

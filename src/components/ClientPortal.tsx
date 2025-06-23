@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/context/ToastContext";
 // Assuming you have a function like this:
 import { postIds } from "@/service/case.service"; // You should implement this service
+import { Badge } from "@/components/ui/badge";
 
 interface ClientCase {
   id: string;
@@ -139,6 +140,56 @@ const filteredCases = cases.filter((c) => {
   return (
     <div className="p-4 space-y-4 h-screen">
       <h1 className="text-xl font-bold">Your Cases</h1>
+      <div className="flex gap-2 mb-4">
+          <Button
+            style={{ cursor: "pointer", position: "relative" }}
+            variant={activeTab === "unpaid" ? "default" : "outline"}
+            onClick={() => {
+              setActiveTab("unpaid");
+            }}
+          >
+            Unpaid
+            {/* {cases.some((c) => c.payment === null) && ( */}
+              {(<Badge
+                variant="destructive"
+                className="absolute -top-2 -right-2 px-2 py-0.5 text-xs"
+              >
+                {cases.filter((c) => c.payment === null).length}
+              </Badge>
+            )}
+          </Button>
+
+          <Button
+            style={{ cursor: "pointer", position: "relative" }}
+            variant={activeTab === "under-verification" ? "default" : "outline"}
+            onClick={() => {
+              setActiveTab("under-verification");
+              setSelectMode(false);
+            }}
+          >
+            Under Verification
+            {/* {cases.some((c) => c.payment?.status === "Paid") && ( */}
+              {(<Badge
+                variant="destructive"
+                className="absolute -top-2 -right-2 px-2 py-0.5 text-xs"
+              >
+                {cases.filter((c) => c.payment?.status === "Paid").length}
+              </Badge>
+            )}
+          </Button>
+
+          <Button
+            style={{ cursor: "pointer" }}
+            variant={activeTab === "verified" ? "default" : "outline"}
+            onClick={() => {
+              setActiveTab("verified");
+              setSelectMode(false); // disable selection
+            }}
+          >
+            Verified
+          </Button>
+</div>
+
       {activeTab === "unpaid" && (
   <div className="flex justify-end items-center mb-4">
     {!selectMode ? (
@@ -179,39 +230,6 @@ const filteredCases = cases.filter((c) => {
     )}
   </div>
 )}
-
-
-      <div className="flex gap-2 mb-4">
-  <Button
-  style={{cursor:"pointer"}}
-    variant={activeTab === "verified" ? "default" : "outline"}
-    onClick={() => {
-      setActiveTab("verified");
-      setSelectMode(false); // disable selection
-    }}
-  >
-    Verified
-  </Button>
-  <Button
-  style={{cursor:"pointer"}}
-    variant={activeTab === "under-verification" ? "default" : "outline"}
-    onClick={() => {
-      setActiveTab("under-verification");
-      setSelectMode(false);
-    }}
-  >
-    Under Verification
-  </Button>
-  <Button
-  style={{cursor:"pointer"}}
-    variant={activeTab === "unpaid" ? "default" : "outline"}
-    onClick={() => {
-      setActiveTab("unpaid");
-    }}
-  >
-    Unpaid
-  </Button>
-</div>
 
 {filteredCases.length === 0 && (
   <div className="text-center text-muted-foreground py-10 text-sm border rounded-md">

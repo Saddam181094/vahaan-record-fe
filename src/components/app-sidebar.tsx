@@ -11,11 +11,13 @@ import {
   IndianRupee,
   BriefcaseConveyorBelt,
   ClipboardList,
-  ReceiptIndianRupee
+  ReceiptIndianRupee,
+  LogOut
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -32,6 +34,8 @@ import {
 import { useSidebar } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useLocation } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 // import { useState } from "react";
 
 type SidebarItem = {
@@ -72,7 +76,9 @@ const items1: Record<string, SidebarItem[]> = {
       title: "Case", url: "/employee", icon: UserRoundPen,
       submenu: [
         { title: "New Case", url: "/employee/cases/new", icon: CircleUser },
-        { title: "Cases", url: "/employee/cases", icon: PcCase }]
+        { title: "Draft Cases", url: "/employee/cases", icon: PcCase },
+        { title: "Verified Cases", url: "/employee/vcases", icon:BriefcaseConveyorBelt  },
+      ]
     },
     { title: "Tasks", url: "/employee/Tasks", icon: ClipboardList},
     { title: "My Profile", url: "/employee/Profile", icon: User },
@@ -86,7 +92,7 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { state } = useSidebar()
+  const { state,isMobile } = useSidebar()
   const isCollapsed = state === "collapsed"
 
   // Track open state for each collapsible menu by index
@@ -100,6 +106,12 @@ export function AppSidebar() {
     return initial;
   });
 
+    const [open, setOpen] = useState(false);
+    const { logout } = useAuth();
+    const handleLogout = () => {
+      logout();
+    };
+
   const handleToggle = (idx: number) => {
     setOpenMenus((prev) => ({
       ...prev,
@@ -108,63 +120,110 @@ export function AppSidebar() {
   };
 
   return (
-<Sidebar>
-  <SidebarContent>
-    <SidebarGroup>
-      <SidebarGroupLabel>Vaahan Record</SidebarGroupLabel>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item, idx) =>
-            item.submenu ? (
-              <Collapsible
-                key={idx+1}
-                open={openMenus[idx] && !isCollapsed}
-              >
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuItem onClick={() => handleToggle(idx)}>
-                    <SidebarMenuButton>
-                      <item.icon />
-                      {item.title}
-                      <ChevronDown className={`ml-auto transition-transform ${openMenus[idx] ? "rotate-180" : ""}`} />
+ <Sidebar>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Vaahan Record</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item, idx) =>
+                item.submenu ? (
+                  <Collapsible
+                    key={idx + 1}
+                    open={openMenus[idx] && !isCollapsed}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuItem onClick={() => handleToggle(idx)}>
+                        <SidebarMenuButton>
+                          <item.icon />
+                          {item.title}
+                          <ChevronDown
+                            className={`ml-auto transition-transform ${
+                              openMenus[idx] ? "rotate-180" : ""
+                            }`}
+                          />
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pl-6">
+                      {item.submenu.map((sub) => (
+                        <SidebarMenuItem
+                          key={sub.title}
+                          className={
+                            sub.url === currentPath
+                              ? "bg-black text-white rounded-lg"
+                              : ""
+                          }
+                        >
+                          <SidebarMenuButton asChild>
+                            <Link to={sub.url ?? ""}>
+                              <sub.icon />
+                              {sub.title}
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+                ) : (
+                  <SidebarMenuItem
+                    key={item.title}
+                    className={
+                      item.url === currentPath
+                        ? "bg-black text-white rounded-lg"
+                        : ""
+                    }
+                  >
+                    <SidebarMenuButton asChild>
+                      <Link to={item.url ?? ""}>
+                        <item.icon />
+                        {item.title}
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                </CollapsibleTrigger>
+                )
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-                <CollapsibleContent className="pl-6">
-                  {item.submenu.map((sub) => (
-                    <SidebarMenuItem
-                      key={sub.title}
-                      className={sub.url === currentPath ? "bg-black text-white rounded-lg" : ""}
-                    >
-                      <SidebarMenuButton asChild>
-                        <Link to={sub.url ?? ""}>
-                          <sub.icon />
-                          {sub.title}
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-            ) : (
-              <SidebarMenuItem
-                key={item.title}
-                className={item.url === currentPath ? "bg-black text-white rounded-lg" : ""}
+      {/* === Logout Button in Footer === */}
+      <SidebarFooter>
+        <Button
+          variant="destructive"
+          className="w-full cursor-pointer hover:bg-red-800"
+          onClick={() => setOpen(true)}
+        >
+           <LogOut className="w-5 h-5" />
+          {/* Show Logout text unless sidebar is collapsed AND not mobile */}
+{(!isCollapsed || isMobile) && <span className="ml-2">Logout</span>}
+
+        </Button>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Logout</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to logout?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                className="hover:bg-red-800"
+                onClick={handleLogout}
               >
-                <SidebarMenuButton asChild>
-                  <Link to={item.url ?? ""}>
-                    <item.icon />
-                    {item.title}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )
-          )}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
-  </SidebarContent>
-</Sidebar>
+                Logout
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </SidebarFooter>
+    </Sidebar>
 
   );
 }

@@ -129,12 +129,22 @@ return(
             <div className="flex-1">
               <Label htmlFor="mobileNo" className="text-gray-700 font-medium">Mobile No</Label>
               <Input
-                {...register("mobileNo", { required: true })}
+                type="tel"
+                inputMode="numeric"
+                pattern="[6-9]{1}[0-9]{9}"
+                maxLength={10}
+                {...register("mobileNo", {
+                  required: "Mobile No is required",
+                  pattern: {
+                    value: /^[6-9]\d{9}$/,
+                    message: "Enter a valid 10-digit Indian phone number",
+                  }
+                })}
                 placeholder="Mobile No"
                 className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
               />
               {errors.mobileNo && (
-                <p className="text-red-600 text-xs mt-1">Mobile No is required</p>
+                <p className="text-red-600 text-xs mt-1">{errors.mobileNo.message}</p>
               )}
             </div>
           </div>

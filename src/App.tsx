@@ -1,6 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 // import { Suspense } from "react";
-import { UserRole } from "@/context/AuthContext";
+import { useAuth, UserRole } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import LoginPage from "@/pages/Login";
 import AdminDashboard from "@/pages/AdminDash";
@@ -14,6 +14,7 @@ import CaseForm from "@/pages/Case";
 import Allcases from "@/pages/AlCase";
 import AllCaseE from "@/pages/AlCaseE"
 import CaseDetails from "@/components/CaseDetailsAdmin"
+import EmployeeVerified from "@/pages/Empv"
 // import CaseDetailsEmployee from "@/components/CaseDetailsEmployee"
 import CaseDetailsC from "@/components/CaseDetailsClient"
 import ClientCases from "@/pages/ClientCases"
@@ -28,12 +29,22 @@ import Tasks from "@/pages/ToDoPage"
 import Bills from "@/components/ClientBills"
 // import { Loader } from "lucide-react";
 export default function App() {
+  const { isAuthenticated, user, isHydrated } = useAuth();
   return (
 
     <Routes>
 
       {/* General Routes */}
-      <Route path="/" element={<LoginPage />} />
+      <Route
+        path="/"
+        element={
+          (isAuthenticated && isHydrated) ? (
+            <Navigate to={`/${user?.role === "client" ? `${user?.role}/cases` : user?.role}`} replace />
+          ) : (
+            <LoginPage />
+          )
+        }
+      />
       <Route path="/unauthorized" element={<div className="p-4 text-center">Unauthorized</div>} />
       <Route path="/signup" element={<SignUpPage />} />
 
@@ -66,10 +77,10 @@ export default function App() {
           <AddEmployee />
         </ProtectedRoute>
       } />
-      
+
       <Route path="/superadmin/Tasks" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
-          <Tasks/>
+          <Tasks />
         </ProtectedRoute>
       } />
       <Route path="/superadmin/clients" element={
@@ -102,7 +113,7 @@ export default function App() {
 
       <Route path="/superadmin/cases/mycases" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
-          <AlCaseA/>
+          <AlCaseA />
         </ProtectedRoute>
       } />
       <Route path="/superadmin/clients/clientDetails" element={
@@ -122,11 +133,11 @@ export default function App() {
 
       <Route path="/client/cases" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
-          <ClientCases/>
+          <ClientCases />
         </ProtectedRoute>
       } />
 
-            <Route path="/client/cases/:CaseNo" element={
+      <Route path="/client/cases/:CaseNo" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
           <CaseDetailsC />
         </ProtectedRoute>
@@ -140,18 +151,18 @@ export default function App() {
 
       <Route path="/client/payment" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
-          <Payment/>
+          <Payment />
         </ProtectedRoute>
       } />
 
       <Route path="/client/Transactions" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
-          <ClientTransactions/>
+          <ClientTransactions />
         </ProtectedRoute>
       } />
       <Route path="/client/Bills" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
-          <Bills/>
+          <Bills />
         </ProtectedRoute>
       } />
 
@@ -169,7 +180,7 @@ export default function App() {
       } />
       <Route path="/employee/Tasks" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
-          <Tasks/>
+          <Tasks />
         </ProtectedRoute>
       } />
 
@@ -179,13 +190,19 @@ export default function App() {
         </ProtectedRoute>
       } />
 
-      <Route path="/employee/cases/:CaseNo" element={
+      <Route path="/employee/vcases" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
-          <CaseDetails/>
+          < EmployeeVerified />
         </ProtectedRoute>
       } />
-    
-    <Route path="/employee/Profile" element={
+
+      <Route path="/employee/cases/:CaseNo" element={
+        <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
+          <CaseDetails />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/employee/Profile" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
           <Profile />
         </ProtectedRoute>
