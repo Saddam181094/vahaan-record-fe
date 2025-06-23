@@ -1,7 +1,6 @@
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -164,11 +163,6 @@ const paymentTableColumns = (
 
 
 const verifyPayment = () => {
-  const [open, setOpen] = useState(false);
-  const { logout } = useAuth();
-  const handleLogout = () => {
-    logout();
-  };
   const toast = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setLoading } = useLoading();
@@ -250,7 +244,7 @@ const handleConfirmAction = () => {
       <SidebarTrigger />
       <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
         {/* Logout Dialog */}
-        <div className="flex justify-end mb-4">
+        {/* <div className="flex justify-end mb-4">
           <Button variant="destructive" className="cursor-pointer hover:bg-red-800" onClick={() => setOpen(true)}>
             Logout
           </Button>
@@ -270,7 +264,7 @@ const handleConfirmAction = () => {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
+        </div> */}
 
   <Dialog open={actionConfirmOpen} onOpenChange={setActionConfirmOpen}>
   <DialogContent>

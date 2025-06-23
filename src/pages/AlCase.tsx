@@ -1,31 +1,16 @@
 import CaseDesAll from "@/components/CaseDesAll"
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription
-} from "@/components/ui/dialog";
 
 const Allcases = () => {
-  const [open, setOpen] = useState(false);
-  const { logout } = useAuth();
-  const handleLogout = () => {
-    logout();
-  };
 
   return (
       <SidebarProvider>
         <AppSidebar />
         <SidebarTrigger />
         <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
-          <div className="flex justify-end mb-4">
-            <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
+          {/* <div className="flex justify-end mb-4">
+             <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
               Logout
             </Button>
             <Dialog open={open} onOpenChange={setOpen}>
@@ -46,7 +31,7 @@ const Allcases = () => {
                 </div>
               </DialogContent>
             </Dialog>
-          </div>
+          </div> */}
           <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
             <CaseDesAll />
           </div>

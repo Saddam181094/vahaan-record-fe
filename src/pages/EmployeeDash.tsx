@@ -1,36 +1,22 @@
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription
-} from "@/components/ui/dialog";
 import { useToast } from "@/context/ToastContext";
 import { useLoading } from "@/components/LoadingContext";
 // import type { ExpiryData } from "./AdminDash";
-import { allCaseColumns, type CaseData } from "@/lib/tables.data";
+// import { allCaseColumns, type CaseData } from "@/lib/tables.data";
 import { getSummary } from "@/service/case.service";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { DataTable } from "@/components/DataTable";
+// import { DataTable } from "@/components/DataTable";
 import { useNavigate } from "react-router-dom";
 
 const EmployeeDashboard = () => {
-  const [open, setOpen] = useState(false);
-  const { logout } = useAuth();
-  const handleLogout = () => {
-    logout();
-  };
 
     const toast = useToast();
     const { setLoading } = useLoading();
     const [expiryStats, setExpiryStats] = useState<any[]>([]);
-    const [selectedCases, setSelectedCases] = useState<CaseData[]>([]);
-    const [selectedType, setSelectedType] = useState<string | null>(null);
+    // const [selectedCases, setSelectedCases] = useState<CaseData[]>([]);
+    // const [selectedType, setSelectedType] = useState<string | null>(null);
     const navigate = useNavigate();
   
     useEffect(() => {
@@ -41,10 +27,10 @@ const EmployeeDashboard = () => {
           setExpiryStats(data);
   
           // Default selection: first card's cases
-          if (data.length > 0) {
-            setSelectedCases(data[0].cases);
-            setSelectedType(data[0].expiryType);
-          }
+          // if (data.length > 0) {
+          //   setSelectedCases(data[0].cases);
+          //   setSelectedType(data[0].expiryType);
+          // }
         })
         .catch((err) => {
           toast.showToast("Error:", err?.message || "Summary fetch failed", "error");
@@ -63,7 +49,7 @@ const handleClick = (data:any) => {
       <SidebarTrigger />
       <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
         <div className="flex justify-end mb-4">
-          <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
+          {/* <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
             Logout
           </Button>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -83,7 +69,7 @@ const handleClick = (data:any) => {
                 </Button>
               </div>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
         </div>
 <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
   <span className="col-span-full text-4xl font-bold mb-10 block">Summary of the Cases</span>

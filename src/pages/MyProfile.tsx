@@ -6,7 +6,6 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
-    DialogDescription
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -38,12 +37,7 @@ const MyProfile: React.FC = () => {
         watch,
         formState: { errors },
     } = useForm<PasswordFormInputs>();
-
-    const [open, setOpen] = useState(false);
-    const { logout, user } = useAuth();
-    const handleLogout = () => {
-        logout();
-    };
+    const { user } = useAuth();
     // const creditLimit = 100000;
     // const utilizedLimit = 45000;
 
@@ -82,7 +76,7 @@ const MyProfile: React.FC = () => {
             <SidebarTrigger />
             <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
                 <div className="flex justify-end mb-4">
-                    <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
+                    {/* <Button variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
                         Logout
                     </Button>
                     <Dialog open={open} onOpenChange={setOpen}>
@@ -102,7 +96,7 @@ const MyProfile: React.FC = () => {
                                 </Button>
                             </div>
                         </DialogContent>
-                    </Dialog>
+                    </Dialog> */}
                 </div>
 
                 <div className="flex flex-col md:flex-row justify-between w-full gap-6 px-4">

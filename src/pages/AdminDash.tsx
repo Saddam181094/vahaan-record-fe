@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useAuth } from "@/context/AuthContext";
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Button } from "@/components/ui/button";
 import { getSummary } from "@/service/case.service";
 import { useToast } from "@/context/ToastContext";
 import { useLoading } from "@/components/LoadingContext";
@@ -16,15 +13,9 @@ type ExpiryData = {
 };
 
 const AdminDashboard = () => {
-  const [open, setOpen] = useState(false);
-  const { logout } = useAuth();
   const [expiryStats, setExpiryStats] = useState<ExpiryData[]>([]);
   const toast = useToast();
   const {setLoading} = useLoading();
-  const handleLogout = () => {
-    logout();
-  };
-
   const navigate = useNavigate();
 
 const handleClick = (data:any) => {
@@ -53,7 +44,7 @@ const handleClick = (data:any) => {
       <SidebarTrigger />
       <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
         <div className="flex justify-end mb-4">
-          <Button
+          {/* <Button
             style={{ cursor: "pointer" }}
             variant="destructive"
             className="cursor-pointer hover:bg-red-800"
@@ -87,7 +78,7 @@ const handleClick = (data:any) => {
                 </Button>
               </div>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
         </div>
 
         {/* Expiry Stats Cards Section */}

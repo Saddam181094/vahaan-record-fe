@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 // import UClient from "@/components/UClient";
 import { useEffect, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DataTable } from "./DataTable";
 import { Label } from "./ui/label";
 import { Controller, useForm } from "react-hook-form";
@@ -22,11 +21,6 @@ export interface ClientTransaction {
 }
 
 const Client = () => {
-    const [open, setOpen] = useState(false);
-    const { logout } = useAuth();
-    const handleLogout = () => {
-        logout();
-    };
     const toast = useToast();
     const [filteredCases, setFilteredCases] = useState<any>();
     const { setLoading } = useLoading();
@@ -179,7 +173,7 @@ const isDisabled = filteredCases? true : false;
                         <Button type="button" disabled={!isDisabled} style={{cursor:"pointer"}} onClick={reactToPrintFn} className="bg-primary text-white m-5">
                             🖨️ Print PDF
                         </Button>
-                        <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer m-5 hover:bg-red-800" onClick={() => setOpen(true)}>
+                        {/* <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer m-5 hover:bg-red-800" onClick={() => setOpen(true)}>
                             Logout
                         </Button>
                         <Dialog open={open} onOpenChange={setOpen}>
@@ -199,7 +193,7 @@ const isDisabled = filteredCases? true : false;
                                     </Button>
                                 </div>
                             </DialogContent>
-                        </Dialog>
+                        </Dialog> */}
                     </div>
 
                     {/* Extract clientDetails from the first transaction if available */}

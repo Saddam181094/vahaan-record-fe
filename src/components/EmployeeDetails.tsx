@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useToast } from "@/context/ToastContext";
@@ -48,11 +46,6 @@ export default function ClientDetails() {
     const [cases, setCases] = useState<CaseItem[]>([]);
     const { setLoading } = useLoading();
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-    const [open, setOpen] = useState(false);
-    const { logout } = useAuth();
-    const handleLogout = () => {
-        logout();
-    };
 
     const { handleSubmit, setValue, control } = useForm<FilterFormValues>({
         defaultValues: {
@@ -135,7 +128,7 @@ export default function ClientDetails() {
                     >
                         ← Back
                     </Button>
-                    <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
+                    {/* <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
                         Logout
                     </Button>
                     <Dialog open={open} onOpenChange={setOpen}>
@@ -155,7 +148,7 @@ export default function ClientDetails() {
                                 </Button>
                             </div>
                         </DialogContent>
-                    </Dialog>
+                    </Dialog> */}
                 </div>
                 <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto p-6 space-y-6">
                     {/* Top Client Info Card */}

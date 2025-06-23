@@ -1,15 +1,6 @@
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription
-} from "@/components/ui/dialog";
 import { Label } from "./ui/label";
 import { Controller, useForm } from "react-hook-form";
 import { Select, SelectTrigger } from "@radix-ui/react-select";
@@ -19,12 +10,7 @@ import { useToast } from "@/context/ToastContext";
 import { CaseFilterType } from "./CaseDesAll";
 
 const ClientBills = () => {
-  const [open, setOpen] = useState(false);
-  const { logout } = useAuth();
-  const handleLogout = () => {
-    logout();
-  };
-    const { handleSubmit, setValue, getValues, control, watch } = useForm<any>({
+    const { handleSubmit, control, watch } = useForm<any>({
       defaultValues: {
     filterType: "applicationDate",
     fromDate: "",
@@ -33,11 +19,11 @@ const ClientBills = () => {
     });
   const toast = useToast();
 
-  const [filteredCases, setFilteredCases] = useState<any[]>([]);
+  // const [filteredCases, setFilteredCases] = useState<any[]>([]);
   const {setLoading} = useLoading();
 
   const applyFilter = async (data: any) => {
-    const { fromDate, toDate, filterType } = data;
+    const { fromDate, toDate } = data;
   
     if (!fromDate || !toDate) return;
   
@@ -61,8 +47,8 @@ const ClientBills = () => {
         <AppSidebar />
         <SidebarTrigger />
         <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
-          <div className="flex justify-end mb-4">
-            <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
+          {/* <div className="flex justify-end mb-4"> */}
+                        {/* <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
               Logout
             </Button>
             <Dialog open={open} onOpenChange={setOpen}>
@@ -83,9 +69,10 @@ const ClientBills = () => {
                 </div>
               </DialogContent>
             </Dialog>
-          </div>
+          </div>*/}
+
           <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
-                  <form
+      <form
         onSubmit={handleSubmit(applyFilter)}
         className="flex flex-wrap gap-4 items-end md:flex-nowrap"
       >

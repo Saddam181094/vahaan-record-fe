@@ -1,17 +1,13 @@
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
 import ClientPortal from "@/components/ClientPortal";
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const Client = () => {
-  const [open, setOpen] = useState(false);
-  const { logout } = useAuth();
-  const handleLogout = () => {
-    logout();
-  };
+  // const [open, setOpen] = useState(false);
+  // const { logout } = useAuth();
+  // const handleLogout = () => {
+  //   logout();
+  // };
 
   return (
     <>
@@ -19,7 +15,7 @@ const Client = () => {
         <AppSidebar />
         <SidebarTrigger />
         <div className="flex flex-col w-full bg-white pr-6 py-4 h-full min-h-[100vh]">
-          <div className="flex justify-end mb-4">
+          {/* <div className="flex justify-end mb-4">
             <Button style={{cursor:"pointer"}} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
               Logout
             </Button>
@@ -41,7 +37,7 @@ const Client = () => {
                 </div>
               </DialogContent>
             </Dialog>
-          </div>
+          </div> */}
           <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
             <ClientPortal/>
           </div>

@@ -1,7 +1,6 @@
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import {
@@ -26,11 +25,6 @@ export interface Task {
 }
 
 const AddBranch = () => {
-    const [open, setOpen] = useState(false);
-    const { logout } = useAuth();
-    const handleLogout = () => {
-        logout();
-    };
     const { setLoading } = useLoading();
     const toast = useToast();
   const {
@@ -128,7 +122,7 @@ toast.showToast('Error:',err?.message || 'Error occured while marking complete T
                 <SidebarTrigger />
                 <div className="flex flex-col w-full bg-white pr-6 py-4 min-h-screen">
                     <div className="flex justify-end mb-4">
-                        <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
+                        {/* <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
                             Logout
                         </Button>
                         <Dialog open={open} onOpenChange={setOpen}>
@@ -148,7 +142,7 @@ toast.showToast('Error:',err?.message || 'Error occured while marking complete T
                                     </Button>
                                 </div>
                             </DialogContent>
-                        </Dialog>
+                        </Dialog> */}
                     </div>
  <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
       <div className="flex flex-row w-full h-[99vh] overflow-hidden">
