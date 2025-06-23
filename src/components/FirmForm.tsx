@@ -87,7 +87,7 @@ const {setLoading} = useLoading();
 
   return (
     <div>
-      <Button style={{cursor:"pointer"}} onClick={() => setDialogOpen(true)} className="mb-4">
+      <Button style={{cursor:"pointer"}} onClick={() => setDialogOpen(true)} className="mb-4 bg-[#5156DB]">
         Add Firm
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

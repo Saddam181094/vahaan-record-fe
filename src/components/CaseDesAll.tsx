@@ -73,7 +73,7 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
                 // console.log(resp?.data);
                 toast.showToast('Success', 'Case Assigned Successfully.', 'success');
             }).catch((err: any) => {
-                toast.showToast('Error:', err?.message || 'Error Assigning Case', 'error');
+                toast.showToast('Error:', err?.response?.data?.errors[0] || 'Error Assigning Case', 'error');
             })
             .finally(() => {
                 setLoading(false);
@@ -208,30 +208,44 @@ const location = useLocation();
 const selectedFilterType = watch("filterType");
 
   useEffect(() => {
+
+    setLoading(true);
 const { state } = location;
 
-    if(state?.type){
-      switch (state.type) {
-        case "PUC":
-        setValue("filterType","pucExpiry" );
-          break;
-        case "INSURANCE":
-          setValue("filterType","insuranceExpiry" );
-          break;
-        case "FITNESS":
-          setValue("filterType","fitnessExpiry" );
-          break;
-        case "TAX":
-          setValue("filterType","taxExpiry" );
-          break;
-        case "PERMIT":
-          setValue("filterType","permitExpiry" );
-          break;
-        default:
-          setValue("filterType", "applicationDate");
-          break;
-    }
-    }
+    if (state?.type) {
+  // Get last date of current month in `YYYY-MM-DD` format
+const now = new Date();
+const lastDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+const lastDateOfMonth = `${lastDate.getFullYear()}-${String(lastDate.getMonth() + 1).padStart(2, "0")}-${String(lastDate.getDate()).padStart(2, "0")}`;
+
+
+  switch (state.type) {
+    case "PUC":
+      setValue("filterType", "pucExpiry");
+      setValue("toDate", lastDateOfMonth);
+      break;
+    case "INSURANCE":
+      setValue("filterType", "insuranceExpiry");
+      setValue("toDate", lastDateOfMonth);
+      break;
+    case "FITNESS":
+      setValue("filterType", "fitnessExpiry");
+      setValue("toDate", lastDateOfMonth);
+      break;
+    case "TAX":
+      setValue("filterType", "taxExpiry");
+      setValue("toDate", lastDateOfMonth);
+      break;
+    case "PERMIT":
+      setValue("filterType", "permitExpiry");
+      setValue("toDate", lastDateOfMonth);
+      break;
+    default:
+      setValue("filterType", "applicationDate");
+      break;
+  }
+}
+
     const { fromDate, toDate, filterType } = getValues();
     if (!fromDate || !toDate) return;
 
@@ -241,7 +255,8 @@ const { state } = location;
         setFilteredCases(resp?.data || []);
       })
       .catch((err) => console.error("Error fetching cases:", err))
-      .finally(() => setLoading(false));
+      .finally(() => 
+      setLoading(false));
   }, [flag]);
 
 const applyFilter = async (data: FilterFormValues) => {
@@ -363,8 +378,7 @@ const applyFilter = async (data: FilterFormValues) => {
                   >
                     <FaEye />
                   </button>
-                  {caseData.status?.toLowerCase() !== "assigned" &&
-                    caseData.status?.toLowerCase() !== "created" && (
+                  {caseData.status?.toLowerCase() === "ready" &&(
                       <AssignDialog
                         caseNo={caseData.CaseNo}
                         caseId={caseData.id}

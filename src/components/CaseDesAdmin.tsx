@@ -51,7 +51,7 @@ export default function CaseDes() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setLoading } = useLoading();
   const toast = useToast();
-  const [flag] = useState(false); // For re-rendering
+  const [flag,setflag] = useState(false); // For re-rendering
   // console.log(cases);
 
 
@@ -69,6 +69,7 @@ export default function CaseDes() {
     }).catch((err: any) => {
       toast.showToast("Error", err?.message || 'Verification error Occured', 'error');
     }).finally(() => {
+        setflag(f => !f);
       setLoading(false);
     })
   };
@@ -94,7 +95,7 @@ export default function CaseDes() {
           <Button
             style={{ cursor: "pointer" }}
             variant="default"
-            className="mb-4"
+            className="mb-4 bg-[#5156DB]"
             onClick={() => {
               setLoading(true);
               navigate("/superadmin/cases/new")
@@ -161,7 +162,7 @@ export default function CaseDes() {
               style={{ cursor: "pointer" }}
               onClick={handleVerify}
             >
-              Approve
+              Verify
             </Button>
           </DialogFooter>
         </DialogContent>

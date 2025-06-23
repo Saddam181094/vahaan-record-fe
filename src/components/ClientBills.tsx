@@ -3,10 +3,15 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
 import { Label } from "./ui/label";
 import { Controller, useForm } from "react-hook-form";
-import { Select, SelectTrigger } from "@radix-ui/react-select";
-import {  SelectValue } from "./ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
+import { useEffect, useState } from "react";
+import { billbyId, getBills } from "@/service/bills.service";
+import { useAuth } from "@/context/AuthContext";
+import { DataTable } from "./DataTable";
+import { paymentColumns } from "@/lib/tables.data";
+import { type Payment } from "@/lib/tables.data";
 // import { useState } from "react";
 
 export interface Bill{
@@ -19,83 +24,106 @@ export interface Bill{
 }
 
 const ClientBills = () => {
-    const { handleSubmit, control, watch } = useForm<any>({
-      defaultValues: {
-  },
-    });
+  const { handleSubmit, control} = useForm<{ filterType: string }>({
+    defaultValues: {
+      filterType: "",
+    },
+  });
+
   const toast = useToast();
+  const { user } = useAuth();
+  const [bills, setBills] = useState<Bill[]>([]);
+  const [bdata,setBdata] = useState<Payment[]>([]);
+  const { setLoading } = useLoading();
 
-  // const [filteredCases, setFilteredCases] = useState<any[]>([]);
-  // const [bills,setBills] = useState<any[]>([]);
-  const {setLoading} = useLoading();
+  useEffect(() => {
+    setLoading(true);
+    getBills(user?.id)
+      .then((resp) => {
+        setBills(resp?.data ?? []);
+        toast.showToast('Success','All Bills Fetched','success');
+      })
+      .catch((err: any) => {
+        toast.showToast("Error", err?.message || "Fetching error", "error");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
-  const applyFilter = async (data: any) => {
-    const { fromDate, toDate } = data;
-  
-    if (!fromDate || !toDate) return;
-  
+  const applyFilter = async (data: { filterType: string }) => {
+    const { filterType } = data;
+
+    if (!filterType) return;
+
     setLoading(true);
     try {
-      // const response = await getAllCases(filterType, fromDate, toDate);
-      // setFilteredCases(response?.data || []);
+      // Replace with your API function
+     const resp = await billbyId(filterType);
+     setBdata(resp?.data?.payments);
+      toast.showToast('Success',resp?.message,'success');
     } catch (err) {
-      console.error("Error fetching filtered cases:", err);
       toast.showToast("Error", "Failed to apply filter", "error");
     } finally {
       setLoading(false);
     }
   };
-  const selectedFilterType = watch("filtertype");
-
 
   return (
-    <>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarTrigger />
-        <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh]">
-          <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
-      <form
-        onSubmit={handleSubmit(applyFilter)}
-        className="flex flex-wrap gap-4 items-end md:flex-nowrap"
-      >
-        {/* Filter Type */}
-        <div className="flex flex-col space-y-1 min-w-[150px] flex-1">
-          <Label className="text-sm font-medium">
-        Filter Type<span className="text-red-500">*</span>
-          </Label>
-          <Controller
-            control={control}
-            name="filterType"
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} value={selectedFilterType}>
-                <SelectTrigger className="w-full md:w-[200px]">
-                  <SelectValue placeholder="Select Filter" />
-                </SelectTrigger>
-                {/* <SelectContent>
-                  {Object.entries(Bill).map(([key, value]) => (
-                    <SelectItem key={key} value={value}>
-                      {key
-                        .replace(/_/g, " ")
-                        .toLowerCase()
-                        .replace(/(^|\s)\S/g, (l: string) => l.toUpperCase())}
-                    </SelectItem>
-                  ))}
-                </SelectContent> */}
-              </Select>
-            )}
-          />
-        </div>
-        <div className="w-full md:w-auto flex-1">
-          <Button type="submit" style={{cursor:"pointer"}} className="mt-2 w-full md:w-auto">
-        Filter
-          </Button>
-        </div>
-      </form>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarTrigger />
+      <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh]">
+        <form
+          onSubmit={handleSubmit(applyFilter)}
+          className="flex flex-wrap gap-4 items-end md:flex-nowrap p-4"
+        >
+          {/* Filter Type Dropdown */}
+          <div className="flex flex-col space-y-1 min-w-[200px] flex-1">
+            <Label className="text-sm font-medium">
+              Filter Type <span className="text-red-500">*</span>
+            </Label>
+            <Controller
+              name="filterType"
+              control={control}
+              rules={{
+                required:true
+              }}
+              render={({ field, fieldState }) => (
+                <>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Bill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {bills.map((bill) => (
+                        <SelectItem key={bill.billId} value={bill.billId}>
+                          {bill.billMonth}-{bill.billYear}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <span className="text-xs text-red-500">{fieldState.error.message || "This field is required"}</span>
+                  )}
+                </>
+              )}
+            />
           </div>
-        </div>
-      </SidebarProvider>
-    </>
+
+          <div className="w-full md:w-auto">
+            <Button type="submit" className="mt-2 w-full md:w-auto">
+              Filter
+            </Button>
+          </div>
+        </form>
+
+        <DataTable 
+        data={bdata}
+        columns= {[...paymentColumns]}
+        />
+      </div>
+    </SidebarProvider>
   );
 };
 

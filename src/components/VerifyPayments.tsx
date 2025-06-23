@@ -165,6 +165,7 @@ const paymentTableColumns = (
 const verifyPayment = () => {
   const toast = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [flag, setflag] = useState(false);
   const { setLoading } = useLoading();
   const [payments, setPayments] = useState<PaymentData[]>([]);
   const [selectedProofUrl, setSelectedProofUrl] = useState<string | null>(null);
@@ -192,7 +193,7 @@ const [actionConfirmOpen, setActionConfirmOpen] = useState(false);
         toast.showToast('Error:', error?.message || 'Error in fetching Unverified Payments', 'error')
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [flag]);
 
 
   const onVerify = (paymentId: string) => {
@@ -222,6 +223,7 @@ const handleConfirmAction = () => {
     })
     .finally(() => {
       setLoading(false);
+      setflag(f=>!f);
       setActionConfirmOpen(false); // Close the dialog after action
     });
 };

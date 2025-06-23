@@ -24,6 +24,40 @@ export type CaseData = {
     status: string;
   };
 
+export interface Payment {
+  id: string;
+  amount: string;
+  remarks: string;
+  mode: string;
+  paymentDate: string;
+}
+
+export const paymentColumns: ColumnDef<Payment>[] = [
+    {
+    // accessorKey: "paymentDate",
+    header: "Payment Date",
+        cell: ({ row }) => {
+      const date = new Date(row.original.paymentDate);
+      return date.toLocaleString();
+    },
+  },
+    {
+    accessorKey: "mode",
+    header: "Mode",
+    cell: ({ row }) => row.original.mode,
+  },
+  {
+    accessorKey: "remarks",
+    header: "Remarks",
+    cell: ({ row }) => row.original.remarks.replace(/_/g, " "),
+  },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    cell: ({ row }) => `₹${row.original.amount}`,
+  },
+];
+
 export const branchTableColumns: ColumnDef<Branch>[] = [
   {
     accessorKey: "name",
@@ -89,10 +123,11 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
 export const caseColumns: ColumnDef<any>[] = [
   {
     accessorKey: "CaseNo",
+    accessorFn: (row) => `#${row?.CaseNo}`,
     header: "Case No.",
   },
   {
-    accessorKey: "createdAt",
+    // accessorKey: "createdAt",
     header: "Created At",
     cell: ({ row }) => {
       const date = new Date(row.original.createdAt);
@@ -101,6 +136,7 @@ export const caseColumns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "status",
+    accessorFn: (row) => `${row?.status}`,
     header: "Status",
   },
   {
@@ -126,21 +162,21 @@ export const caseColumns: ColumnDef<any>[] = [
 ];
 
 export const clientTransactioncolumns: ColumnDef<Transaction>[] = [
-  
-  {
-    // accessorKey: "Amount",
-    header: "Amount (₹)",
-    cell: ({ row }) => `₹${parseFloat(row.original.Amount).toFixed(2)}`,
+    {
+    // accessorKey: "paymentDate",
+    header: "Date",
+     cell: ({ row }) => new Date(row.original.paymentDate).toLocaleDateString(),
   },
   {
     accessorKey: "mode",
     header: "Mode",
     cell: ({ row }) => (row.original.mode).toUpperCase(),
   },
-  {
-    // accessorKey: "paymentDate",
-    header: "Date",
-     cell: ({ row }) => new Date(row.original.paymentDate).toLocaleDateString(),
+    {
+    // accessorKey: "Amount",
+    accessorFn: (row) => `${row.Amount}`,
+    header: "Amount (₹)",
+    cell: ({ row }) => `₹${parseFloat(row.original.Amount).toFixed(2)}`,
   },
   {
     accessorKey: "status",

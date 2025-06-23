@@ -15,6 +15,7 @@ import { getClient, rejectClient, verifyClient } from "@/service/client.service"
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./DataTable";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "./ui/badge";
 
 export interface NewClient {
   id: string;
@@ -207,21 +208,49 @@ export default function UClient() {
   return (
     <div className="flex flex-col w-full bg-white pr-6 lg:py-10 min-h-[100vh]">
       <div className="flex gap-4 mb-4">
-<Button
-  style={{ cursor: "pointer" }}
-  variant={currentTab === "unverified" ? "default" : "outline"}
-  onClick={() => setCurrentTab("unverified")}
->
-  Unverified Clients
-</Button>
+{unverifiedClients.length > 0 ? (
+  <Button
+    style={{ cursor: "pointer", position: "relative" }}
+    className={`relative transition-colors duration-200 ${
+      currentTab === "unverified"
+        ? "bg-[#5156DB] text-white hover:bg-[#4146b5]"
+        : "bg-[#F5F5F5] text-[#333] hover:bg-[#e5e5e5] hover:text-[#111]"
+    }`}
+    onClick={() => setCurrentTab("unverified")}
+  >
+    Unverified Clients
+    <Badge
+      className="absolute -top-2 -right-2 bg-red-600 text-white px-2 py-0.5 text-xs"
+    >
+      {unverifiedClients.length}
+    </Badge>
+  </Button>
+) : (
+  <Button
+    style={{ cursor: "pointer" }}
+    className={`transition-colors duration-200 ${
+      currentTab === "unverified"
+        ? "bg-[#5156DB] text-white hover:bg-[#4146b5]"
+        : "bg-[#F5F5F5] text-[#333] hover:bg-[#e5e5e5] hover:text-[#111]"
+    }`}
+    onClick={() => setCurrentTab("unverified")}
+  >
+    Unverified Clients
+  </Button>
+)}
 
 <Button
   style={{ cursor: "pointer" }}
-  variant={currentTab === "verified" ? "default" : "outline"}
+  className={`transition-colors duration-200 ${
+    currentTab === "verified"
+      ? "bg-[#5156DB] text-white hover:bg-[#4146b5]"
+      : "bg-[#F5F5F5] text-[#333] hover:bg-[#e5e5e5] hover:text-[#111]"
+  }`}
   onClick={() => setCurrentTab("verified")}
 >
   Verified Clients
 </Button>
+
 
 
       </div>

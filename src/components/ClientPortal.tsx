@@ -39,7 +39,7 @@ export interface PaymentMode {
 }
 
 export default function ClientCaseList() {
-  const [activeTab, setActiveTab] = useState<"verified" | "under-verification" | "unpaid">("under-verification");
+  const [activeTab, setActiveTab] = useState<"verified" | "under-verification" | "unpaid"| "failed">("unpaid");
   const [cases, setCases] = useState<ClientCase[]>([]);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [selectedCaseIds, setSelectedCaseIds] = useState<string[]>([]);
@@ -132,7 +132,8 @@ export default function ClientCaseList() {
 
 const filteredCases = cases.filter((c) => {
   if (activeTab === "verified") return c.payment?.status === "success";
-  if (activeTab === "under-verification") return c.payment?.status === "Paid";
+  if (activeTab === "under-verification") return c.payment?.status === "paid";
+  if (activeTab === "failed") return c.payment?.status === "failed";
   return c.payment === null; // unpaid
 });
 
@@ -140,7 +141,7 @@ const filteredCases = cases.filter((c) => {
   return (
     <div className="p-4 space-y-4 h-screen">
       <h1 className="text-xl font-bold">Your Cases</h1>
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4 sm:flex-row flex-col">
           <Button
             style={{ cursor: "pointer", position: "relative" }}
             variant={activeTab === "unpaid" ? "default" : "outline"}
@@ -149,8 +150,8 @@ const filteredCases = cases.filter((c) => {
             }}
           >
             Unpaid
-            {/* {cases.some((c) => c.payment === null) && ( */}
-              {(<Badge
+            {cases.some((c) => c.payment === null) && (
+            <Badge
                 variant="destructive"
                 className="absolute -top-2 -right-2 px-2 py-0.5 text-xs"
               >
@@ -168,8 +169,8 @@ const filteredCases = cases.filter((c) => {
             }}
           >
             Under Verification
-            {/* {cases.some((c) => c.payment?.status === "Paid") && ( */}
-              {(<Badge
+            {cases.some((c) => c.payment?.status === "Paid") && (
+              <Badge
                 variant="destructive"
                 className="absolute -top-2 -right-2 px-2 py-0.5 text-xs"
               >
@@ -188,6 +189,24 @@ const filteredCases = cases.filter((c) => {
           >
             Verified
           </Button>
+                  <Button
+  style={{ cursor: "pointer", position: "relative" }}
+  variant={activeTab === "failed" ? "default" : "outline"}
+  onClick={() => {
+    setActiveTab("failed");
+    setSelectMode(false);
+  }}
+>
+  Failed
+  {cases.some((c) => c.payment?.status === "failed") && (
+    <Badge
+      variant="destructive"
+      className="absolute -top-2 -right-2 px-2 py-0.5 text-xs"
+    >
+      {cases.filter((c) => c.payment?.status === "failed").length}
+    </Badge>
+  )}
+</Button>
 </div>
 
       {activeTab === "unpaid" && (

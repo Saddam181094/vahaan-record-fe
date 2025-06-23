@@ -237,6 +237,7 @@ export default function EmployeeForm() {
       variant="default"
         size="sm"
         color="white"
+        className="bg-[#5156DB]"
         onClick={() => navigate("/superadmin/employee/employeeDetails", { state: { employee: row.original } })}
       >
         View Details

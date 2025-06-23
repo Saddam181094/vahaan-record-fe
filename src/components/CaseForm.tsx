@@ -282,7 +282,12 @@ export default function CaseForm() {
       .then((resp) => {
         toast.showToast('Success', resp?.message, 'success');
         reset();
-        navigate(-1);
+
+        if(user?.role === "employee")
+        navigate('/employee/cases');
+
+        else if(user?.role === "superadmin")
+        navigate('/superadmin/cases/Mycases')
       })
       .catch((err: any) => {
         toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');

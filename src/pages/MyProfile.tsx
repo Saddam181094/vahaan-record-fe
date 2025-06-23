@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
     Dialog,
     DialogContent,
@@ -14,7 +14,7 @@ import { Card } from "@/components/ui/card";
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { changePassword } from "@/service/auth.service";
+import { changePassword, getProfile } from "@/service/auth.service";
 import { useLoading } from "@/components/LoadingContext";
 import { useToast } from "@/context/ToastContext";
 // import { Progress } from "@/components/ui/progress";
@@ -31,7 +31,7 @@ const MyProfile: React.FC = () => {
     const [showDialog, setShowDialog] = useState(false);
     // const [message, setMessage] = useState("");
     const {
-        register,
+      control,
         handleSubmit,
         reset,
         watch,
@@ -41,8 +41,17 @@ const MyProfile: React.FC = () => {
     // const creditLimit = 100000;
     // const utilizedLimit = 45000;
 
+    const [person,setPerson] = useState<any>();
+
     const toast = useToast();
-    const newPassword = watch("newPassword");
+
+    useEffect(()=>{
+        getProfile().then((resp)=>{
+            setPerson(resp?.data);
+        }).catch((err)=>{
+          toast.showToast('Error',err?.message || 'Error fetching personal Data','error')
+        })
+    },[])
 
     const onSubmit = (data: PasswordFormInputs) => {
         if (data.newPassword !== data.confirmPassword) {
@@ -53,15 +62,18 @@ const MyProfile: React.FC = () => {
         changePassword(data.currentPassword, data.newPassword).then(
             (resp) =>
                 toast.showToast('Success', resp?.message, 'success')
-        ).finally(() => {
+        ).catch((err:any)=>{
+            toast.showToast('Success', err?.message ?? 'Something went wrong', 'success')
+        })
+        .finally(() => {
             reset();
             setLoading(false);
             setShowDialog(false);
         })
     };
 
-    const utilized = Number(user?.utilizedCredit) || 0;
-    const limit = Number(user?.creditLimit) || 1; // avoid divide-by-zero
+    const utilized = Number(person?.utilizedCredit) || 0;
+    const limit = Number(person?.creditLimit) || 1; // avoid divide-by-zero
 
     const percentage = (utilized / limit) * 100;
 
@@ -83,13 +95,13 @@ const MyProfile: React.FC = () => {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Avatar & Info */}
             <div className="flex gap-4 flex-1 items-center">
-              <div className="h-16 w-16 md:h-24 md:w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xl font-bold">
-                {user?.name?.[0]?.toUpperCase()}
+              <div className="h-16 w-16 md:h-24 md:w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 md:text-4xl text-2xl font-bold">
+                {person?.firstName?.[0] ?? ''}{person?.lastName?.[0] ?? ''}
               </div>
               <div className="space-y-1">
-                <p><strong>Name:</strong> {user?.name}</p>
-                <p><strong>Email:</strong> {user?.email}</p>
-                <p><strong>Role:</strong> {user?.role}</p>
+                <p><strong>Name:</strong> {person?.firstName} {person?.lastName}</p>
+                <p><strong>Email:</strong> {person?.email}</p>
+                <p><strong>Role:</strong> {person?.role}</p>
               </div>
             </div>
 
@@ -98,8 +110,8 @@ const MyProfile: React.FC = () => {
               <div className="flex-1">
                 <h3 className="text-lg font-semibold mb-2">Credit Summary</h3>
                 <div className="flex justify-between text-sm font-medium">
-                  <span>Utilized: ₹{user.utilizedCredit}</span>
-                  <span>Total Limit: ₹{user.creditLimit}</span>
+                  <span>Utilized: ₹{person?.client?.utilizedCredit}</span>
+                  <span>Total Limit: ₹{person?.client?.creditLimit}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden mt-2">
                   <div
@@ -133,49 +145,114 @@ const MyProfile: React.FC = () => {
                   Change Password
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                {["currentPassword", "newPassword", "confirmPassword"].map((field) => (
-                  <div key={field}>
-                    <Label htmlFor={field} className="mb-1 block capitalize">
-                      {field.replace(/([A-Z])/g, " $1")}
-                    </Label>
-                    <Input
-                      id={field}
-                      type="password"
-                      autoComplete="new-password"
-                      className="w-full"
-                      {...register("newPassword", {
-                        required: `${field.replace(/([A-Z])/g, " $1")} is required`,
-                        ...(field === "confirmPassword"
-                          ? {
-                              validate: (value) =>
-                                value === newPassword || "Passwords do not match",
-                            }
-                          : {}),
-                      })}
-                    />
-                    {errors.newPassword && (
-                      <p className="text-xs text-red-500 mt-1">
-                        {errors.newPassword?.message}
-                      </p>
-                    )}
-                  </div>
-                ))}
-                <DialogFooter className="flex justify-between gap-2 pt-2">
-                  <Button
-                    style={{ cursor: "pointer" }}
-                    type="button"
-                    variant="outline"
-                    className="w-1/2"
-                    onClick={() => setShowDialog(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button style={{ cursor: "pointer" }} type="submit" className="w-1/2">
-                    Submit
-                  </Button>
-                </DialogFooter>
-              </form>
+<form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+  <Controller
+    name="currentPassword"
+    control={control}
+    rules={{
+      required: "Current Password is required",
+    }}
+    render={({ field }) => (
+      <div>
+        <Label htmlFor="currentPassword" className="mb-1 block">
+          Current Password
+        </Label>
+        <Input
+          {...field}
+          id="currentPassword"
+          type="password"
+          autoComplete="current-password"
+          className="w-full"
+        />
+        {errors.currentPassword && (
+          <p className="text-xs text-red-500 mt-1">
+            {errors.currentPassword.message}
+          </p>
+        )}
+      </div>
+    )}
+  />
+
+  <Controller
+    name="newPassword"
+    control={control}
+    rules={{
+      required: "New Password is required",
+      minLength: {
+        value: 8,
+        message: "New Password must be at least 8 characters",
+      },
+    }}
+    render={({ field }) => (
+      <div>
+        <Label htmlFor="newPassword" className="mb-1 block">
+          New Password
+        </Label>
+        <Input
+          {...field}
+          id="newPassword"
+          type="password"
+          autoComplete="new-password"
+          className="w-full"
+        />
+        {errors.newPassword && (
+          <p className="text-xs text-red-500 mt-1">
+            {errors.newPassword.message}
+          </p>
+        )}
+      </div>
+    )}
+  />
+
+  <Controller
+    name="confirmPassword"
+    control={control}
+    rules={{
+      required: "Confirm Password is required",
+      minLength: {
+        value: 8,
+        message: "Confirm Password must be at least 8 characters",
+      },
+      validate: (value) =>
+        value === watch("newPassword") || "Passwords do not match",
+    }}
+    render={({ field }) => (
+      <div>
+        <Label htmlFor="confirmPassword" className="mb-1 block">
+          Confirm Password
+        </Label>
+        <Input
+          {...field}
+          id="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          className="w-full"
+        />
+        {errors.confirmPassword && (
+          <p className="text-xs text-red-500 mt-1">
+            {errors.confirmPassword.message}
+          </p>
+        )}
+      </div>
+    )}
+  />
+
+  <DialogFooter className="flex justify-between gap-2 pt-2">
+    <Button
+      style={{ cursor: "pointer" }}
+      type="button"
+      variant="outline"
+      className="w-1/2"
+      onClick={() => setShowDialog(false)}
+    >
+      Cancel
+    </Button>
+    <Button style={{ cursor: "pointer" }} type="submit" className="w-1/2">
+      Submit
+    </Button>
+  </DialogFooter>
+</form>
+
             </DialogContent>
           </Dialog>
         </Card>

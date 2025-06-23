@@ -159,7 +159,7 @@ export default function AdminBranchForm() {
     <div>
       <Button 
       style={{cursor:"pointer"}}
-      onClick={() => setDialogOpen(true)} className="mb-4">
+      onClick={() => setDialogOpen(true)} className="mb-4 bg-[#5156DB]">
         Add Branch
       </Button>
 

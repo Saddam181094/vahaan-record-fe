@@ -209,12 +209,12 @@ export function AppSidebar() {
               </DialogDescription>
             </DialogHeader>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setOpen(false)}>
+              <Button variant="outline" className="cursor-pointer" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button
                 variant="destructive"
-                className="hover:bg-red-800"
+                className="hover:bg-red-800 cursor-pointer"
                 onClick={handleLogout}
               >
                 Logout

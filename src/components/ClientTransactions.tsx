@@ -15,13 +15,15 @@ import { useLoading } from "./LoadingContext";
 import { clientTransaction } from "@/service/client.service";
 import { clientTransactioncolumns } from "@/lib/tables.data";
 import { useReactToPrint } from "react-to-print";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
 const Client = () => {
     const toast = useToast();
     const [filteredCases, setFilteredCases] = useState<any>();
     const { setLoading } = useLoading();
     const { user } = useAuth();
-    const [isDisabled,setisDisabled] = useState(true);
+    const [isDisabled, setisDisabled] = useState(true);
     const { handleSubmit, control, setValue } = useForm<FilterFormValues>({
         defaultValues: {
             filterType: "applicationDate",
@@ -68,7 +70,7 @@ const Client = () => {
             setFilteredCases(response?.data || []);
             setLoading(false);
 
-             if (response?.data?.transactions?.length > 0) {
+            if (response?.data?.transactions?.length > 0) {
                 setisDisabled(true);
             } else {
                 setisDisabled(false);
@@ -77,10 +79,10 @@ const Client = () => {
             catch((err: any) => {
                 //   console.error("Error fetching filtered cases:", err);
                 toast.showToast("Error", err?.message, "error");
-            }).finally(()=>{
+            }).finally(() => {
                 setLoading(false);
             })
-           
+
     },
         [setValue]);
 
@@ -109,62 +111,66 @@ const Client = () => {
         </div>
     );
 
-const PrintableCaseDetails = ({
-  firstName,
-  lastName,
-  email,
-  phoneNo,
-  creditLimit,
-  transactions = [],
-}: any) => {
-  return (
-    <div id="printable-content" className="p-12 text-sm leading-relaxed">
-      {/* Letterhead */}
-      <div className="mb-6 border-b pb-4">
-        <img src="/Group.svg" alt="Letterhead" className="mb-5 max-h-24" />
-        <p className="text-gray-600"></p>
-      </div>
+    const PrintableCaseDetails = ({
+        firstName,
+        lastName,
+        email,
+        phoneNo,
+        creditLimit,
+        transactions = [],
+    }: any) => {
+        return (
+            <div id="printable-content" className="p-12 text-sm leading-relaxed">
+                {/* Letterhead */}
+                <div className="mb-6 border-b pb-4">
+                    <img src="/Group.svg" alt="Letterhead" className="mb-5 max-h-24" />
+                    <p className="text-gray-600"></p>
+                </div>
 
-      {/* Client Info Section */}
-      <Section2 title="Client Details">
-        <PrintField label="First Name" value={firstName} />
-        <PrintField label="Last Name" value={lastName} />
-        <PrintField label="Email" value={email} />
-        <PrintField label="Phone No." value={phoneNo} />
-        <PrintField label="Credit Limit" value={creditLimit} />
-      </Section2>
+                {/* Client Info Section */}
+                <Section2 title="Client Details">
+                    <PrintField label="First Name" value={firstName} />
+                    <PrintField label="Last Name" value={lastName} />
+                    <PrintField label="Email" value={email} />
+                    <PrintField label="Phone No." value={phoneNo} />
+                    <PrintField label="Credit Limit" value={creditLimit} />
+                </Section2>
 
-      {/* Transaction Table */}
-      {transactions.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold mb-2">Transaction History</h2>
-          <table className="w-full text-left border border-collapse border-gray-300 text-xs">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-3 py-2">Date</th>
-                <th className="border px-3 py-2">Remarks</th>
-                <th className="border px-3 py-2">Mode</th>
-                <th className="border px-3 py-2">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((txn:any) => (
-                <tr >
-                <td className="border px-3 py-2">
-                    {new Date(txn.paymentDate).toLocaleDateString()}
-                  </td>
-                  <td className="border px-3 py-2 capitalize">{txn.remark}</td>
-                  <td className="border px-3 py-2">{txn.mode}</td>
-                  <td className="border px-3 py-2">₹{txn.Amount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-};
+                {/* Transaction Table */}
+                {transactions.length > 0 && (
+                    <div className="mt-8">
+                        <h2 className="text-lg font-semibold mb-2">Transaction History</h2>
+                        <table className="w-full text-left border border-collapse border-gray-300 text-xs">
+                            <thead className="bg-gray-100">
+                                <tr>
+                                    <th className="border px-3 py-2">Date</th>
+                                    <th className="border px-3 py-2">Remarks</th>
+                                    <th className="border px-3 py-2">Mode</th>
+                                    <th className="border px-3 py-2">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {transactions.map((txn: any) => (
+                                    <tr >
+                                        <td className="border px-3 py-2">
+                                            {new Date(txn.paymentDate).toLocaleDateString()}
+                                        </td>
+                                        <td className="border px-3 py-2 capitalize">{txn.remark}</td>
+                                        <td className="border px-3 py-2">{txn.mode}</td>
+                                        <td className="border px-3 py-2">₹{txn.Amount}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    const [showModal, setShowModal] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState<any | null>(null);
+
 
 
     return (
@@ -175,9 +181,9 @@ const PrintableCaseDetails = ({
                 <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ms-3">
 
                     {/* Extract clientDetails from the first transaction if available */}
-                        <Button type="button" disabled={!isDisabled}  style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={reactToPrintFn} className="w-fit bg-primary text-white mb-5">
-                            🖨️ Print PDF
-                        </Button>
+                    <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={reactToPrintFn} className="w-fit bg-primary text-white mb-5">
+                        🖨️ Print PDF
+                    </Button>
                     <form
                         onSubmit={handleSubmit(applyFilter)}
                         className="flex flex-wrap gap-4 items-end md:flex-nowrap"
@@ -220,15 +226,68 @@ const PrintableCaseDetails = ({
                             />
                         </div>
 
-                        <Button type="submit" style={{cursor:"pointer"}} className="mt-2 w-full md:w-auto">
+                        <Button type="submit" style={{ cursor: "pointer" }} className="mt-2 w-full md:w-auto">
                             Filter
                         </Button>
                     </form>
                     <DataTable
                         data={filteredCases?.transactions ?? []}
-                        columns={[...clientTransactioncolumns]}
+                        columns={[...clientTransactioncolumns,
+                        {
+                            header: "Actions",
+                            id: "actions",
+                            cell: ({ row }) => (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        setSelectedTransaction(row.original); // Set modal data
+                                        setShowModal(true); // Open modal
+                                    }}
+                                >
+                                    View Details
+                                </Button>
+                            ),
+                        }
+
+
+                        ]
+                        }
                     />
                 </div>
+                {showModal && selectedTransaction && (
+                    <Dialog open={showModal} onOpenChange={setShowModal}>
+                        <DialogContent className="max-w-lg">
+                            <DialogHeader>
+                                <DialogTitle>Transaction Details</DialogTitle>
+                                <DialogDescription>
+                                    Below are the linked case details for this transaction.
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="mt-4 space-y-2">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Case No</TableHead>
+                                            <TableHead>Vehicle No</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {selectedTransaction.cases?.map((c: any) => (
+                                            <TableRow key={c.id}>
+                                                <TableCell>{c.caseNo}</TableCell>
+                                                <TableCell>{c.vehicleNo}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                )}
+
 
 
 

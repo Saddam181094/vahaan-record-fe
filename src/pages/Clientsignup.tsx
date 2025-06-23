@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { indianStates } from "@/components/Branchform";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { createClient } from "@/service/client.service";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -34,11 +34,9 @@ export interface NewClient {
 export default function Signup () {
 
     const {
-        register,
+        control,
         handleSubmit,
         reset,
-        setValue,
-        watch,
         formState: { errors },
       } = useForm<NewClient>({ defaultValues: {} as NewClient });
 
@@ -81,174 +79,232 @@ return(
         <p className="text-gray-500 text-base">Create your account for Vahaan Record</p>
       </CardHeader>
       <CardContent>
-        <form className="space-y-5" onSubmit={handleSubmit(onsubmit)}>
-          {/* Row 1: First Name, Last Name */}
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <Label htmlFor="firstName" className="text-gray-700 font-medium">First Name</Label>
-              <Input
-                {...register("firstName", { required: true })}
-                placeholder="First Name"
-                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
-              />
-              {errors.firstName && (
-                <p className="text-red-600 text-xs mt-1">First Name is required</p>
-              )}
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="lastName" className="text-gray-700 font-medium">Last Name</Label>
-              <Input
-                {...register("lastName", { required: true })}
-                placeholder="Last Name"
-                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
-              />
-              {errors.lastName && (
-                <p className="text-red-600 text-xs mt-1">Last Name is required</p>
-              )}
-            </div>
-          </div>
-          {/* Row 2: Email, Mobile No */}
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
-              <Input
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Enter a valid email address",
-                  },
-                })}
-                placeholder="Email"
-                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
-              />
-              {errors.email && (
-                <p className="text-red-600 text-xs mt-1">{errors.email.message}</p>
-              )}
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="mobileNo" className="text-gray-700 font-medium">Mobile No</Label>
-              <Input
-                type="tel"
-                inputMode="numeric"
-                pattern="[6-9]{1}[0-9]{9}"
-                maxLength={10}
-                {...register("mobileNo", {
-                  required: "Mobile No is required",
-                  pattern: {
-                    value: /^[6-9]\d{9}$/,
-                    message: "Enter a valid 10-digit Indian phone number",
-                  }
-                })}
-                placeholder="Mobile No"
-                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
-              />
-              {errors.mobileNo && (
-                <p className="text-red-600 text-xs mt-1">{errors.mobileNo.message}</p>
-              )}
-            </div>
-          </div>
-          {/* Row 3: Firm Name */}
-          <div>
-            <Label htmlFor="firmName" className="text-gray-700 font-medium">Firm Name</Label>
+<form className="space-y-5" onSubmit={handleSubmit(onsubmit)}>
+  {/* Row 1: First Name, Last Name */}
+  <div className="flex gap-4">
+    {(["firstName", "lastName"] as const).map((field) => (
+      <Controller
+        key={field}
+        name={field}
+        control={control}
+        rules={{ required: `${field === "firstName" ? "First" : "Last"} Name is required` }}
+        render={({ field: f }) => (
+          <div className="flex-1">
+            <Label htmlFor={field} className="text-gray-700 font-medium">
+              {field === "firstName" ? "First Name" : "Last Name"}
+            </Label>
             <Input
-              {...register("firmName", { required: true })}
-              placeholder="Firm Name"
+              {...f}
+              id={field}
+              placeholder={field === "firstName" ? "First Name" : "Last Name"}
               className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
             />
-            {errors.firmName && (
-              <p className="text-red-600 text-xs mt-1">Firm Name is required</p>
+            {errors?.[field] && (
+              <p className="text-red-600 text-xs mt-1">{errors[field]?.message}</p>
             )}
           </div>
-          {/* Row 4: Address1, Address2 */}
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <Label htmlFor="address1" className="text-gray-700 font-medium">Address 1</Label>
-              <Input
-                {...register("address1", { required: true })}
-                placeholder="Address 1"
-                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
-              />
-              {errors.address1 && (
-                <p className="text-red-600 text-xs mt-1">Address 1 is required</p>
-              )}
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="address2" className="text-gray-700 font-medium">Address 2</Label>
-              <Input
-                {...register("address2", { required: true })}
-                placeholder="Address 2"
-                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
-              />
-              {errors.address2 && (
-                <p className="text-red-600 text-xs mt-1">Address 2 is required</p>
-              )}
-            </div>
-          </div>
-          {/* Row 5: City, State, Pincode */}
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <Label htmlFor="city" className="text-gray-700 font-medium">City</Label>
-              <Input
-                {...register("city", { required: true })}
-                placeholder="City"
-                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
-              />
-              {errors.city && (
-                <p className="text-red-600 text-xs mt-1">City is required</p>
-              )}
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="state" className="text-gray-700 font-medium">State</Label>
-              <Select
-                onValueChange={(value) => {setValue("state", value);setSearch('')}}
-                defaultValue={watch("state")}
-              >
-                <SelectTrigger className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400">
-                  <SelectValue placeholder="Select State" />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="p-2">
-                    <Input
-                      placeholder="Search a State"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="mb-2"
-                      onClick={(e) => e.stopPropagation()} 
-                      onKeyDown={(e) => e.stopPropagation()} 
-                    />
-                  </div>
-                  {ind2.map((state) => (
-                    <SelectItem key={state} value={state}>
-                      {state}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.state && (
-                <p className="text-red-600 text-xs mt-1">State is required</p>
-              )}
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="pincode" className="text-gray-700 font-medium">Pincode</Label>
-              <Input
-                {...register("pincode", { required: true })}
-                placeholder="Pincode"
-                className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
-              />
-              {errors.pincode && (
-                <p className="text-red-600 text-xs mt-1">Pincode is required</p>
-              )}
-            </div>
-          </div>
-          <Button
-          style={{cursor:"pointer"}}
-            type="submit"
-            className="w-full mt-6 bg-gradient-to-r cursor-pointer from-blue-500 to-purple-500 text-white font-semibold py-2 rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all"
+        )}
+      />
+    ))}
+  </div>
+
+  {/* Row 2: Email, Mobile No */}
+  <div className="flex gap-4">
+    <Controller
+      name="email"
+      control={control}
+      rules={{
+        required: "Email is required",
+        pattern: {
+          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+          message: "Enter a valid email address",
+        },
+      }}
+      render={({ field }) => (
+        <div className="flex-1">
+          <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+          <Input
+            {...field}
+            id="email"
+            placeholder="Email"
+            className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+          />
+          {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email.message}</p>}
+        </div>
+      )}
+    />
+
+    <Controller
+      name="mobileNo"
+      control={control}
+      rules={{
+        required: "Mobile No is required",
+        pattern: {
+          value: /^[6-9]\d{9}$/,
+          message: "Enter a valid 10-digit Indian phone number",
+        },
+      }}
+      render={({ field }) => (
+        <div className="flex-1">
+          <Label htmlFor="mobileNo" className="text-gray-700 font-medium">Mobile No</Label>
+          <Input
+            {...field}
+            id="mobileNo"
+            type="tel"
+            inputMode="numeric"
+            maxLength={10}
+            placeholder="Mobile No"
+            className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+            onChange={e => {
+              // Only allow digits
+              const value = e.target.value.replace(/\D/g, "");
+              field.onChange(value);
+            }}
+            value={field.value || ""}
+          />
+          {errors.mobileNo && (
+            <p className="text-red-600 text-xs mt-1">{errors.mobileNo.message}</p>
+          )}
+        </div>
+      )}
+    />
+  </div>
+
+  {/* Row 3: Firm Name */}
+  <Controller
+    name="firmName"
+    control={control}
+    rules={{ required: "Firm Name is required" }}
+    render={({ field }) => (
+      <div>
+        <Label htmlFor="firmName" className="text-gray-700 font-medium">Firm Name</Label>
+        <Input
+          {...field}
+          id="firmName"
+          placeholder="Firm Name"
+          className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+        />
+        {errors.firmName && <p className="text-red-600 text-xs mt-1">{errors.firmName.message}</p>}
+      </div>
+    )}
+  />
+
+  {/* Row 4: Address1, Address2 */}
+  {(["address1", "address2"] as const).map((field) => (
+    <Controller
+      key={field}
+      name={field}
+      control={control}
+      rules={{ required: `${field === "address1" ? "Address 1" : "Address 2"} is required` }}
+      render={({ field: f }) => (
+        <div className="flex-1">
+          <Label htmlFor={field} className="text-gray-700 font-medium">
+            {field === "address1" ? "Address 1" : "Address 2"}
+          </Label>
+          <Input
+            {...f}
+            id={field}
+            placeholder={field === "address1" ? "Address 1" : "Address 2"}
+            className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+          />
+          {errors[field] && (
+            <p className="text-red-600 text-xs mt-1">{errors[field]?.message}</p>
+          )}
+        </div>
+      )}
+    />
+  ))}
+
+  {/* Row 5: City, State, Pincode */}
+  <div className="flex gap-4">
+    <Controller
+      name="city"
+      control={control}
+      rules={{ required: "City is required" }}
+      render={({ field }) => (
+        <div className="flex-1">
+          <Label htmlFor="city" className="text-gray-700 font-medium">City</Label>
+          <Input
+            {...field}
+            id="city"
+            placeholder="City"
+            className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+          />
+          {errors.city && <p className="text-red-600 text-xs mt-1">{errors.city.message}</p>}
+        </div>
+      )}
+    />
+
+    <Controller
+      name="state"
+      control={control}
+      rules={{ required: "State is required" }}
+      render={({ field }) => (
+        <div className="flex-1">
+          <Label htmlFor="state" className="text-gray-700 font-medium">State</Label>
+          <Select
+            onValueChange={(value) => {
+              field.onChange(value);
+              setSearch("");
+            }}
+            defaultValue={field.value}
           >
-            Sign Up
-          </Button>
-        </form>
+            <SelectTrigger className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400">
+              <SelectValue placeholder="Select State" />
+            </SelectTrigger>
+            <SelectContent>
+              <div className="p-2">
+                <Input
+                  placeholder="Search a State"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="mb-2"
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                />
+              </div>
+              {ind2.map((state) => (
+                <SelectItem key={state} value={state}>
+                  {state}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.state && <p className="text-red-600 text-xs mt-1">{errors.state.message}</p>}
+        </div>
+      )}
+    />
+
+    <Controller
+      name="pincode"
+      control={control}
+      rules={{ required: "Pincode is required" }}
+      render={({ field }) => (
+        <div className="flex-1">
+          <Label htmlFor="pincode" className="text-gray-700 font-medium">Pincode</Label>
+          <Input
+            {...field}
+            id="pincode"
+            placeholder="Pincode"
+            className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-purple-400"
+          />
+          {errors.pincode && (
+            <p className="text-red-600 text-xs mt-1">{errors.pincode.message}</p>
+          )}
+        </div>
+      )}
+    />
+  </div>
+
+  <Button
+    style={{ cursor: "pointer" }}
+    type="submit"
+    className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold py-2 rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all"
+  >
+    Sign Up
+  </Button>
+</form>
+
 
         <div className="text-center text-sm pt-10">
                 Already have an account?{" "}

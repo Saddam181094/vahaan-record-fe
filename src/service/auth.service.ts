@@ -15,6 +15,20 @@ export const getConfig = (): AxiosRequestConfig => {
   } as AxiosRequestConfig;
 };
 
+export const getProfile = async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/auth/get-my-profile", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
+
 export async function forgotPassword(email: string): Promise<string> {
   try {
     const response = await axios.post(
@@ -31,8 +45,8 @@ export async function forgotPassword(email: string): Promise<string> {
   }
 }
 
-export async function changePassword(currentPassword:string,newPasssword:string){
-  const data = {currentPassword,newPasssword}
+export async function changePassword(currentPassword:string,newPassword:string){
+  const data = {currentPassword,newPassword}
 
   const config = getConfig();
   return axios

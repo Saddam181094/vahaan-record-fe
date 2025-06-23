@@ -23,6 +23,7 @@ export default function CaseDes() {
   const navigate = useNavigate(); // ✅ Add this
 
   const [cases, setCases] = useState<CaseDetails[]>([]);
+  const [flag, setflag] = useState(false);
   const { setLoading } = useLoading();
   const toast = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -43,6 +44,7 @@ export default function CaseDes() {
     }).catch((err:any)=>{
       toast.showToast("Error", err?.message || 'Verification error Occured', 'error');
     }).finally(()=>{
+      setflag(f => !f);
     setLoading(false);
     })
   };
@@ -57,7 +59,7 @@ export default function CaseDes() {
         // console.error("Error fetching cases:", err)
         })
       .finally(() => setLoading(false));
-  }, []);
+  }, [flag]);
 
   return (
     <div>
@@ -146,7 +148,7 @@ export default function CaseDes() {
               style={{ cursor: "pointer" }}
               onClick={handleVerify}
             >
-              Approve
+              Verify
             </Button>
           </DialogFooter>
         </DialogContent>
