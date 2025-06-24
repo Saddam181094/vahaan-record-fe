@@ -58,7 +58,7 @@ const paymentTableColumns = (
     {
       // accessorKey: "paymentBy",
       header: "Paid By",
-      accessorFn:(row)=>`${row.paymentBy}`,
+      // accessorFn:(row)=>`${row.paymentBy}`,
       cell: ({ row }) => {
         const { name, phoneNo, id } = row.original.paymentBy;
         return id ? `${name} | ${phoneNo}` : ``;

@@ -79,7 +79,7 @@ const ClientBills = () => {
     const resp = await billbyId(filterType);
     const bill = resp?.data;
     // console.log(bill);
-    if (bill?.status === "generated") {
+    if (bill?.status !== "generated" || bill?.status !== "failed"){
       setBdata([]); // Clear the table if status is not generated
       toast.showToast("Notice", "No cases to show.", "info");
     } else {

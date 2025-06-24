@@ -131,10 +131,10 @@ export default function ClientCaseList() {
   );
 
 const filteredCases = cases.filter((c) => {
-  if (activeTab === "verified") return c.payment?.status === "success";
-  if (activeTab === "under-verification") return c.payment?.status === "paid";
-  if (activeTab === "failed") return c.payment?.status === "failed";
-  return c.payment === null; // unpaid
+  if (activeTab === "verified") return c.payment?.status?.toLowerCase() === "success";
+  if (activeTab === "under-verification") return c.payment?.status?.toLowerCase() === "paid";
+  // if (activeTab === "failed") return c.payment?.status?.toLowerCase() === "failed";
+  return (c.payment === null || c.payment?.status?.toLowerCase() === "failed"); // unpaid
 });
 
 
@@ -150,12 +150,14 @@ const filteredCases = cases.filter((c) => {
             }}
           >
             Unpaid
-            {cases.some((c) => c.payment === null) && (
+            {cases.some((c) => {
+              return c.payment === null || c.payment?.status?.toLowerCase() === "failed";
+              }) && (
             <Badge
                 variant="destructive"
                 className="absolute -top-2 -right-2 px-2 py-0.5 text-xs"
               >
-                {cases.filter((c) => c.payment === null).length}
+                {cases.filter((c) => c.payment === null).length + cases.filter((c) => c.payment?.status?.toLowerCase() === "failed").length}
               </Badge>
             )}
           </Button>
@@ -189,7 +191,7 @@ const filteredCases = cases.filter((c) => {
           >
             Verified
           </Button>
-                  <Button
+                  {/* <Button
   style={{ cursor: "pointer", position: "relative" }}
   variant={activeTab === "failed" ? "default" : "outline"}
   onClick={() => {
@@ -206,7 +208,7 @@ const filteredCases = cases.filter((c) => {
       {cases.filter((c) => c.payment?.status === "failed").length}
     </Badge>
   )}
-</Button>
+</Button> */}
 </div>
 
       {activeTab === "unpaid" && (
