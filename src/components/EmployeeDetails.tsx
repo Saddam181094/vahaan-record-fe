@@ -7,6 +7,8 @@ import {
     CardHeader,
     CardContent,
 } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
@@ -25,6 +27,7 @@ type CaseItem = {
     CaseNo: string;
     status: string;
     createdAt: string;
+    incentiveStatus: string;
     vehicleDetail?: {
         vehicleNo?: string;
     };
@@ -46,6 +49,8 @@ export default function ClientDetails() {
     const [cases, setCases] = useState<CaseItem[]>([]);
     const { setLoading } = useLoading();
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+    const [incentiveDialogOpen, setIncentiveDialogOpen] = useState(false);
+
 
     const { handleSubmit, setValue, control } = useForm<FilterFormValues>({
         defaultValues: {
@@ -106,6 +111,15 @@ export default function ClientDetails() {
         setExpandedIndex((prev) => (prev === idx ? null : idx));
     };
 
+    const handleClick = () => () => {
+  if (cases.length === 0) {
+    toast.showToast("Notice", "No cases to calculate incentives.", "info");
+    return;
+  }
+  setIncentiveDialogOpen(true);
+};
+
+
       if (!employee) {
     return (
       <div className="p-6">
@@ -128,27 +142,6 @@ export default function ClientDetails() {
                     >
                         ← Back
                     </Button>
-                    {/* <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={() => setOpen(true)}>
-                        Logout
-                    </Button>
-                    <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Confirm Logout</DialogTitle>
-                                <DialogDescription>
-                                    Are you sure you want to logout?
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex justify-end gap-2">
-                                <Button style={{ cursor: "pointer" }} variant="outline" onClick={() => setOpen(false)}>
-                                    Cancel
-                                </Button>
-                                <Button style={{ cursor: "pointer" }} variant="destructive" className="cursor-pointer  hover:bg-red-800" onClick={handleLogout}>
-                                    Logout
-                                </Button>
-                            </div>
-                        </DialogContent>
-                    </Dialog> */}
                 </div>
                 <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto p-6 space-y-6">
                     {/* Top Client Info Card */}
@@ -251,6 +244,12 @@ export default function ClientDetails() {
                                 Filter
                             </Button>
                         </div>
+
+                        <div className="w-full sm:w-auto flex items-end">
+                            <Button type="button" style={{cursor:"pointer"}} className="w-full sm:w-auto mt-2 sm:mt-0" onClick={handleClick()}>
+                                Calculate Incentive
+                            </Button>
+                        </div>
                     </form>
 
 
@@ -325,6 +324,45 @@ export default function ClientDetails() {
                     )}
                 </div>
             </div>
+            <Dialog open={incentiveDialogOpen} onOpenChange={setIncentiveDialogOpen}>
+  <DialogContent className="max-w-3xl">
+    <DialogHeader>
+      <DialogTitle>Incentive Details</DialogTitle>
+      <DialogDescription>Summary of incentives for the selected period.</DialogDescription>
+    </DialogHeader>
+
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Case No</TableHead>
+          <TableHead>Vehicle No</TableHead>
+          <TableHead>Incentive Status</TableHead>
+          <TableHead>Incentive Amount</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {cases.map((c, idx) => (
+          <TableRow key={idx}>
+            <TableCell>{c.CaseNo}</TableCell>
+            <TableCell>{c.vehicleDetail?.vehicleNo || "-"}</TableCell>
+            <TableCell>{c.incentiveStatus}</TableCell>
+            <TableCell>
+              ₹{Number(c.generalDetail?.incentiveAmount || 0).toFixed(2)}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+
+    <div className="text-right font-semibold text-lg mt-4">
+      Total Incentive: ₹
+      {cases
+        .reduce((sum, c) => sum + Number(c.generalDetail?.incentiveAmount || 0), 0)
+        .toFixed(2)}
+    </div>
+  </DialogContent>
+</Dialog>
+
         </SidebarProvider>
     );
 }
