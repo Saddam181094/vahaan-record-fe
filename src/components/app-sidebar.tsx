@@ -10,7 +10,6 @@ import {
   User,
   IndianRupee,
   BriefcaseConveyorBelt,
-  ClipboardList,
   ReceiptIndianRupee,
   LogOut
 } from "lucide-react";
@@ -61,7 +60,7 @@ const items1: Record<string, SidebarItem[]> = {
     { title: "My-Cases", url: "/superadmin/cases/Mycases", icon: PcCase },
     { title: "Verified-Cases", url: "/superadmin/cases/all", icon: BriefcaseConveyorBelt},
     { title: "Payments", url: "/superadmin/VerifyPayments", icon: IndianRupee },
-    { title: "Tasks", url: "/superadmin/Tasks", icon: ClipboardList},
+    // { title: "Tasks", url: "/superadmin/Tasks", icon: ClipboardList},
     { title: "My Profile", url: "/superadmin/Profile", icon: User },
   ],
   client: [
@@ -80,7 +79,7 @@ const items1: Record<string, SidebarItem[]> = {
         { title: "Verified Cases", url: "/employee/vcases", icon:BriefcaseConveyorBelt  },
       ]
     },
-    { title: "Tasks", url: "/employee/Tasks", icon: ClipboardList},
+    // { title: "Tasks", url: "/employee/Tasks", icon: ClipboardList},
     { title: "My Profile", url: "/employee/Profile", icon: User },
   ],
 };
