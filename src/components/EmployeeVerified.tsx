@@ -250,6 +250,11 @@ const lastDateOfMonth = `${lastDate.getFullYear()}-${String(lastDate.getMonth() 
     setLoading(true);
     getEmployeeV(filterType, fromDate, toDate)
       .then((resp) => {
+
+      if (!resp?.data || resp.data.length === 0) {
+      toast.showToast("Information", "No cases Available", "info");
+    }
+
         setFilteredCases(resp?.data || []);
       })
       .catch((err) => console.error("Error fetching cases:", err))
@@ -265,6 +270,9 @@ const applyFilter = async (data: FilterFormValues) => {
   setLoading(true);
   try {
     const response = await getEmployeeV(filterType, fromDate, toDate);
+          if (!response?.data || response.data.length === 0) {
+      toast.showToast("Information", "No cases Available", "info");
+    }
     setFilteredCases(response?.data || []);
   } catch (err) {
     console.error("Error fetching filtered cases:", err);

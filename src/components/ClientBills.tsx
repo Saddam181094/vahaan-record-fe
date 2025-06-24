@@ -79,7 +79,7 @@ const ClientBills = () => {
     const resp = await billbyId(filterType);
     const bill = resp?.data;
     // console.log(bill);
-    if (bill?.status !== "generated" || bill?.status !== "failed"){
+    if (bill?.status !== "generated" && bill?.status !== "failed"){
       setBdata([]); // Clear the table if status is not generated
       toast.showToast("Notice", "No cases to show.", "info");
     } else {
@@ -147,7 +147,7 @@ const ClientBills = () => {
   <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh]">
+      <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] lg:ms-0 ms-3">
         <form
           onSubmit={handleSubmit(applyFilter)}
           className="flex flex-wrap gap-4 items-end md:flex-nowrap p-4"
@@ -196,14 +196,14 @@ const ClientBills = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Case No</TableHead>
+                  <TableHead>Case Date</TableHead>
                   <TableHead>Amount</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {bdata.map((item, idx) => (
                   <TableRow key={idx}>
-                    <TableCell>{item.paymentDate}</TableCell>
+                    <TableCell>{new Date(item.paymentDate).toLocaleString()}</TableCell>
                     <TableCell>₹{item.amount}</TableCell>
                   </TableRow>
                 ))}
@@ -249,19 +249,24 @@ const ClientBills = () => {
                 onChange={(e) => onFileChange(e.target.files)}
                 className="block w-full text-gray-700 border border-gray-300 rounded-md p-2 cursor-pointer"
               />
-              {uploading && <p className="text-blue-600">Uploading image...</p>}
-              {uploadedFileUrl && (
+                {uploading && (
+                <div className="flex items-center space-x-2">
+                  <span className="loader mr-2" />
+                  <span className="text-blue-600">Uploading image...</span>
+                </div>
+                )}
+                {uploadedFileUrl && (
                 <div className="flex items-center space-x-4">
                   <Button
-                    type="button"
-                    variant="secondary"
-                    className="cursor-pointer"
-                    onClick={() => setViewImageOpen(true)}
+                  type="button"
+                  variant="secondary"
+                  className="cursor-pointer"
+                  onClick={() => setViewImageOpen(true)}
                   >
-                    View Uploaded Image
+                  View Uploaded Image
                   </Button>
                 </div>
-              )}
+                )}
             </div>
 
             <div className="flex justify-end">

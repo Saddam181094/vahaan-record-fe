@@ -336,7 +336,6 @@ export default function ClientDetails() {
         <TableRow>
           <TableHead>Case No</TableHead>
           <TableHead>Vehicle No</TableHead>
-          <TableHead>Incentive Status</TableHead>
           <TableHead>Incentive Amount</TableHead>
         </TableRow>
       </TableHeader>
@@ -345,7 +344,6 @@ export default function ClientDetails() {
           <TableRow key={idx}>
             <TableCell>{c.CaseNo}</TableCell>
             <TableCell>{c.vehicleDetail?.vehicleNo || "-"}</TableCell>
-            <TableCell>{c.incentiveStatus}</TableCell>
             <TableCell>
               ₹{Number(c.generalDetail?.incentiveAmount || 0).toFixed(2)}
             </TableCell>

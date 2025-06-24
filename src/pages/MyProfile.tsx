@@ -72,12 +72,14 @@ const MyProfile: React.FC = () => {
         })
     };
 
-    const utilized = Number(person?.utilizedCredit) || 0;
-    const limit = Number(person?.creditLimit) || 1; // avoid divide-by-zero
+    // Calculate utilized and limit from the latest person object (client nested)
+    const utilized = Number(person?.client?.utilizedCredit) || 0;
+    const limit = Number(person?.client?.creditLimit) || 1; // avoid divide-by-zero
 
     const percentage = (utilized / limit) * 100;
 
     const getProgressColor = (value: number) => {
+      console.log(value);
         if (value >= 100) return "bg-red-500";
         if (value >= 80) return "bg-orange-500";
         return "bg-green-500";

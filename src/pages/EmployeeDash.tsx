@@ -143,7 +143,7 @@ const AdminDashboard = () => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <div className="flex w-full bg-white  lg:py-20 h-full min-h-[100vh]">
+      <div className="flex w-full bg-white  lg:py-20 h-full min-h-[100vh] lg:ms-0">
 
         {/* Expiry Stats Cards Section */}
         <div className="grid md:grid-cols-2 mb-8 grid-cols-1 w-full h-full min-h-screen overflow-y-auto">

@@ -267,10 +267,13 @@ const applyFilter = async (data: FilterFormValues) => {
   setLoading(true);
   try {
     const response = await getAllCases(filterType, fromDate, toDate);
+    if (!response?.data || response.data.length === 0) {
+      toast.showToast("Information", "No cases Available", "info");
+    }
     setFilteredCases(response?.data || []);
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error fetching filtered cases:", err);
-    toast.showToast("Error", "Failed to apply filter", "error");
+    toast.showToast("Error", err?.message || "Failed to apply filter", "error");
   } finally {
     setLoading(false);
   }
