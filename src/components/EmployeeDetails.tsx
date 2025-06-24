@@ -44,7 +44,7 @@ type generalDetail = {
 export default function ClientDetails() {
     const { state } = useLocation();
     const navigate = useNavigate();
-     const employee: Employee | undefined = state?.employee;
+    const employee: Employee | undefined = state?.employee;
     const toast = useToast();
     const [cases, setCases] = useState<CaseItem[]>([]);
     const { setLoading } = useLoading();
@@ -69,7 +69,7 @@ export default function ClientDetails() {
         setLoading(true);
         try {
             const response = await getCasesbyEmployee(filterType, fromDate, toDate, employee?.id ?? "");
-           setCases(Array.isArray(response?.data?.cases) ? response.data.cases : []);
+            setCases(Array.isArray(response?.data?.cases) ? response.data.cases : []);
         } catch (err) {
             console.error("Error fetching filtered cases:", err);
             toast.showToast("Error", "Failed to apply filter", "error");
@@ -112,21 +112,21 @@ export default function ClientDetails() {
     };
 
     const handleClick = () => () => {
-  if (cases.length === 0) {
-    toast.showToast("Notice", "No cases to calculate incentives.", "info");
-    return;
-  }
-  setIncentiveDialogOpen(true);
-};
+        if (cases.length === 0) {
+            toast.showToast("Notice", "No cases to calculate incentives.", "info");
+            return;
+        }
+        setIncentiveDialogOpen(true);
+    };
 
 
-      if (!employee) {
-    return (
-      <div className="p-6">
-        <p className="text-center text-red-500 font-semibold">No employee data found.</p>
-      </div>
-    );
-  }
+    if (!employee) {
+        return (
+            <div className="p-6">
+                <p className="text-center text-red-500 font-semibold">No employee data found.</p>
+            </div>
+        );
+    }
 
     return (
         <SidebarProvider>
@@ -147,15 +147,19 @@ export default function ClientDetails() {
                     {/* Top Client Info Card */}
                     <Card>
                         <CardHeader>
-                            <h2 className="text-xl font-bold">
-                                {employee.firstName} {employee.lastName}
-                            </h2>
-                            <p className="text-sm text-muted-foreground">
-                                {employee.email} | {employee.phoneNo}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                                {employee.branchCode} {employee.employeeCode}, {employee.role}
-                            </p>
+                            <div className="flex gap-4 flex-1 md:items-center">
+                                <div className="h-16 w-24 md:h-24 md:w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 md:text-4xl text-2xl font-bold">
+                                    {employee?.firstName?.[0] ?? ''}{employee?.lastName?.[0] ?? ''}
+                                </div>
+                                <div className="space-y-1">
+                                    <p><strong>Name:</strong> {employee?.firstName} {employee?.lastName}</p>
+                                    <p><strong>Email:</strong> {employee?.email}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                        Branch Code : {employee.branchCode}, Employee Code : {employee.employeeCode}
+                                    </p>
+                                </div>
+                            </div>
+
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
 
@@ -240,13 +244,13 @@ export default function ClientDetails() {
                         </div>
 
                         <div className="w-full sm:w-auto flex items-end">
-                            <Button type="submit" style={{cursor:"pointer"}} className="w-full sm:w-auto mt-2 sm:mt-0">
+                            <Button type="submit" style={{ cursor: "pointer" }} className="w-full sm:w-auto mt-2 sm:mt-0">
                                 Filter
                             </Button>
                         </div>
 
                         <div className="w-full sm:w-auto flex items-end">
-                            <Button type="button" style={{cursor:"pointer"}} className="w-full sm:w-auto mt-2 sm:mt-0" onClick={handleClick()}>
+                            <Button type="button" style={{ cursor: "pointer" }} className="w-full sm:w-auto mt-2 sm:mt-0" onClick={handleClick()}>
                                 Calculate Incentive
                             </Button>
                         </div>
@@ -311,7 +315,7 @@ export default function ClientDetails() {
                                                     }
                                                     variant="outline"
                                                     size="sm"
-                                                    style={{cursor:"pointer"}}
+                                                    style={{ cursor: "pointer" }}
                                                 >
                                                     View Details
                                                 </Button>
@@ -325,41 +329,41 @@ export default function ClientDetails() {
                 </div>
             </div>
             <Dialog open={incentiveDialogOpen} onOpenChange={setIncentiveDialogOpen}>
-  <DialogContent className="max-w-3xl">
-    <DialogHeader>
-      <DialogTitle>Incentive Details</DialogTitle>
-      <DialogDescription>Summary of incentives for the selected period.</DialogDescription>
-    </DialogHeader>
+                <DialogContent className="max-w-3xl">
+                    <DialogHeader>
+                        <DialogTitle>Incentive Details</DialogTitle>
+                        <DialogDescription>Summary of incentives for the selected period.</DialogDescription>
+                    </DialogHeader>
 
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Case No</TableHead>
-          <TableHead>Vehicle No</TableHead>
-          <TableHead>Incentive Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {cases.map((c, idx) => (
-          <TableRow key={idx}>
-            <TableCell>{c.CaseNo}</TableCell>
-            <TableCell>{c.vehicleDetail?.vehicleNo || "-"}</TableCell>
-            <TableCell>
-              ₹{Number(c.generalDetail?.incentiveAmount || 0).toFixed(2)}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Case No</TableHead>
+                                <TableHead>Vehicle No</TableHead>
+                                <TableHead>Incentive Amount</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {cases.map((c, idx) => (
+                                <TableRow key={idx}>
+                                    <TableCell>{c.CaseNo}</TableCell>
+                                    <TableCell>{c.vehicleDetail?.vehicleNo || "-"}</TableCell>
+                                    <TableCell>
+                                        ₹{Number(c.generalDetail?.incentiveAmount || 0).toFixed(2)}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
 
-    <div className="text-right font-semibold text-lg mt-4">
-      Total Incentive: ₹
-      {cases
-        .reduce((sum, c) => sum + Number(c.generalDetail?.incentiveAmount || 0), 0)
-        .toFixed(2)}
-    </div>
-  </DialogContent>
-</Dialog>
+                    <div className="text-right font-semibold text-lg mt-4">
+                        Total Incentive: ₹
+                        {cases
+                            .reduce((sum, c) => sum + Number(c.generalDetail?.incentiveAmount || 0), 0)
+                            .toFixed(2)}
+                    </div>
+                </DialogContent>
+            </Dialog>
 
         </SidebarProvider>
     );

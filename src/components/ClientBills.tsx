@@ -46,13 +46,15 @@ const ClientBills = () => {
 
   const toast = useToast();
   const { user } = useAuth();
-  const [bills, setBills] = useState<Bill[]>([]);
+  const [bills, setBills] = useState<Bill[]>();
   const [bdata,setBdata] = useState<Payment[]>([]);
+  const [bill,setBill] = useState<any>(null);
     const [uploading, setUploading] = useState(false);
   const [uploadedFileUrl, setUploadedFileUrl] = useState(null);
   const [viewImageOpen, setViewImageOpen] = useState(false);
   const { setLoading } = useLoading();
     const paymentMethod = watch("paymentMethod");
+    const [flag, setFlag] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -67,7 +69,7 @@ const ClientBills = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [flag]);
 
   const applyFilter = async (data: { filterType: string }) => {
   const { filterType } = data;
@@ -78,14 +80,10 @@ const ClientBills = () => {
   try {
     const resp = await billbyId(filterType);
     const bill = resp?.data;
+    setBill(bill);
     // console.log(bill);
-    if (bill?.status !== "generated" && bill?.status !== "failed"){
-      setBdata([]); // Clear the table if status is not generated
-      toast.showToast("Notice", "No cases to show.", "info");
-    } else {
-      setBdata(bill?.payments || []);
+    setBdata(bill?.payments || []);
       toast.showToast("Success", resp?.message, "success");
-    }
   } catch (err) {
     toast.showToast("Error", "Failed to apply filter", "error");
   } finally {
@@ -133,15 +131,16 @@ const ClientBills = () => {
         mode: paymentMethod,
         paymentProofUrl: uploadedFileUrl,
       });
-
       toast.showToast("Payment successful", "Your payment has been processed.", "success");
     } catch (error:any) {
       toast.showToast("Payment failed", error.message || "Something went wrong", "error");
     } finally {
-      
+      setFlag(f =>!f);
       setLoading(false);
     }
   };
+
+  const canPay = watch('paymentProofUrl').length>0 && watch('paymentMethod').length>0
 
   return (
   <SidebarProvider>
@@ -167,7 +166,7 @@ const ClientBills = () => {
                       <SelectValue placeholder="Select Bill" />
                     </SelectTrigger>
                     <SelectContent>
-                      {bills.map((bill) => (
+                      {bills?.map((bill:any) => (
                         <SelectItem key={bill.billId} value={bill.billId}>
                           {bill.billMonth}-{bill.billYear}
                         </SelectItem>
@@ -214,7 +213,15 @@ const ClientBills = () => {
               Total Amount: ₹{bdata.reduce((acc, item) => acc + Number(item.amount), 0).toFixed(2)}
             </div>
 
-            <div className="space-y-3">
+
+{bill && bill?.status === "success" && <p className=" text-green-500 font-semibold">Payment already done and verified</p>}
+{bill && bill?.status === "paid" && <p className=" text-yellow-500 font-semibold">Payment under verification</p>}
+{bill && bill?.status === "failed" && <p className=" text-red-500 font-semibold">Your last payment has failed. You can try again</p>}
+      
+{bill && (bill?.status === "failed" || bill?.status === "generated") && 
+
+(<>
+<div className="space-y-3">
               <Label className="font-semibold text-gray-800 text-lg">
                 Choose Payment Method
               </Label>
@@ -237,18 +244,16 @@ const ClientBills = () => {
                 )}
               />
             </div>
-
             <div className="space-y-3">
-              <Label className="font-semibold text-gray-800 text-lg block">
+              {watch('paymentMethod').length>0 && <><Label className="font-semibold text-gray-800 text-lg block">
                 Upload Payment Proof
               </Label>
               <input
                 type="file"
-                required
                 accept="image/*"
                 onChange={(e) => onFileChange(e.target.files)}
                 className="block w-full text-gray-700 border border-gray-300 rounded-md p-2 cursor-pointer"
-              />
+              /></>}
                 {uploading && (
                 <div className="flex items-center space-x-2">
                   <span className="loader mr-2" />
@@ -272,13 +277,15 @@ const ClientBills = () => {
             <div className="flex justify-end">
               <Button
                 type="button"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !canPay}
                 onClick={handlePayment}
                 className="px-8 cursor-pointer"
               >
                 {isSubmitting ? "Processing..." : "Pay Now"}
               </Button>
             </div>
+            </>
+            )}
           </div>
         )}
       </div>

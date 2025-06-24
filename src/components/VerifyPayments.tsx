@@ -122,6 +122,7 @@ const paymentTableColumns = (
       header: "Cases",
       cell: ({ row }) => (
         <ul className="list list-inside text-sm max-h-24 overflow-auto">
+          {row.original.caseAssignments.length===0 && <span className=" text-red-500">NA</span>}
           {row.original.caseAssignments.map((assignment) => (
             <li className="list-item" key={assignment.id}>
               {assignment.case.caseNo} (₹{assignment.TotalAmount})

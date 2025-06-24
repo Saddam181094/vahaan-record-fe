@@ -253,10 +253,10 @@ const AdminDashboard = () => {
               </Dialog>
 
               {task.length > 0 ? (
-                <Accordion type="multiple" className="space-y-2 w-96">
+                <Accordion type="multiple" className="space-y-2 w-88 md:w-96 border rounded-lg p-2">
                   {task.map((t) => (
                     <AccordionItem key={t.id} value={t.id}>
-                      <AccordionTrigger className="text-left">
+                      <AccordionTrigger className="text-left cursor-pointer">
                         <div className="flex items-center gap-2">
                           <div className="font-semibold text-base">{t.task_title}</div>
                         </div>
@@ -264,7 +264,7 @@ const AdminDashboard = () => {
                       <AccordionContent>
                         <p className="text-sm mb-2">{t.task_text}</p>
                         <div className="text-xs text-muted-foreground space-y-1">
-                          <div><strong>Created:</strong> {new Date(t.createdAt).toLocaleString()}</div>
+                          {/* <div><strong>Created:</strong> {new Date(t.createdAt).toLocaleString()}</div> */}
                                                       <strong>Updated:</strong>{" "}
 {(() => {
   const updatedDate = new Date(t.updatedAt);
@@ -277,9 +277,9 @@ const AdminDashboard = () => {
   const days = Math.floor(hours / 24);
 
   if (days >= 1) return updatedDate.toLocaleDateString();
-  if (hours >= 1) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-  if (minutes >= 1) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-  return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
+  if (hours >= 1) return `${hours} hr${hours > 1 ? "s" : ""} ago`;
+  if (minutes >= 1) return `${minutes} min${minutes > 1 ? "s" : ""} ago`;
+  return `${seconds} s${seconds !== 1 ? "s" : ""} ago`;
 })()}
                         </div>
                         <Button
