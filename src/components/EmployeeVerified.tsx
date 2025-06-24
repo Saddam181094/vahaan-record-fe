@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLoading } from "./LoadingContext";
-import { getAllCases, getEmployeeV } from "@/service/case.service";
+import { getEmployeeV } from "@/service/case.service";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "@radix-ui/react-label";
 import { FaEye } from "react-icons/fa";
@@ -264,7 +264,7 @@ const applyFilter = async (data: FilterFormValues) => {
 
   setLoading(true);
   try {
-    const response = await getAllCases(filterType, fromDate, toDate);
+    const response = await getEmployeeV(filterType, fromDate, toDate);
     setFilteredCases(response?.data || []);
   } catch (err) {
     console.error("Error fetching filtered cases:", err);
