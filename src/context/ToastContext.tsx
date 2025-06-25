@@ -15,15 +15,19 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const show = (message: string, options?: { type: "success" | "error" | "warning" | "info" }) => {
     toast({
       title: message,
-      variant: options?.type === "error" ? "destructive" : "default"
+      variant: options?.type === "error" ? "destructive" : "default",
+      // @ts-ignore: extending with customVariant
+      customVariant: options?.type ?? "info"
     });
   };
 
   const showToast = (title: string, message: string, type: "success" | "error" | "warning" | "info") => {
     toast({
-      title: title,
+      title,
       description: message,
-      variant: type === "error" ? "destructive" : "default"
+      variant: type === "error" ? "destructive" : "default",
+      // @ts-ignore: extending with customVariant
+      customVariant: type
     });
   };
 

@@ -105,7 +105,7 @@ export default function ClientDetails() {
           const { id, case: caseData, TotalAmount } = item;
 
           return (
-            <Card key={id} className="border shadow-md">
+            <Card key={id} className="border shadow-md mb-5">
               <CardHeader
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => toggleCard(idx)}

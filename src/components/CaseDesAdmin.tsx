@@ -79,6 +79,9 @@ export default function CaseDes() {
     getAdminCases()
       .then((resp) => 
       {
+        if (!resp?.data || resp.data.length === 0) {
+          toast.showToast('Info:', 'No records found.', 'info');
+        }
         setCases(resp?.data);
         setLoading(false);
       }

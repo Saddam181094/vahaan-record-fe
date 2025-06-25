@@ -53,6 +53,9 @@ export default function CaseDes() {
     setLoading(true);
     getAllCasesE()
       .then((resp) => {
+        if (!resp?.data || resp.data.length === 0) {
+          toast.showToast('Info:', 'No records found.', 'info');
+        }
         setCases(resp?.data)})
       .catch((err: any) => {
         toast.showToast('Error:',err?.message || 'Error fetching cases:','error');
