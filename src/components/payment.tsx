@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
@@ -198,6 +198,13 @@ const Payment = () => {
             <span className="text-lg font-semibold text-gray-900">
               Total Amount Payable: ₹{totalAmount.toFixed(2)}
             </span>
+            <Link
+                  style={{cursor:"pointer"}}
+                    type="button"
+                    to={`upi://pay?pa=deepak25khatri@oksbi&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`}
+                  >
+                    PAY WITH UPI LINK
+                  </Link>
           </div>
 
           <div className="space-y-3">
