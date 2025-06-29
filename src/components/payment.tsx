@@ -19,9 +19,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useAuth } from "@/context/AuthContext"; 
+import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
-import { useLoading } from "./LoadingContext"; 
+import { useLoading } from "./LoadingContext";
 import { makePayment } from "@/service/client.service";
 import { uploadFileToServer } from "@/service/branch.service";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -107,17 +107,19 @@ const Payment = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-  setLoading(true);
+    setLoading(true);
 
-  const payload: any = {
-    caseAssignmentIds: caseIds,
-    amount: Number(totalAmount.toFixed(2)),
-    mode: data.paymentMethod,
-  };
+    const payload: any = {
+      caseAssignmentIds: caseIds,
+      amount: Number(totalAmount.toFixed(2)),
+      mode: data.paymentMethod,
+    };
 
-  if (data.paymentMethod !== "CREDIT") {
-    payload.paymentProofUrl = uploadedFileUrl || "";
-  }
+
+
+    if (data.paymentMethod !== "CREDIT") {
+      payload.paymentProofUrl = uploadedFileUrl || "";
+    }
 
     makePayment(payload)
       .then(() => {
@@ -133,6 +135,11 @@ const Payment = () => {
   };
 
   const handleLogout = () => logout();
+
+  const makeUpiPayment = () => {
+    const url = `upi://pay?pa=deepak25khatri@oksbi&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`
+    window.location.href = url;
+  }
 
   return (
     <SidebarProvider>
@@ -156,10 +163,10 @@ const Payment = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" style={{cursor:"pointer"}} onClick={() => setOpen(false)}>
+                <Button variant="outline" style={{ cursor: "pointer" }} onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button variant="destructive" style={{cursor:"pointer"}} onClick={handleLogout}>
+                <Button variant="destructive" style={{ cursor: "pointer" }} onClick={handleLogout}>
                   Logout
                 </Button>
               </div>
@@ -198,13 +205,6 @@ const Payment = () => {
             <span className="text-lg font-semibold text-gray-900">
               Total Amount Payable: ₹{totalAmount.toFixed(2)}
             </span>
-            <Link
-                  style={{cursor:"pointer"}}
-                    type="button"
-                    to={`upi://pay?pa=deepak25khatri@oksbi&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`}
-                  >
-                    PAY WITH UPI LINK
-                  </Link>
           </div>
 
           <div className="space-y-3">
@@ -233,8 +233,18 @@ const Payment = () => {
             />
           </div>
 
+          {
+            paymentMethod === "UPI" &&
+            <Button
+              onClick={() => makeUpiPayment()}
+              className=" cursor-pointer w-fit"
+            >
+              Pay With UPI
+            </Button>
+          }
+
           {(paymentMethod === "CASH" || paymentMethod === "UPI") && (
-            <div className="mt-6 space-y-3">
+            <div className="mt-2 space-y-3">
               <Label
                 htmlFor="paymentProof"
                 className="font-semibold text-gray-800 text-lg block"
@@ -258,7 +268,7 @@ const Payment = () => {
               {uploadedFileUrl && (
                 <div className="flex items-center space-x-4">
                   <Button
-                  style={{cursor:"pointer"}}
+                    style={{ cursor: "pointer" }}
                     type="button"
                     variant="secondary"
                     onClick={() => setViewImageOpen(true)}
@@ -271,7 +281,7 @@ const Payment = () => {
           )}
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting} style={{cursor:"pointer"}} variant="default" className="px-8">
+            <Button type="submit" disabled={isSubmitting} style={{ cursor: "pointer" }} variant="default" className="px-8">
               {isSubmitting ? "Processing..." : "Pay Now"}
             </Button>
           </div>
@@ -293,7 +303,7 @@ const Payment = () => {
                   alt="Uploaded Payment Proof"
                   className="rounded-md border max-h-96 object-contain"
                 />
-                <Button variant="outline" style={{cursor:"pointer"}} onClick={() => setViewImageOpen(false)}>
+                <Button variant="outline" style={{ cursor: "pointer" }} onClick={() => setViewImageOpen(false)}>
                   Close Preview
                 </Button>
               </div>
