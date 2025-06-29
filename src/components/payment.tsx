@@ -137,7 +137,7 @@ const Payment = () => {
   const handleLogout = () => logout();
 
   const makeUpiPayment = () => {
-    const url = `upi://pay?pa=deepak25khatri@oksbi&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`
+    const url = `upi://pay?pa=nirmalshah20519@okhdfcbank&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`
     window.location.href = url;
   }
 
