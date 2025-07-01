@@ -16,6 +16,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./DataTable";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "./ui/badge";
+import { useAuth } from "@/context/AuthContext";
 
 export interface NewClient {
   id: string;
@@ -31,16 +32,16 @@ export interface NewClient {
   firmName: string;
   isVerified: boolean;
   creditLimit?: number;
-  users:{
-    id:string;
-    branchCode?:string;
-    employeeCode?:string;
-    firstName:string;
-    lastname:string;
-    email:string;
-    phoneNo:string;
-    role:string;
-    isVerified:string;
+  users: {
+    id: string;
+    branchCode?: string;
+    employeeCode?: string;
+    firstName: string;
+    lastname: string;
+    email: string;
+    phoneNo: string;
+    role: string;
+    isVerified: string;
   }[]
 }
 
@@ -55,6 +56,7 @@ export default function UClient() {
   const toast = useToast();
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const {logout} = useAuth();
 
 
 
@@ -62,7 +64,7 @@ export default function UClient() {
 
   const handleReject = async () => {
     if (!selectedClient) return;
-    
+
     setLoading(true);
     await rejectClient(selectedClient.id).then(() => {
       toast.showToast("Rejection:", "Client Rejected", "success");
@@ -70,6 +72,11 @@ export default function UClient() {
     }).
 
       catch((err: any) => {
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast("Error:", err?.message || 'Rejection was not done due to errors', "error");
       })
       .finally(() => {
@@ -90,8 +97,14 @@ export default function UClient() {
         setVerifiedClients(verified);
         setUnverifiedClients(unverified);
       })
-      .catch((err: any) =>         toast.showToast('Error:',err?.message || 'Error during fetch of Clients','error')
-)
+      .catch((err: any) =>{
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+         toast.showToast('Error:', err?.message || 'Error during fetch of Clients', 'error')}
+      )
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
@@ -117,21 +130,21 @@ export default function UClient() {
     setSelectedClient: (client: NewClient) => void,
     setDialogOpen: (open: boolean) => void
   ): ColumnDef<NewClient>[] => [
-    {
-    id: "serial",
-    header: "S.No",
-    cell: ({ row }) => row.index + 1, // Calculate the serial number based on visible row index
-    enableSorting: false, // Disable sorting for this column
-    size: 50, // Optional: Adjust width
-  },
+      {
+        id: "serial",
+        header: "S.No",
+        cell: ({ row }) => row.index + 1, // Calculate the serial number based on visible row index
+        enableSorting: false, // Disable sorting for this column
+        size: 50, // Optional: Adjust width
+      },
       {
         header: "Name",
         accessorFn: (row) => `${row.firstName} ${row.lastName}`,
       },
       {
-        header: "Address",
+        header: "City",
         accessorFn: (row) =>
-          `${row.address1}, ${row.address2}, ${row.city}, ${row.state}, ${row.pincode}`,
+          `${row.city}`,
       },
       {
         header: "Contact",
@@ -179,83 +192,82 @@ export default function UClient() {
           );
         },
       },
-       {
-    id: "viewDetails",
-    header: "View Details",
-    cell: ({ row }) => {
-      
-      if (currentTab === "verified")
-     { 
-      return (
-      <Button
-      style={{cursor:"pointer"}}
-      variant="default"
-        size="sm"
-        color="white"
-        onClick={() => navigate("/superadmin/clients/clientDetails", { state: { client: row.original } })}
-      >
-        View Details
-      </Button>
-    )
-    }
-    else{
-      <span>No Details Available Yet</span>
-    }
-    },
-  },
+      {
+        id: "viewDetails",
+        header: "View Details",
+        cell: ({ row }) => {
+
+          if (currentTab === "verified") {
+            return (
+              <Button
+                style={{ cursor: "pointer" }}
+                variant="default"
+                size="sm"
+                color="white"
+                onClick={() => navigate("/superadmin/clients/clientDetails", { state: { client: row.original } })}
+              >
+                View Details
+              </Button>
+            )
+          }
+          else {
+            <span>No Details Available Yet</span>
+          }
+        },
+      },
     ];
 
   return (
     <div className="flex flex-col w-full bg-white pr-6 lg:py-10 min-h-[100vh]">
       <div className="flex gap-4 mb-4">
-{unverifiedClients.length > 0 ? (
-  <Button
-    style={{ cursor: "pointer", position: "relative" }}
-    className={`relative transition-colors duration-200 ${
-      currentTab === "unverified"
-        ? "bg-[#5156DB] text-white hover:bg-[#4146b5]"
-        : "bg-[#F5F5F5] text-[#333] hover:bg-[#e5e5e5] hover:text-[#111]"
-    }`}
-    onClick={() => setCurrentTab("unverified")}
-  >
-    Unverified Clients
-    <Badge
-      className="absolute -top-2 -right-2 bg-red-600 text-white px-2 py-0.5 text-xs"
-    >
-      {unverifiedClients.length}
-    </Badge>
-  </Button>
-) : (
-  <Button
-    style={{ cursor: "pointer" }}
-    className={`transition-colors duration-200 ${
-      currentTab === "unverified"
-        ? "bg-[#5156DB] text-white hover:bg-[#4146b5]"
-        : "bg-[#F5F5F5] text-[#333] hover:bg-[#e5e5e5] hover:text-[#111]"
-    }`}
-    onClick={() => setCurrentTab("unverified")}
-  >
-    Unverified Clients
-  </Button>
-)}
+        {unverifiedClients.length > 0 ? (
+          <Button
+            style={{ cursor: "pointer", position: "relative" }}
+            className={`relative transition-colors duration-200 ${currentTab === "unverified"
+                ? "bg-[#5156DB] text-white hover:bg-[#4146b5]"
+                : "bg-[#F5F5F5] text-[#333] hover:bg-[#e5e5e5] hover:text-[#111]"
+              }`}
+            onClick={() => setCurrentTab("unverified")}
+          >
+            Unverified Clients
+            <Badge
+              className="absolute -top-2 -right-2 bg-red-600 text-white px-2 py-0.5 text-xs"
+            >
+              {unverifiedClients.length}
+            </Badge>
+          </Button>
+        ) : (
+          <Button
+            style={{ cursor: "pointer" }}
+            className={`transition-colors duration-200 ${currentTab === "unverified"
+                ? "bg-[#5156DB] text-white hover:bg-[#4146b5]"
+                : "bg-[#F5F5F5] text-[#333] hover:bg-[#e5e5e5] hover:text-[#111]"
+              }`}
+            onClick={() => setCurrentTab("unverified")}
+          >
+            Unverified Clients
+          </Button>
+        )}
 
-<Button
-  style={{ cursor: "pointer" }}
-  className={`transition-colors duration-200 ${
-    currentTab === "verified"
-      ? "bg-[#5156DB] text-white hover:bg-[#4146b5]"
-      : "bg-[#F5F5F5] text-[#333] hover:bg-[#e5e5e5] hover:text-[#111]"
-  }`}
-  onClick={() => setCurrentTab("verified")}
->
-  Verified Clients
-</Button>
+        <Button
+          style={{ cursor: "pointer" }}
+          className={`transition-colors duration-200 ${currentTab === "verified"
+              ? "bg-[#5156DB] text-white hover:bg-[#4146b5]"
+              : "bg-[#F5F5F5] text-[#333] hover:bg-[#e5e5e5] hover:text-[#111]"
+            }`}
+          onClick={() => setCurrentTab("verified")}
+        >
+          Verified Clients
+        </Button>
+
 
 
 
       </div>
-
-      <DataTable columns={getClientColumns(currentTab, setSelectedClient, setDialogOpen)} data={clients} />
+      <div className="flex-1 overflow-auto">
+        <DataTable columns={getClientColumns(currentTab, setSelectedClient, setDialogOpen)} data={clients} />
+      </div>
+      {/* <DataTable columns={getClientColumns(currentTab, setSelectedClient, setDialogOpen)} data={clients} /> */}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
@@ -270,14 +282,14 @@ export default function UClient() {
             <div className="flex flex-col gap-1">
               <Label htmlFor="creditLimit">Credit Limit</Label>
               <Input
-              id="creditLimit"
-              name="creditLimit"
-              type="number"
-              required
-              placeholder="Enter credit limit"
-              pattern="[0-9]*"
-              inputMode="numeric"
-              min="0"
+                id="creditLimit"
+                name="creditLimit"
+                type="number"
+                required
+                placeholder="Enter credit limit"
+                pattern="[0-9]*"
+                inputMode="numeric"
+                min="0"
               />
             </div>
 

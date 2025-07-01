@@ -16,6 +16,7 @@ import { getUnPayments, rejectPayment } from "@/service/case.service";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./DataTable";
 import { verifyPayments } from "@/service/case.service";
+import { useAuth } from "@/context/AuthContext";
 type paymentBy = {
   id: string;
   name: string;
@@ -169,6 +170,7 @@ const verifyPayment = () => {
   const [flag, setflag] = useState(false);
   const { setLoading } = useLoading();
   const [payments, setPayments] = useState<PaymentData[]>([]);
+  const {logout} = useAuth();
   const [selectedProofUrl, setSelectedProofUrl] = useState<string | null>(null);
   const [actionDialog, setActionDialog] = useState<{
   type: "verify" | "reject";
@@ -191,6 +193,11 @@ const [actionConfirmOpen, setActionConfirmOpen] = useState(false);
         }
       })
       .catch((error) => {
+                if(error?.status == '401' || error?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', error?.message || 'Error in fetching Unverified Payments', 'error')
       })
       .finally(() => setLoading(false));
@@ -220,6 +227,11 @@ const handleConfirmAction = () => {
       );
     })
     .catch((err) => {
+              if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast("Error", err?.message || 'Unable to proceed with the Process due to error', "error");
     })
     .finally(() => {

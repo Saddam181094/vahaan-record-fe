@@ -37,7 +37,7 @@ const MyProfile: React.FC = () => {
         watch,
         formState: { errors },
     } = useForm<PasswordFormInputs>();
-    const { user } = useAuth();
+    const { user,logout } = useAuth();
     // const creditLimit = 100000;
     // const utilizedLimit = 45000;
 
@@ -46,10 +46,19 @@ const MyProfile: React.FC = () => {
     const toast = useToast();
 
     useEffect(()=>{
+      setLoading(true);
         getProfile().then((resp)=>{
             setPerson(resp?.data);
         }).catch((err)=>{
+                  if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
           toast.showToast('Error',err?.message || 'Error fetching personal Data','error')
+        }).finally(()=>{
+          setTimeout(()=> setLoading(false),3000)
+          setLoading(false);
         })
     },[])
 
@@ -63,6 +72,11 @@ const MyProfile: React.FC = () => {
             (resp) =>
                 toast.showToast('Success', resp?.message, 'success')
         ).catch((err:any)=>{
+                  if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
             toast.showToast('Success', err?.message ?? 'Something went wrong', 'success')
         })
         .finally(() => {
@@ -98,7 +112,7 @@ const MyProfile: React.FC = () => {
             {/* Avatar & Info */}
             <div className="flex gap-4 flex-1 items-center">
               <div className="h-16 w-16 md:h-24 md:w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 md:text-4xl text-2xl font-bold">
-                {person?.firstName?.[0] ?? ''}{person?.lastName?.[0] ?? ''}
+                {person?.firstName?.[0].toUpperCase() ?? ''}{person?.lastName?.[0].toUpperCase() ?? ''}
               </div>
               <div className="space-y-1">
                 <p><strong>Name:</strong> {person?.firstName} {person?.lastName}</p>

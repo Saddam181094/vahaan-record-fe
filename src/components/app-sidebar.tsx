@@ -122,7 +122,14 @@ export function AppSidebar() {
  <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Vaahan Record</SidebarGroupLabel>
+                      {isCollapsed && (
+  <div className="flex justify-center mt-4">
+    <img src="/Vector.svg" alt="Logo" className="h-5" />
+  </div>
+)}
+          <SidebarGroupLabel>
+            <img src="/Group.svg" alt="Logo" className="h-10 mt-8" />
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item, idx) =>

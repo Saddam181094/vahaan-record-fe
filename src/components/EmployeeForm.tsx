@@ -22,7 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Branch } from "./Branchform";
-import { UserRole } from "@/context/AuthContext";
+import { useAuth, UserRole } from "@/context/AuthContext";
 import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
@@ -37,6 +37,8 @@ export interface Employee {
   employeeCode?:string;
   firstName: string;
   lastName: string;
+  aadharNumber:string;
+  panNumber:string;
   email: string;
   phoneNo: string;
   role: string;
@@ -63,7 +65,7 @@ export default function EmployeeForm() {
   const [search, setSearch] = useState("");
   const toast = useToast();
   const navigate = useNavigate();
-  // const { user } = useAuth();
+  const { logout } = useAuth();
 
   const filteredBranch = branch.filter((temp)=>{
     return temp.name.toLowerCase().includes(search.toLowerCase())
@@ -76,6 +78,11 @@ export default function EmployeeForm() {
         setEmployee2(resp?.data);
       })
       .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
        toast.showToast('Error:',err?.message || 'Error during fetch of Employees','error');
       }).finally(() => setLoading(false));
 
@@ -88,6 +95,11 @@ export default function EmployeeForm() {
         setBranch(resp?.data);
       })
       .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:',err?.message || 'Error during fetch of Branch','error');
       })
       .finally(() => setLoading(false));
@@ -103,6 +115,11 @@ export default function EmployeeForm() {
       toast.showToast('Success', 'Created a New Employee', 'success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
+      if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:',err?.message || 'Error occured while making a new Employee','error');
     } finally {
       setLoading(false);
@@ -127,7 +144,7 @@ export default function EmployeeForm() {
           </DialogHeader>
 
 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
-  {["firstname", "lastname", "email", "phone", "branchCode"].map((field) => (
+  {["firstname", "lastname", "email", "phone", "branchCode","aadharNumber","panNumber"].map((field) => (
     <div key={field}>
       {field === "branchCode" ? (
         <Controller
@@ -198,7 +215,74 @@ export default function EmployeeForm() {
             </>
           )}
         />
-      ) : (
+      ): 
+      field === "aadharNumber"?
+      (<>
+          <Controller
+                  name="aadharNumber"
+                  control={control}
+                  rules={{
+                    required:"Aadhar No is required.",
+                  pattern: {
+                    value: /^\d{12}$/,
+                    message: "Aadhaar No must be a 12-digit number",
+                  },
+                  }}
+                  render={({ field, fieldState }) => (
+                  <div className="flex flex-col gap-1">
+                    <Input
+                    id="aadharNumber"
+                    placeholder="Aadhaar No"
+                    maxLength={12}
+                    {...field}
+                    onChange={e => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      field.onChange(val);
+                    }}
+                    />
+                    {fieldState.error && (
+                    <p className="text-red-600 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                    )}
+                  </div>
+                  )}
+                />
+      </>)
+      : field === "panNumber"?
+      (<>
+          <Controller
+                  name="panNumber"
+                  control={control}
+                  rules={{
+                    required:"PAN No is required.",
+                  pattern: {
+                       value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                       message: "Enter Valid PAN",
+                  },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <div className="flex flex-col gap-1">
+                    <Input
+                      id="panNumber"
+                      placeholder="PAN No"
+                      maxLength={10}
+                      {...field}
+                      onChange={e => {
+                      const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+                      field.onChange(val);
+                      }}
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-600 text-xs mt-1">
+                      {fieldState.error.message}
+                      </p>
+                    )}
+                    </div>
+                  )}
+                />
+      </>):
+      (
         <>
           <Input
             {...register(field as keyof Employee, { required: true })}

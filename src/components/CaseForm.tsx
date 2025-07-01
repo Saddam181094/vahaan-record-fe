@@ -96,6 +96,7 @@ export interface ExpenseDetail {
   insuranceCharges: number | string;
   otherCharges: number | string;
   adminCharges: number | string;
+  recieptAmount:number | string;
 }
 
 export const TransactionTo = {
@@ -188,7 +189,7 @@ export default function CaseForm() {
     employeeCode: string;
   };
 
-  const { user } = useAuth();
+  const { user,logout } = useAuth();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [b, setB] = useState<string>("");
   const { setLoading } = useLoading();
@@ -223,6 +224,11 @@ export default function CaseForm() {
         setBranches(resp?.data);
       })
       .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
         // console.error("Error fetching branches:", err);
       })
@@ -240,6 +246,11 @@ export default function CaseForm() {
         setbranchEmp(resp?.data);
       })
       .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
       })
       .finally(() => {
@@ -255,6 +266,11 @@ export default function CaseForm() {
         setfirms(resp?.data);
       })
       .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
       })
       .finally(() => setLoading(false));
@@ -290,6 +306,11 @@ export default function CaseForm() {
         navigate('/superadmin/cases/Mycases')
       })
       .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');
       })
       .finally(() => {
@@ -305,6 +326,18 @@ export default function CaseForm() {
       // Convert entire string to uppercase
       .toUpperCase();
   }
+
+  useEffect(() => {
+  // Listen to all input events, force uppercase
+  const handler = (e:any) => {
+    if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
+      e.target.value = e.target.value.toUpperCase();
+    }
+  };
+  document.addEventListener('input', handler, true);
+  return () => document.removeEventListener('input', handler, true);
+}, []);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8 p-6">
       {/* General Details */}
@@ -465,20 +498,35 @@ export default function CaseForm() {
             {/* Incentive Type - Only show for superadmin */}
             {user?.role === "superadmin" && (
               <Controller
-                name="generalDetails.incentiveAmount"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col w-full">
-                    <Label htmlFor="incentiveAmount" className="pb-2">
-                      Incentive Amount
-                    </Label>
-                    <Input
-                      placeholder="Amount"
-                      className="w-full"
-                      {...field}
-                    />
-                  </div>
+              name="generalDetails.incentiveAmount"
+              control={control}
+              rules={{
+                pattern: {
+                value: /^[6-9]\d{9}$/,
+                message: "Only numbers are allowed",
+                },
+              }}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col w-full">
+                <Label htmlFor="incentiveAmount" className="pb-2">
+                  Incentive Amount
+                </Label>
+                <Input
+                  placeholder="Amount"
+                  className="w-full"
+                  {...field}
+                  onChange={e => {
+              const value = e.target.value.replace(/\D/g, "");
+              field.onChange(value);
+                  }}
+                />
+                {fieldState.error && (
+                  <p className="text-red-500 text-xs mt-1">
+                  {fieldState.error.message}
+                  </p>
                 )}
+                </div>
+              )}
               />
             )}
             <Controller
@@ -1250,7 +1298,7 @@ export default function CaseForm() {
         <CardContent className="grid gap-4 p-6">
           <div className="text-xl font-semibold border-b-2">Expense Detail</div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {(["pucCharges", "insuranceCharges", "otherCharges"] as const).map(
+            {(["pucCharges", "insuranceCharges", "recieptAmount"] as const).map(
               (key) => (
                 <Controller
                   key={key}
@@ -1292,6 +1340,7 @@ export default function CaseForm() {
             )}
             {/* Show adminCharges only for superadmin */}
             {user?.role === "superadmin" && (
+              <>
               <Controller
                 name="expenseDetail.adminCharges"
                 control={control}
@@ -1315,6 +1364,31 @@ export default function CaseForm() {
                   </div>
                 )}
               />
+
+               <Controller
+                name="expenseDetail.otherCharges"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1">
+                    <Label className="py-3" htmlFor="adminCharges">
+                      Other Charges
+                    </Label>
+                    <Input
+                      required
+                      id="otherCharges"
+                      type="number"
+                      placeholder="Enter a value"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val === "" ? "" : Number(val));
+                      }}
+                    />
+                  </div>
+                )}
+              />
+              </>
             )}
           </div>
         </CardContent>

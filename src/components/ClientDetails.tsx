@@ -13,6 +13,7 @@ import type { NewClient } from "@/components/UClient";
 import { getCasebyClient } from "@/service/case.service";
 import { useToast } from "@/context/ToastContext";
 import { useLoading } from "./LoadingContext";
+import { useAuth } from "@/context/AuthContext";
 
 // Dummy types – replace with actual types
 type CaseItem = {
@@ -38,7 +39,7 @@ export default function ClientDetails() {
   const { setLoading } = useLoading();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   // const [open, setOpen] = useState(false);
-  // const { logout } = useAuth();
+  const { logout } = useAuth();
   // const handleLogout = () => {
   //   logout();
   // };
@@ -52,6 +53,11 @@ export default function ClientDetails() {
     getCasebyClient(client.users[0]?.id)
       .then((res) => setCases(res?.data?.cases || []))
       .catch((err) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Warning:', err?.message || 'No Cases assigned Yet', 'warning');
       })
       .finally(() => setLoading(false));

@@ -27,6 +27,7 @@ import {
 import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { branchTableColumns } from "@/lib/tables.data";
+import { useAuth } from "@/context/AuthContext";
 
 export interface Branch {
   branchCode?: string;
@@ -98,6 +99,7 @@ export default function AdminBranchForm() {
   const [refreshFlag, setRefreshFlag] = useState(false);
   const toast = useToast();
   const [search , setSearch]= useState("");
+  const {logout } = useAuth();
 
   const ind2 = indianStates.filter((hostel) =>
         hostel.toLowerCase().includes(search.toLowerCase())
@@ -110,6 +112,12 @@ export default function AdminBranchForm() {
         setBranches(resp?.data);
       })
       .catch((err: any) => {
+           if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+
         toast.showToast('Error:', err?.message || 'Some Error in Fetching Branches', 'error');
         // console.error("Error fetching branches:", err);
       })
@@ -128,6 +136,11 @@ export default function AdminBranchForm() {
       setRefreshFlag((prev) => !prev);
       reset();
     } catch (err: any) {
+         if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast('Some Error in Fetching Branches', err, 'error');
       // console.error(err);
     } finally {
@@ -146,6 +159,11 @@ export default function AdminBranchForm() {
       await toggleBranch(branch);
       toast.showToast('Success','Branch Switched Succesfully', 'success');
     } catch (err: any) {
+         if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast('Error:', err?.message || 'Some Error in switching Branches', 'error');
       // console.error(err);
     } finally {

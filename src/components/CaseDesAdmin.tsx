@@ -10,6 +10,7 @@ import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { caseTableColumns } from "@/lib/tables.data";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { useAuth } from "@/context/AuthContext";
 
 export interface CaseDetails {
   id: string;
@@ -51,6 +52,7 @@ export default function CaseDes() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setLoading } = useLoading();
   const toast = useToast();
+  const {logout} = useAuth();
   const [flag,setflag] = useState(false); // For re-rendering
   // console.log(cases);
 
@@ -67,6 +69,11 @@ export default function CaseDes() {
       setDialogOpen(false);
 
     }).catch((err: any) => {
+         if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast("Error", err?.message || 'Verification error Occured', 'error');
     }).finally(() => {
         setflag(f => !f);
@@ -86,7 +93,13 @@ export default function CaseDes() {
         setLoading(false);
       }
         )
-      .catch((err: any) =>  toast.showToast("Error", err?.message || 'Error fetching Branches', 'error'))
+      .catch((err: any) =>  {
+           if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+        toast.showToast("Error", err?.message || 'Error fetching Branches', 'error')})
       .finally(() => {
         setLoading(false)});
   }, [flag]);
@@ -110,12 +123,13 @@ export default function CaseDes() {
             columns={[...caseTableColumns,
             {
               id: "verify",
-              header: "Verify",
+              header: "Actions",
               cell: ({ row }) => {
                 const data = row.original;
                 const isDisabled = !data?.generalDetail?.appointmentDate;
 
                 return (
+                  <div className="flex gap-2">
                   <Button
                     variant="outline"
                     style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
@@ -128,6 +142,22 @@ export default function CaseDes() {
                   >
                     Verify
                   </Button>
+                                    <Button
+                  variant="outline"
+                  style={{cursor:"pointer"}}
+                    onClick={() =>
+                      navigate(`/superadmin/cases/${data.CaseNo}`, {
+                        state: { id: data.id, status: data.status },
+                      })
+                    }
+                    title="View Details"
+                    className="text-black hover:text-blue-600"
+                  >
+                    {/* <FaEye />
+                     */}
+                     View Details
+                  </Button>
+                  </div>
                 );
               },
 

@@ -45,7 +45,7 @@ const ClientBills = () => {
   });
 
   const toast = useToast();
-  const { user } = useAuth();
+  const { user,logout } = useAuth();
   const [bills, setBills] = useState<Bill[]>();
   const [bdata,setBdata] = useState<Payment[]>([]);
   const [bill,setBill] = useState<any>(null);
@@ -64,6 +64,11 @@ const ClientBills = () => {
         toast.showToast('Success','All Bills Fetched','success');
       })
       .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast("Error", err?.message || "Fetching error", "error");
       })
       .finally(() => {
@@ -84,7 +89,12 @@ const ClientBills = () => {
     // console.log(bill);
     setBdata(bill?.payments || []);
       toast.showToast("Success", resp?.message, "success");
-  } catch (err) {
+  } catch (err:any) {
+    if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
     toast.showToast("Error", "Failed to apply filter", "error");
   } finally {
     setLoading(false);
@@ -112,6 +122,11 @@ const ClientBills = () => {
         toast.showToast("Upload successful", "Proof uploaded.", "success");
       }
     } catch (error:any) {
+      if(error?.status == '401' || error?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast("Upload failed", error.message || "File upload failed", "error");
     } finally {
       setUploading(false);
@@ -133,6 +148,11 @@ const ClientBills = () => {
       });
       toast.showToast("Payment successful", "Your payment has been processed.", "success");
     } catch (error:any) {
+      if(error?.status == '401' || error?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast("Payment failed", error.message || "Something went wrong", "error");
     } finally {
       setFlag(f =>!f);

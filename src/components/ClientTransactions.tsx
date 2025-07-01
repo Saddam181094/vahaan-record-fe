@@ -22,7 +22,7 @@ const Client = () => {
     const toast = useToast();
     const [filteredCases, setFilteredCases] = useState<any>();
     const { setLoading } = useLoading();
-    const { user } = useAuth();
+    const { user,logout } = useAuth();
     const [isDisabled, setisDisabled] = useState(true);
     const { handleSubmit, control, setValue } = useForm<FilterFormValues>({
         defaultValues: {
@@ -42,7 +42,12 @@ const Client = () => {
             const response = await clientTransaction(fromDate, toDate, user?.id ?? "");
             setFilteredCases(response?.data || []);
             setisDisabled(response?.data?.transactions?.length > 0);
-        } catch (err) {
+        } catch (err:any) {
+            if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
             //   console.error("Error fetching filtered cases:", err);
             toast.showToast("Error", "Failed to apply filter", "error");
         } finally {
@@ -77,6 +82,11 @@ const Client = () => {
             }
         }).
             catch((err: any) => {
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
                 //   console.error("Error fetching filtered cases:", err);
                 toast.showToast("Error", err?.message, "error");
             }).finally(() => {

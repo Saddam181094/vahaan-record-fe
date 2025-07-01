@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
 import { type FinalDetails } from "./CaseDetailsAdmin";
 import { useToast } from "@/context/ToastContext";
+import { useAuth } from "@/context/AuthContext";
 
 
 export default function CaseDetails() {
@@ -15,6 +16,7 @@ export default function CaseDetails() {
   const { setLoading } = useLoading();
   const toast = useToast();
   const [caseData, setCaseData] = useState<FinalDetails>();
+  const {logout} = useAuth();
 
   useEffect(() => {
     if (!id) {
@@ -25,6 +27,11 @@ export default function CaseDetails() {
     getCaseID(id).then((resp) => {
       setCaseData(resp?.data);
     }).catch((err:any)=>{
+      if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast('Error:',err?.message || 'Error during fetch caseData','error');
     })
     .finally(() => setLoading(false));

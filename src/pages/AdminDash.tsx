@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getSummary } from "@/service/case.service";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/context/ToastContext";
 import { useLoading } from "@/components/LoadingContext";
 import { useNavigate } from "react-router-dom";
@@ -19,16 +20,44 @@ import { DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
 import type { Task } from "./ToDoPage";
 import { createTask, getTasks, markDone, updateTask } from "@/service/tasks.service";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/AuthContext";
 
 type ExpiryData = {
   expiryType: string;
   count: number;
+  cases:CurrExpiry[]
 };
+type expireDetail = {
+  pucExpiry?:string
+  insuranceExpiry?:string,
+  fitnessExpiry?:string,
+  taxExpiry?:string,
+  permitExpiry?:string
+}
+type vehicleDetail = {
+  vehicleNo:string
+}
+
+
+type CurrExpiry = {
+  id:string,
+  CaseNo:number,
+  status:string,
+  createdAt:string,
+  vehicleDetail:vehicleDetail,
+  expireDetail:expireDetail
+
+}
+
 
 const AdminDashboard = () => {
   const [expiryStats, setExpiryStats] = useState<ExpiryData[]>([]);
   const toast = useToast();
-  const { setLoading } = useLoading();
+const [summaryLoading, setSummaryLoading] = useState(false);
+const [tasksLoading, setTasksLoading] = useState(false);
+const { setLoading } = useLoading();
+
+
   const navigate = useNavigate();
   const {
     handleSubmit,
@@ -40,24 +69,37 @@ const AdminDashboard = () => {
 
   const [task, setTask] = useState<Task[]>([])
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [DialogOpen2, setDialogOpen2] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [editTask, setEditTask] = useState(null);
+  const [currExpiries, setcurrExpiries] = useState<ExpiryData>();
+  const { logout } = useAuth();
 
   useEffect(() => {
+  setLoading(summaryLoading || tasksLoading);
+}, [summaryLoading, tasksLoading, setLoading]);
 
-    setLoading(true);
-    getTasks()
-      .then((resp) => {
-        setTask(resp?.data?.tasks || []);
-        // console.log(resp?.data?.tasks);
-        setLoading(false);
-      })
-      .catch((err: any) => {
-        toast.showToast('Error', err?.message || 'Error Fetching the Tasks', 'error');
-        setLoading(false);
-      });
 
-  }, [refreshFlag]);
+useEffect(() => {
+  setTasksLoading(true);
+
+  getTasks()
+    .then((resp) => {
+      setTask(resp?.data?.tasks || []);
+    })
+    .catch((err) => {
+      if (err?.status === '401' || err?.response?.status === 401) {
+        toast.showToast('Error', 'Session Expired', 'error');
+        logout();
+      }
+      toast.showToast('Error', err?.message || 'Error Fetching the Tasks', 'error');
+    })
+    .finally(() => {
+      setTasksLoading(false);
+    });
+}, [refreshFlag]);
+
+
 
   const onSubmit: SubmitHandler<Task> = async (data: Task) => {
     setLoading(true);
@@ -72,8 +114,14 @@ const AdminDashboard = () => {
         setRefreshFlag((prev) => !prev); // Trigger a refresh
         reset();
       } catch (err: any) {
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Error updating the Task', 'error');
       } finally {
+        setEditTask(null);
         setLoading(false);
       }
     }
@@ -86,6 +134,11 @@ const AdminDashboard = () => {
         toast.showToast('Success', 'Created a New Task', 'success');
         reset(); // Reset the form after successful submission
       } catch (err: any) {
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Error occured while making a new Task', 'error');
       } finally {
         setLoading(false);
@@ -98,6 +151,11 @@ const AdminDashboard = () => {
       toast.showToast('Success', 'Task Completed Successfully!', 'success');
       setLoading(false);
     }).catch((err: any) => {
+              if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
     }).finally(() => {
       setLoading(false);
@@ -113,6 +171,7 @@ const AdminDashboard = () => {
   };
 
   const handleDiagClick = () => {
+    setEditTask(null);
     setDialogOpen(false);
     reset(); // Reset the form when dialog is closed
   };
@@ -120,24 +179,35 @@ const AdminDashboard = () => {
 
 
   const handleClick = (data: any) => {
-    const type = data;
-    navigate(`/superadmin/cases/all`, { state: { type } });
+    // const type = data;
+    // console.log(data);
+    setDialogOpen2(true)
+    setcurrExpiries(data)
+    
+    
+    // navigate(`/superadmin/cases/all`, { state: { type } });
   }
 
   // Simulate API fetch (replace this with actual API call)
-  useEffect(() => {
-    // replace this with your actual API service
-    setLoading(true);
-    getSummary()
-      .then((resp) => {
-        setExpiryStats(resp?.data?.data)
-      })
-      .catch((err) => {
-        toast.showToast('Error:', err?.message || 'Summary was not fetched due to some error', 'error')
-      }).finally(() => {
-        setLoading(false);
-      })
-  }, []);
+useEffect(() => {
+  setSummaryLoading(true);
+
+  getSummary()
+    .then((resp) => {
+      setExpiryStats(resp?.data?.data);
+    })
+    .catch((err) => {
+      if (err?.status === '401' || err?.response?.status === 401) {
+        toast.showToast('Error', 'Session Expired', 'error');
+        logout();
+      }
+      toast.showToast('Error', err?.message || 'Summary was not fetched due to some error', 'error');
+    })
+    .finally(() => {
+      setSummaryLoading(false);
+    });
+}, []);
+
 
   return (
     <SidebarProvider>
@@ -159,7 +229,7 @@ const AdminDashboard = () => {
                   <Card
                     key={item.expiryType}
                     className={`shadow-md border-0 ${bgColor} ${textColor} rounded-lg flex flex-col j`}
-                    onClick={() => handleClick(item.expiryType)}
+                    onClick={() => handleClick(item)}
                     style={{ cursor: "pointer" }}
                   >
                     <CardHeader className="text-lg font-semibold">
@@ -251,6 +321,44 @@ const AdminDashboard = () => {
                   </form>
                 </DialogContent>
               </Dialog>
+
+                <Dialog open={DialogOpen2} onOpenChange={setDialogOpen2}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{currExpiries?.expiryType} EXPIRIES IN THIS MONTH</DialogTitle>
+                    </DialogHeader>
+
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Case No</TableHead>
+                                <TableHead>Vehicle No</TableHead>
+                                <TableHead>Expiry date</TableHead>
+                                <TableHead>Action</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {currExpiries?.cases.map((c, idx) => (
+                                <TableRow key={idx}>
+                                    <TableCell>{c.CaseNo}</TableCell>
+                                    <TableCell>{c.vehicleDetail?.vehicleNo || "-"}</TableCell>
+                                    <TableCell>
+                                        ₹{new Date(c.expireDetail?.pucExpiry || c.expireDetail?.insuranceExpiry || c.expireDetail?.fitnessExpiry || c.expireDetail?.taxExpiry || c.expireDetail?.permitExpiry || '').toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell>
+                                      <Button variant={'outline'}
+                                      className=" cursor-pointer"
+                                      onClick={()=>navigate(`/superadmin/cases/${c.CaseNo}`, {state:{id:c.id}})}
+                                      >
+                                        View Details
+                                      </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </DialogContent>
+            </Dialog>
 
               {task.length > 0 ? (
                 <Accordion type="multiple" className="space-y-2 w-88 md:w-96 border rounded-lg p-2">

@@ -20,6 +20,7 @@ import { Label } from "./ui/label";
 import { Controller, useForm } from "react-hook-form";
 import { DateInput } from "./ui/date-input";
 import { getCasesbyEmployee } from "@/service/case.service";
+import { useAuth } from "@/context/AuthContext";
 
 // Dummy types – replace with actual types
 type CaseItem = {
@@ -48,6 +49,7 @@ export default function ClientDetails() {
     const toast = useToast();
     const [cases, setCases] = useState<CaseItem[]>([]);
     const { setLoading } = useLoading();
+    const {logout} = useAuth();
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
     const [incentiveDialogOpen, setIncentiveDialogOpen] = useState(false);
 
@@ -70,7 +72,12 @@ export default function ClientDetails() {
         try {
             const response = await getCasesbyEmployee(filterType, fromDate, toDate, employee?.id ?? "");
             setCases(Array.isArray(response?.data?.cases) ? response.data.cases : []);
-        } catch (err) {
+        } catch (err:any) {
+            if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
             console.error("Error fetching filtered cases:", err);
             toast.showToast("Error", "Failed to apply filter", "error");
         } finally {
@@ -97,7 +104,11 @@ export default function ClientDetails() {
                     setCases(Array.isArray(response?.data?.cases) ? response.data.cases : []);
                 })
                 .catch((err) => {
-                    console.error("Error fetching employee cases:", err);
+                    if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
                     toast.showToast("Error", "Failed to fetch cases", "error");
                 })
                 .finally(() => {
@@ -258,7 +269,7 @@ export default function ClientDetails() {
 
 
                     {cases.length === 0 ? (
-                        <p className="text-muted-foreground text-center">No cases found for this client.</p>
+                        <p className="text-muted-foreground text-center">No cases found for this Employee.</p>
                     ) : (
                         cases.map((item, idx) => {
                             const isOpen = expandedIndex === idx;

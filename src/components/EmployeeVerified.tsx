@@ -15,6 +15,7 @@ import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { caseColumns } from "@/lib/tables.data";
 import { DateInput } from "./ui/date-input";
+import { useAuth } from "@/context/AuthContext";
 
 export interface CaseDetails {
     id: string;
@@ -165,6 +166,7 @@ export default function CaseDes() {
   const navigate = useNavigate();
   const { setLoading } = useLoading();
   const toast = useToast();
+  const {logout} = useAuth();
   const [filteredCases, setFilteredCases] = useState<any[]>([]);
 //   const [clients, setClients] = useState<any[]>([]);
   const [flag] = useState(true);
@@ -257,7 +259,14 @@ const lastDateOfMonth = `${lastDate.getFullYear()}-${String(lastDate.getMonth() 
 
         setFilteredCases(resp?.data || []);
       })
-      .catch((err) => console.error("Error fetching cases:", err))
+      .catch((err) =>{
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+        toast.showToast('Error', err?.message || 'Error listing the cases.', 'error');
+      })
       .finally(() => 
       setLoading(false));
   }, [flag]);
@@ -274,8 +283,12 @@ const applyFilter = async (data: FilterFormValues) => {
       toast.showToast("Information", "No cases Available", "info");
     }
     setFilteredCases(response?.data || []);
-  } catch (err) {
-    console.error("Error fetching filtered cases:", err);
+  } catch (err:any) {
+            if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
     toast.showToast("Error", "Failed to apply filter", "error");
   } finally {
     setLoading(false);

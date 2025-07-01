@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
+import { useAuth } from "@/context/AuthContext";
 
 interface DetailedCase {
   id: string;
@@ -51,6 +52,7 @@ export default function CaseDescription() {
     const { setLoading } = useLoading();
     const [caseData, setCaseData] = useState<DetailedCase>();
     const toast = useToast();
+    const {logout} = useAuth();
 
     useEffect(() => {
         if (!id) {
@@ -64,6 +66,11 @@ export default function CaseDescription() {
                 setCaseData(resp?.data);
             })
             .catch((err:any)=>{
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
                 toast.showToast('Error:',err?.message || 'Error during fetch','error');
             })
             .finally(() => setLoading(false));

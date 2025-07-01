@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { forgotPassword } from "@/service/auth.service"
 import { useToast } from "@/context/ToastContext"
+import { useAuth } from "@/context/AuthContext"
 
 export interface ForgotPasswordModalProps {
   open: boolean;
@@ -13,6 +14,7 @@ export interface ForgotPasswordModalProps {
 export function ForgotPasswordModal({open, onOpenChange}: ForgotPasswordModalProps) {
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
+  const {logout} = useAuth();
   // const [error, setError] = useState("")
   const toast = useToast();
   const [loading, setLoading] = useState(false)
@@ -27,6 +29,11 @@ export function ForgotPasswordModal({open, onOpenChange}: ForgotPasswordModalPro
       setMessage(res)
           toast.showToast('Submitting forgot password for:',email,'info');
     } catch (err: any) {
+              if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:',err?.message || 'Error during process Occured','error');
       // setError(err.message)
     } finally {

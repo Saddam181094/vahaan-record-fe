@@ -3,7 +3,6 @@ import { useLoading } from "./LoadingContext";
 import { getAllCases } from "@/service/case.service";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "@radix-ui/react-label";
-import { FaEye } from "react-icons/fa";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,7 @@ import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { caseTableColumns } from "@/lib/tables.data";
 import { DateInput } from "./ui/date-input";
+import { useAuth } from "@/context/AuthContext";
 
 
 export interface CaseDetails {
@@ -64,6 +64,7 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
     });
 
     const selectedClient = watch("clientId");
+    const {logout} = useAuth();
 
     const onSubmit = (data: { clientId: string }) => {
 
@@ -73,6 +74,11 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
                 // console.log(resp?.data);
                 toast.showToast('Success', 'Case Assigned Successfully.', 'success');
             }).catch((err: any) => {
+                 if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
                 toast.showToast('Error:', err?.response?.data?.errors[0] || 'Error Assigning Case', 'error');
             })
             .finally(() => {
@@ -170,6 +176,7 @@ export default function CaseDes() {
   const [filteredCases, setFilteredCases] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
   const [flag, setFlag] = useState(true);
+  const {logout} = useAuth();
 
   const { handleSubmit, setValue, getValues, control,watch } = useForm<FilterFormValues>({
     defaultValues: {
@@ -184,6 +191,7 @@ export default function CaseDes() {
   const yyyy = now.getFullYear();
   const mm = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
+  
 
   const defaultFrom = `${yyyy}-${mm}-01`;
   const defaultTo = `${yyyy}-${mm}-${dd}`;
@@ -198,6 +206,11 @@ export default function CaseDes() {
     getActiveClients()
       .then((resp) => setClients(resp?.data || []))
       .catch((err) => {
+           if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast("Error:", err?.message || "Error fetching clients", "error");
         setClients([]);
       })
@@ -254,7 +267,14 @@ const lastDateOfMonth = `${lastDate.getFullYear()}-${String(lastDate.getMonth() 
       .then((resp) => {
         setFilteredCases(resp?.data || []);
       })
-      .catch((err) => console.error("Error fetching cases:", err))
+      .catch((err) => 
+     { if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+      toast.showToast('Error', err?.message || 'Error fetching Cases', 'error');
+      })
       .finally(() => 
       setLoading(false));
   }, [flag]);
@@ -272,7 +292,11 @@ const applyFilter = async (data: FilterFormValues) => {
     }
     setFilteredCases(response?.data || []);
   } catch (err: any) {
-    console.error("Error fetching filtered cases:", err);
+    if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
     toast.showToast("Error", err?.message || "Failed to apply filter", "error");
   } finally {
     setLoading(false);
@@ -368,8 +392,9 @@ const applyFilter = async (data: FilterFormValues) => {
             cell: ({ row }: any) => {
               const caseData = row.original;
               return (
-                <div className="flex gap-4">
-                  <button
+                <div className="flex">
+                  <Button
+                  variant="outline"
                   style={{cursor:"pointer"}}
                     onClick={() =>
                       navigate(`/superadmin/cases/${caseData.CaseNo}`, {
@@ -377,10 +402,12 @@ const applyFilter = async (data: FilterFormValues) => {
                       })
                     }
                     title="View Details"
-                    className="text-black hover:text-blue-600 text-xl"
+                    className="text-black hover:text-blue-600"
                   >
-                    <FaEye />
-                  </button>
+                    {/* <FaEye />
+                     */}
+                     View Details
+                  </Button>
                   {caseData.status?.toLowerCase() === "ready" &&(
                       <AssignDialog
                         caseNo={caseData.CaseNo}

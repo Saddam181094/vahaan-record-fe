@@ -100,6 +100,11 @@ const Payment = () => {
         throw new Error("Upload failed");
       }
     } catch (error: any) {
+              if(error?.status == '401' || error?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast("Upload failed", error.message || "File upload failed.", "error");
     } finally {
       setUploading(false);
@@ -126,6 +131,11 @@ const Payment = () => {
         toast.showToast("Payment successful", "Your payment has been processed.", "success");
       })
       .catch((error: any) => {
+                if(error?.status == '401' || error?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast("Payment failed", error.message || "Something went wrong", "error");
       })
       .finally(() => {

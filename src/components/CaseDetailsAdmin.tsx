@@ -90,6 +90,7 @@ export default function CaseDescription() {
 
   const [searchHPT, setSearchHPT] = useState("");
   const [searchHPA, setSearchHPA] = useState("");
+  const {logout} = useAuth();
 
 
   const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
@@ -112,6 +113,11 @@ export default function CaseDescription() {
         setfirms(resp?.data);
       })
       .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
       })
       .finally(() => setLoading(false));
@@ -134,6 +140,11 @@ export default function CaseDescription() {
         // console.log(resp?.data);
         setCaseData(resp?.data);
       }).catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Some error Occured during fetch', 'error');
       })
       .finally(() => setLoading(false));
@@ -181,7 +192,12 @@ export default function CaseDescription() {
       setEditMode(false);
     } catch (err: any) {
       // console.error(err);
-      if (err?.response?.status === 400) {
+      if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+      else if (err?.response?.status === 400) {
         toast.showToast('Bad Request', 'Provide full owner details or none', 'error');
       } else {
         const errorMessage = err?.response?.data?.message || err?.message || 'Unknown error occurred.';
@@ -472,6 +488,17 @@ const reactToPrintFn = useReactToPrint({ contentRef });
   }: any) => {
     const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : "-");
     const getBool = (val?: boolean) => (val ? "Yes" : "No");
+
+      useEffect(() => {
+      // Listen to all input events, force uppercase
+      const handler = (e:any) => {
+        if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
+          e.target.value = e.target.value.toUpperCase();
+        }
+      };
+      document.addEventListener('input', handler, true);
+      return () => document.removeEventListener('input', handler, true);
+    }, []);
 
     return (
       <div id="printable-content" className="p-12 text-sm leading-relaxed">

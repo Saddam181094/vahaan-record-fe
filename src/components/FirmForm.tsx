@@ -15,6 +15,7 @@ import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { firmTableColumns } from "@/lib/tables.data";
+import { useAuth } from "@/context/AuthContext";
 // import { Toaster } from "@/components/ui/sonner";
 
 export interface Firm {
@@ -36,6 +37,7 @@ const {setLoading} = useLoading();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const toast = useToast();
+  const {logout} =useAuth();
 
   useEffect(() => {
     setLoading(true);
@@ -44,6 +46,11 @@ const {setLoading} = useLoading();
         setfirms(resp?.data);
       })
       .catch((err: any) => {
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:',err?.message || 'Error during fetch of Firms','error');
 
       })
@@ -60,6 +67,11 @@ const {setLoading} = useLoading();
       toast.showToast('Success:','Successfully created a Firm','success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
+              if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:',err?.message || 'Error during Creation of Firm','error');
 
     } finally {
@@ -73,6 +85,11 @@ const {setLoading} = useLoading();
       await toggleFirm(Firm);
       toast.showToast('Success:','Firm Switched Successfully','info');
     } catch (err: any) {
+              if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast('Error:',err || 'Error occured in Flipping','error');
     } finally {
       setRefreshFlag((prev) => !prev); // Trigger a refresh

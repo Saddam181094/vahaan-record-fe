@@ -19,6 +19,7 @@ import { DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
 import type { Task } from "./ToDoPage";
 import { createTask, getTasks, markDone, updateTask } from "@/service/tasks.service";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/AuthContext";
 
 type ExpiryData = {
   expiryType: string;
@@ -42,6 +43,7 @@ const AdminDashboard = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [editTask, setEditTask] = useState(null);
+  const {logout} = useAuth();
 
   useEffect(() => {
 
@@ -53,6 +55,11 @@ const AdminDashboard = () => {
         setLoading(false);
       })
       .catch((err: any) => {
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error', err?.message || 'Error Fetching the Tasks', 'error');
         setLoading(false);
       });
@@ -72,6 +79,11 @@ const AdminDashboard = () => {
         setRefreshFlag((prev) => !prev); // Trigger a refresh
         reset();
       } catch (err: any) {
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Error updating the Task', 'error');
       } finally {
         setLoading(false);
@@ -86,6 +98,11 @@ const AdminDashboard = () => {
         toast.showToast('Success', 'Created a New Task', 'success');
         reset(); // Reset the form after successful submission
       } catch (err: any) {
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Error occured while making a new Task', 'error');
       } finally {
         setLoading(false);
@@ -98,6 +115,11 @@ const AdminDashboard = () => {
       toast.showToast('Success', 'Task Completed Successfully!', 'success');
       setLoading(false);
     }).catch((err: any) => {
+              if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
     }).finally(() => {
       setLoading(false);
@@ -133,6 +155,11 @@ const AdminDashboard = () => {
         setExpiryStats(resp?.data?.data)
       })
       .catch((err) => {
+                if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast('Error:', err?.message || 'Summary was not fetched due to some error', 'error')
       }).finally(() => {
         setLoading(false);

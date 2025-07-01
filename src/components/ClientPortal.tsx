@@ -11,6 +11,7 @@ import { useToast } from "@/context/ToastContext";
 // Assuming you have a function like this:
 import { postIds } from "@/service/case.service"; // You should implement this service
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/context/AuthContext";
 
 interface ClientCase {
   id: string;
@@ -47,6 +48,7 @@ export default function ClientCaseList() {
   const [selectMode, setSelectMode] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
+  const {logout} = useAuth();
   const { setLoading } = useLoading();
 
   useEffect(() => {
@@ -61,6 +63,11 @@ export default function ClientCaseList() {
         }
       })
       .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
         toast.showToast("Error:", err?.message || 'Error fetching your Cases', "error");
       })
       .finally(() => {
@@ -117,6 +124,11 @@ export default function ClientCaseList() {
         });
       }, 1500);
     } catch (err: any) {
+      if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
       toast.showToast("Error:", err?.message || 'Payment failed due to an error', "error");
     } finally {
       setLoading(false);
