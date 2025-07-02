@@ -153,7 +153,7 @@ const filteredCases = cases.filter((c) => {
   return (
     <div className="p-4 space-y-4 h-screen">
       <h1 className="text-xl font-bold">Your Cases</h1>
-      <div className="flex flex-wrap gap-2 mb-4 sm:flex-row flex-col">
+      <div className="flex gap-2 mb-4">
           <Button
             style={{ cursor: "pointer", position: "relative" }}
             variant={activeTab === "unpaid" ? "default" : "outline"}

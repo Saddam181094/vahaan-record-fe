@@ -31,6 +31,34 @@ export const makebillPayment = async (data:any) => {
     });
 };
 
+export const getUpi = async () => {
+  const config = getConfig();
+  return axios
+    .get(url+ "/api/get-upi", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
+export const updateUpi = async (newupi:string) => {
+  const config = getConfig();
+  const data = {upi:newupi}
+
+  return axios
+    .post(url+ "/api/update-upi",data,config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
 export const billbyId = async (id:any) => {
   const config = getConfig();
   return axios

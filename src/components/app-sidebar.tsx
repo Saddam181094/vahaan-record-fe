@@ -139,7 +139,15 @@ export function AppSidebar() {
                     open={openMenus[idx] && !isCollapsed}
                   >
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuItem onClick={() => handleToggle(idx)}>
+                      <SidebarMenuItem
+                        onClick={() => handleToggle(idx)}
+                        className={
+                          (openMenus[idx] && !isCollapsed) ||
+                          item.submenu?.some(sub => sub.url === currentPath)
+                            ? "bg-black text-white rounded-lg"
+                            : ""
+                        }
+                      >
                         <SidebarMenuButton>
                           <item.icon />
                           {item.title}

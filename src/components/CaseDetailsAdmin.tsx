@@ -34,6 +34,7 @@ import type { Firm } from "./FirmForm";
 import { NumberPlate } from "@/components/CaseForm";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/button";
+import { getFirmsD } from "@/service/client.service";
 // import CaseDetails from "./CaseDetailsEmployee";
 
 export interface FinalDetails {
@@ -78,8 +79,8 @@ export default function CaseDescription() {
 
   const [searchSellerState, setSearchSellerState] = useState("");
   const [searchBuyerState, setSearchBuyerState] = useState("");
-
-
+  const [searchFirm, setSearchFirm] = useState("");
+  const [firm,setFirm] = useState<[]>([]);
 
   const ind2 = indianStates.filter((hostel) =>
     hostel.toLowerCase().includes((searchSellerState).toLowerCase())
@@ -126,6 +127,25 @@ export default function CaseDescription() {
   useEffect(() => {
     setStatus(state);
   }, [refreshFlag])
+
+   useEffect(() => {
+      setLoading(true);
+  
+      getFirmsD()
+        .then((resp) => {
+          const f = resp?.data.map((f:string) => f.toUpperCase());
+          setFirm(f);
+        })
+        .catch((err: any) => {
+          if(err?.status == '401' || err?.response?.status == '401')
+          {
+            toast.showToast('Error', 'Session Expired', 'error');
+            logout();
+          }
+          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+        })
+        .finally(() => setLoading(false));
+    }, [refreshFlag]);
 
   useEffect(() => {
     if (!id) {
@@ -285,6 +305,7 @@ const Section2 = ({
     type = "text",
     options,
     search,
+    setSearch,
     required,
     getOptionValue = (opt) => opt,     // Default: return whole string
     getOptionLabel = (opt) => opt,     // Default: return whole string
@@ -335,37 +356,46 @@ const Section2 = ({
             )}
           />
         ) : options ? (
-          <Controller
-            name={name as any}
-            control={control}
-            render={({ field }) => (
-              <>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value || ""}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(options ?? [])
-                      .filter((opt) =>
-                        !search
-                          ? true
-                          : getOptionLabel(opt)
-                            .toLowerCase()
-                            .includes(search.toLowerCase())
-                      )
-                      .map((opt) => (
-                        <SelectItem key={getOptionValue(opt)} value={getOptionValue(opt)}>
-                          {getOptionLabel(opt)}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </>
-            )}
-          />
+<Controller
+  name={name as any}
+  control={control}
+  render={({ field }) => (
+<Select
+  onValueChange={field.onChange}
+  value={field.value || ""}
+>
+  <SelectTrigger className="w-full">
+    <SelectValue placeholder="Select..." />
+  </SelectTrigger>
+  <SelectContent>
+    {setSearch && (
+      <div className="px-2 py-1">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search..."
+          className="w-full px-2 py-1 text-sm border rounded"
+        />
+      </div>
+    )}
+    {(options ?? [])
+      .filter((opt) =>
+        !search
+          ? true
+          : getOptionLabel(opt).toLowerCase().includes(search.toLowerCase())
+      )
+      .map((opt) => (
+        <SelectItem key={getOptionValue(opt)} value={getOptionValue(opt)}>
+          {getOptionLabel(opt)}
+        </SelectItem>
+      ))}
+  </SelectContent>
+</Select>
+
+  )}
+/>
+
         ) : type === "Mobile" ? (
           <Controller
             name={name as any}
@@ -641,6 +671,9 @@ const isDisabled = caseData? true : false;
           required
           value={gd?.firmName}
           name="generalDetail.firmName"
+          options={firm}
+          search={searchFirm}
+          setSearch={setSearchFirm}
         />
         {user?.role === "superadmin" &&
           <RenderField
@@ -730,7 +763,6 @@ const isDisabled = caseData? true : false;
         />
         <RenderField
           label="Permit Expiry"
-          required
           value={formatDate(ed?.permitExpiry)}
           name="expireDetail.permitExpiry"
           type="date"
@@ -862,22 +894,26 @@ const isDisabled = caseData? true : false;
       <Section title="Buyer Details">
         <RenderField
           label="Buyer Name"
+          required
           value={owd?.buyerName}
           name="ownerDetails.buyerName"
         />
         <RenderField
           label="Buyer Aadhar Number"
+          required
           value={owd?.buyerAadharNo}
           name="ownerDetails.buyerAadharNo"
           type="Aadhar"
         />
         <RenderField
           label="Buyer Address"
+          required
           value={owd?.buyerAddress}
           name="ownerDetails.buyerAddress"
         />
         <RenderField
           label="Buyer State"
+          required
           value={owd?.buyerState}
           name="ownerDetails.buyerState"
           options={ind3}
@@ -886,6 +922,7 @@ const isDisabled = caseData? true : false;
         />
         <RenderField
           label="Buyer Mobile Number"
+          required
           value={owd?.buyerPhoneNo}
           name="ownerDetails.buyerPhoneNo"
           type="Mobile"

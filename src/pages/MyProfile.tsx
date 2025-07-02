@@ -17,6 +17,8 @@ import { useAuth } from "@/context/AuthContext";
 import { changePassword, getProfile } from "@/service/auth.service";
 import { useLoading } from "@/components/LoadingContext";
 import { useToast } from "@/context/ToastContext";
+import { Pencil } from "lucide-react";
+import { getUpi, updateUpi } from "@/service/bills.service";
 // import { Progress } from "@/components/ui/progress";
 
 
@@ -29,6 +31,9 @@ export interface PasswordFormInputs {
 const MyProfile: React.FC = () => {
     const { setLoading } = useLoading();
     const [showDialog, setShowDialog] = useState(false);
+    const [upiId, setUpiId] = useState<string>("");
+const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
+
     // const [message, setMessage] = useState("");
     const {
       control,
@@ -61,6 +66,38 @@ const MyProfile: React.FC = () => {
           setLoading(false);
         })
     },[])
+
+    useEffect(()=>{
+      setLoading(true);
+      getUpi().then((resp)=>{
+        setUpiId(resp?.data?.upi);
+      }).catch((err:any)=>{
+                  if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+          toast.showToast('Error',err?.message || 'Error fetching UPI Id','error')
+        }).finally(()=>{
+          setLoading(false);
+        })
+
+    },[]);
+
+    const updateUpiId = async (newUpi: string) => {
+  try {
+    setLoading(true);
+    // replace this with your actual update API call
+    await updateUpi(newUpi); 
+    toast.showToast("Success", "UPI ID updated successfully", "success");
+    setIsEditingUpi(false);
+  } catch (err: any) {
+    toast.showToast("Error", err?.message || "Failed to update UPI ID", "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     const onSubmit = (data: PasswordFormInputs) => {
         if (data.newPassword !== data.confirmPassword) {
@@ -141,6 +178,59 @@ const MyProfile: React.FC = () => {
               </div>
             )}
           </div>
+<div className="flex items-center justify-between border px-3 py-2 rounded-md">
+  {!isEditingUpi ? (
+    <>
+      <span className="text-sm">
+        <strong>UPI ID:</strong> {upiId || "Not Provided"}
+      </span>
+      <button
+        className="text-blue-500 hover:text-blue-700"
+        onClick={() => setIsEditingUpi(true)}
+      >
+        <Pencil className="h-4 w-4" />
+      </button>
+    </>
+  ) : (
+    <div className="flex items-center w-full gap-2">
+      <Input
+        type="text"
+        value={upiId}
+        onChange={(e) => setUpiId(e.target.value)}
+        placeholder="Enter UPI ID"
+        className="flex-1"
+      />
+      <Button
+        type="button"
+        size="sm"
+        onClick={() => {
+          const isValidUpi = /^[\w.\-]{2,256}@[a-zA-Z]{2,64}$/.test(upiId);
+          if (!isValidUpi) {
+            toast.showToast("Error", "Invalid UPI ID format", "error");
+            return;
+          }
+          updateUpiId(upiId);
+        }}
+        className="px-3"
+      >
+        Save
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={() => {
+          setIsEditingUpi(false);
+          setUpiId(upiId?? "");
+        }}
+      >
+        Cancel
+      </Button>
+    </div>
+  )}
+</div>
+
+
 
           {/* Change Password Button & Dialog */}
           <div className="flex justify-center">

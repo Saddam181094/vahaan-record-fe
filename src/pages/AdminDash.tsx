@@ -25,37 +25,40 @@ import { useAuth } from "@/context/AuthContext";
 type ExpiryData = {
   expiryType: string;
   count: number;
-  cases:CurrExpiry[]
+  cases: CurrExpiry[]
 };
 type expireDetail = {
-  pucExpiry?:string
-  insuranceExpiry?:string,
-  fitnessExpiry?:string,
-  taxExpiry?:string,
-  permitExpiry?:string
+  pucExpiry?: string
+  insuranceExpiry?: string,
+  fitnessExpiry?: string,
+  taxExpiry?: string,
+  permitExpiry?: string
 }
 type vehicleDetail = {
-  vehicleNo:string
+  vehicleNo: string
 }
 
-
+type ownerDetails = {
+  buyerName: string;
+  buyerPhoneNo: string;
+}
 type CurrExpiry = {
-  id:string,
-  CaseNo:number,
-  status:string,
-  createdAt:string,
-  vehicleDetail:vehicleDetail,
-  expireDetail:expireDetail
-
+  id: string,
+  CaseNo: number,
+  status: string,
+  createdAt: string,
+  vehicleDetail: vehicleDetail,
+  expireDetail: expireDetail
+  ownerDetails: ownerDetails
 }
 
 
 const AdminDashboard = () => {
   const [expiryStats, setExpiryStats] = useState<ExpiryData[]>([]);
   const toast = useToast();
-const [summaryLoading, setSummaryLoading] = useState(false);
-const [tasksLoading, setTasksLoading] = useState(false);
-const { setLoading } = useLoading();
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [tasksLoading, setTasksLoading] = useState(false);
+  const { setLoading } = useLoading();
 
 
   const navigate = useNavigate();
@@ -76,28 +79,28 @@ const { setLoading } = useLoading();
   const { logout } = useAuth();
 
   useEffect(() => {
-  setLoading(summaryLoading || tasksLoading);
-}, [summaryLoading, tasksLoading, setLoading]);
+    setLoading(summaryLoading || tasksLoading);
+  }, [summaryLoading, tasksLoading, setLoading]);
 
 
-useEffect(() => {
-  setTasksLoading(true);
+  useEffect(() => {
+    setTasksLoading(true);
 
-  getTasks()
-    .then((resp) => {
-      setTask(resp?.data?.tasks || []);
-    })
-    .catch((err) => {
-      if (err?.status === '401' || err?.response?.status === 401) {
-        toast.showToast('Error', 'Session Expired', 'error');
-        logout();
-      }
-      toast.showToast('Error', err?.message || 'Error Fetching the Tasks', 'error');
-    })
-    .finally(() => {
-      setTasksLoading(false);
-    });
-}, [refreshFlag]);
+    getTasks()
+      .then((resp) => {
+        setTask(resp?.data?.tasks || []);
+      })
+      .catch((err) => {
+        if (err?.status === '401' || err?.response?.status === 401) {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+        toast.showToast('Error', err?.message || 'Error Fetching the Tasks', 'error');
+      })
+      .finally(() => {
+        setTasksLoading(false);
+      });
+  }, [refreshFlag]);
 
 
 
@@ -114,8 +117,7 @@ useEffect(() => {
         setRefreshFlag((prev) => !prev); // Trigger a refresh
         reset();
       } catch (err: any) {
-                if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -134,8 +136,7 @@ useEffect(() => {
         toast.showToast('Success', 'Created a New Task', 'success');
         reset(); // Reset the form after successful submission
       } catch (err: any) {
-                if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -151,11 +152,10 @@ useEffect(() => {
       toast.showToast('Success', 'Task Completed Successfully!', 'success');
       setLoading(false);
     }).catch((err: any) => {
-              if(err?.status == '401' || err?.response?.status == '401')
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
+      if (err?.status == '401' || err?.response?.status == '401') {
+        toast.showToast('Error', 'Session Expired', 'error');
+        logout();
+      }
       toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
     }).finally(() => {
       setLoading(false);
@@ -183,30 +183,30 @@ useEffect(() => {
     // console.log(data);
     setDialogOpen2(true)
     setcurrExpiries(data)
-    
-    
+
+
     // navigate(`/superadmin/cases/all`, { state: { type } });
   }
 
   // Simulate API fetch (replace this with actual API call)
-useEffect(() => {
-  setSummaryLoading(true);
+  useEffect(() => {
+    setSummaryLoading(true);
 
-  getSummary()
-    .then((resp) => {
-      setExpiryStats(resp?.data?.data);
-    })
-    .catch((err) => {
-      if (err?.status === '401' || err?.response?.status === 401) {
-        toast.showToast('Error', 'Session Expired', 'error');
-        logout();
-      }
-      toast.showToast('Error', err?.message || 'Summary was not fetched due to some error', 'error');
-    })
-    .finally(() => {
-      setSummaryLoading(false);
-    });
-}, []);
+    getSummary()
+      .then((resp) => {
+        setExpiryStats(resp?.data?.data);
+      })
+      .catch((err) => {
+        if (err?.status === '401' || err?.response?.status === 401) {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+        toast.showToast('Error', err?.message || 'Summary was not fetched due to some error', 'error');
+      })
+      .finally(() => {
+        setSummaryLoading(false);
+      });
+  }, []);
 
 
   return (
@@ -322,43 +322,47 @@ useEffect(() => {
                 </DialogContent>
               </Dialog>
 
-                <Dialog open={DialogOpen2} onOpenChange={setDialogOpen2}>
+              <Dialog open={DialogOpen2} onOpenChange={setDialogOpen2}>
                 <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{currExpiries?.expiryType} EXPIRIES IN THIS MONTH</DialogTitle>
-                    </DialogHeader>
+                  <DialogHeader>
+                    <DialogTitle>{currExpiries?.expiryType} EXPIRIES IN THIS MONTH</DialogTitle>
+                  </DialogHeader>
 
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Case No</TableHead>
-                                <TableHead>Vehicle No</TableHead>
-                                <TableHead>Expiry date</TableHead>
-                                <TableHead>Action</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {currExpiries?.cases.map((c, idx) => (
-                                <TableRow key={idx}>
-                                    <TableCell>{c.CaseNo}</TableCell>
-                                    <TableCell>{c.vehicleDetail?.vehicleNo || "-"}</TableCell>
-                                    <TableCell>
-                                        ₹{new Date(c.expireDetail?.pucExpiry || c.expireDetail?.insuranceExpiry || c.expireDetail?.fitnessExpiry || c.expireDetail?.taxExpiry || c.expireDetail?.permitExpiry || '').toLocaleDateString()}
-                                    </TableCell>
-                                    <TableCell>
-                                      <Button variant={'outline'}
-                                      className=" cursor-pointer"
-                                      onClick={()=>navigate(`/superadmin/cases/${c.CaseNo}`, {state:{id:c.id}})}
-                                      >
-                                        View Details
-                                      </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Case No</TableHead>
+                        <TableHead>Vehicle No</TableHead>
+                        <TableHead>Expiry date</TableHead>
+                        <TableHead>Owner Name</TableHead>
+                        <TableHead>Owner Contact</TableHead>
+                        <TableHead>Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {currExpiries?.cases.map((c, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell>{c.CaseNo}</TableCell>
+                          <TableCell>{c.vehicleDetail?.vehicleNo ||<span className="text-red-500">N/A</span>}</TableCell>
+                          <TableCell>
+                            {new Date(c.expireDetail?.pucExpiry || c.expireDetail?.insuranceExpiry || c.expireDetail?.fitnessExpiry || c.expireDetail?.taxExpiry || c.expireDetail?.permitExpiry || '').toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>{c.ownerDetails?.buyerName ||<span className="text-red-500">N/A</span> }</TableCell>
+                          <TableCell>{c.ownerDetails?.buyerPhoneNo || <span className="text-red-500">N/A</span>}</TableCell>
+                          <TableCell>
+                            <Button variant={'outline'}
+                              className=" cursor-pointer"
+                              onClick={() => navigate(`/superadmin/cases/${c.CaseNo}`, { state: { id: c.id } })}
+                            >
+                              View Details
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </DialogContent>
-            </Dialog>
+              </Dialog>
 
               {task.length > 0 ? (
                 <Accordion type="multiple" className="space-y-2 w-88 md:w-96 border rounded-lg p-2">
@@ -373,22 +377,22 @@ useEffect(() => {
                         <p className="text-sm mb-2">{t.task_text}</p>
                         <div className="text-xs text-muted-foreground space-y-1">
                           {/* <div><strong>Created:</strong> {new Date(t.createdAt).toLocaleString()}</div> */}
-                                                      <strong>Updated:</strong>{" "}
-{(() => {
-  const updatedDate = new Date(t.updatedAt);
-  const now = new Date();
-  const diffMs = now.getTime() - updatedDate.getTime();
+                          <strong>Updated:</strong>{" "}
+                          {(() => {
+                            const updatedDate = new Date(t.updatedAt);
+                            const now = new Date();
+                            const diffMs = now.getTime() - updatedDate.getTime();
 
-  const seconds = Math.floor(diffMs / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
+                            const seconds = Math.floor(diffMs / 1000);
+                            const minutes = Math.floor(seconds / 60);
+                            const hours = Math.floor(minutes / 60);
+                            const days = Math.floor(hours / 24);
 
-  if (days >= 1) return updatedDate.toLocaleDateString();
-  if (hours >= 1) return `${hours} hr${hours > 1 ? "s" : ""} ago`;
-  if (minutes >= 1) return `${minutes} min${minutes > 1 ? "s" : ""} ago`;
-  return `${seconds} s${seconds !== 1 ? "s" : ""} ago`;
-})()}
+                            if (days >= 1) return updatedDate.toLocaleDateString();
+                            if (hours >= 1) return `${hours} hr${hours > 1 ? "s" : ""} ago`;
+                            if (minutes >= 1) return `${minutes} min${minutes > 1 ? "s" : ""} ago`;
+                            return `${seconds} s${seconds !== 1 ? "s" : ""} ago`;
+                          })()}
                         </div>
                         <Button
                           size="sm"

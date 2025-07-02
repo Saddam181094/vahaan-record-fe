@@ -135,10 +135,14 @@ export const getCaseID = async (Id: any) => {
     });
 };
 
-export const getCasebyClient = async (Id: any) => {
+export const getCasebyClient = async (Id: any , filterType: string,
+  fromDate: string,
+  toDate: string,) => {
   const config = getConfig();
+  const data = {filterType,fromDate,toDate};
+
   return axios
-    .get(`${url}/case/client/${Id}`, config)
+    .post(`${url}/case/client/${Id}`,data, config)
     .then((response) => {
       return response.data;
     })

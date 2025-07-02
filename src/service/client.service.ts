@@ -80,6 +80,18 @@ export const unVerifiedClients = async () => {
     });
 };
 
+export const getFirmsD = async () => {
+  const config = getConfig();
+  return axios
+    .get(url + "/client/firmnames/active", config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
 export const getActiveClients = async () => {
   const config = getConfig();
   return axios

@@ -26,6 +26,7 @@ import { createCase } from "@/service/case.service";
 import { useToast } from "@/context/ToastContext";
 import { useNavigate } from "react-router-dom";
 import { DateInput } from "@/components/ui/date-input";
+import { getFirmsD } from "@/service/client.service";
 
 // Interfaces
 export interface Case {
@@ -195,6 +196,7 @@ export default function CaseForm() {
   const { setLoading } = useLoading();
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
+  const [firmsD, setfirmsD] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   // const [done,setDone] = useState("");
   const toast = useToast();
@@ -276,6 +278,26 @@ export default function CaseForm() {
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
+  
+  useEffect(() => {
+    setLoading(true);
+
+    getFirmsD()
+      .then((resp) => {
+        const f = resp?.data.map((f:string) => f.toUpperCase());
+        setfirmsD(f);
+      })
+      .catch((err: any) => {
+        if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+      })
+      .finally(() => setLoading(false));
+  }, [refreshFlag]);
+
   useEffect(() => {
     if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
       setValue("generalDetails.branchCodeId", user.branchCode);
@@ -345,152 +367,171 @@ export default function CaseForm() {
         <CardContent className="grid gap-4">
           <div className="text-xl font-semibold">General Details</div>
           <hr />
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Controller
               name="generalDetails.firmName"
               control={control}
               rules={{ required: "Firm Name is required" }}
               render={({ field, fieldState }) => (
-                <div className="flex flex-col w-full">
-                  <Label htmlFor="firmName" className="pb-2">
-                    Firm Name <span className="text-red-500">*</span>
-                  </Label>
+              <div className="flex flex-col w-full">
+                <Label htmlFor="firmName" className="pb-2">
+                Firm Name <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                required
+                value={field.value}
+                onValueChange={field.onChange}
+                >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Firm" />
+                </SelectTrigger>
+                <SelectContent>
+                  <div className="p-2">
                   <Input
-                    required
-                    placeholder="Firm Name"
-                    className="w-full"
-                    {...field}
+                    placeholder="Search a Firm"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="mb-2"
                   />
-                  {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                  )}
-                </div>
+                  </div>
+                  {firmsD
+                  .map((firm) => (
+                    <SelectItem key={firm} value={firm}>
+                    {firm}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+                </Select>
+                {fieldState.error && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldState.error.message}
+                </p>
+                )}
+              </div>
               )}
             />
             {user?.role !== "superadmin" && (
               <Controller
-                name="generalDetails.branchCodeId"
-                control={control}
-                rules={{ required: "Branch is required" }}
-                render={({ field, fieldState }) => (
+              name="generalDetails.branchCodeId"
+              control={control}
+              rules={{ required: "Branch is required" }}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col w-full">
+                 <Label htmlFor="branchCodeId" className="pb-2">
+                  Branch Name
+                </Label>
+                {user?.role === "employee" ? (
                   <div className="flex flex-col w-full">
-                     <Label htmlFor="branchCodeId" className="pb-2">
-                      Branch Name
-                    </Label>
-                    {user?.role === "employee" ? (
-                      <div className="flex flex-col w-full">
-                        <Input
-                          readOnly
-                          value={
-                            branches.find((branch) => branch.branchCode === user.branchCode)?.name
-                          }
-                          className="bg-gray-100 cursor-not-allowed"
-                        />
-                        {/* Hidden input, but do NOT spread `field`, only needed name + value */}
-                        <input type="hidden" name={field.name} value={user.branchCode} />
-                      </div>
-                    ) : (
-                      <div className="flex flex-col w-full">
-                        <Select
-                          required
-                          value={field.value}
-                          onValueChange={(val) => {
-                            field.onChange(val);
-                            setB(val);
-                          }}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Branch" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <div className="p-2">
-                              <Input
-                                placeholder="Search a Branch"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="mb-2"
-                              />
-                            </div>
-                            {branches.map((branch) => (
-                              <SelectItem
-                                key={branch?.branchCode}
-                                value={branch?.branchCode || "default"}
-                              >
-                                {branch.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-
-                    {fieldState.error && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {fieldState.error.message}
-                      </p>
-                    )}
+                  <Input
+                    readOnly
+                    value={
+                    branches.find((branch) => branch.branchCode === user.branchCode)?.name
+                    }
+                    className="bg-gray-100 cursor-not-allowed"
+                  />
+                  {/* Hidden input, but do NOT spread `field`, only needed name + value */}
+                  <input type="hidden" name={field.name} value={user.branchCode} />
+                  </div>
+                ) : (
+                  <div className="flex flex-col w-full">
+                  <Select
+                    required
+                    value={field.value}
+                    onValueChange={(val) => {
+                    field.onChange(val);
+                    setB(val);
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                    <div className="p-2">
+                      <Input
+                      placeholder="Search a Branch"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                      />
+                    </div>
+                    {branches.map((branch) => (
+                      <SelectItem
+                      key={branch?.branchCode}
+                      value={branch?.branchCode || "default"}
+                      >
+                      {branch.name}
+                      </SelectItem>
+                    ))}
+                    </SelectContent>
+                  </Select>
                   </div>
                 )}
+
+                {fieldState.error && (
+                  <p className="text-red-500 text-xs mt-1">
+                  {fieldState.error.message}
+                  </p>
+                )}
+                </div>
+              )}
               />)}
             {user?.role !== "superadmin" && (
               <Controller
-                name="generalDetails.employeeCodeId"
-                control={control}
-                rules={{ required: "Employee is required" }}
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-col w-full">
-                     <Label htmlFor="employeeCodeId" className="pb-2">
-                      Employee Name
-                    </Label>
-                    {user?.role === "employee" ? (
-                      <>
-                        <Input
-                          readOnly
-                          value={
-                            branchEmp.find((emp) => emp.employeeCode === user.employeeCode)?.name
-                          }
-                          className="bg-gray-100 cursor-not-allowed"
-                        />
-                        {/* Hidden input to preserve value for submission */}
-                        <input type="hidden" name={field.name} value={user.employeeCode} />
-                      </>
-                    ) : (
-                      <>
-                        <Select
-                          required
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Employee" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <div className="p-2">
-                              <Input
-                                placeholder="Search an Employee"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="mb-2"
-                              />
-                            </div>
-                            {branchEmp.map((emp) => (
-                              <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
-                                {emp?.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {fieldState.error && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {fieldState.error.message}
-                          </p>
-                        )}
-                      </>
-                    )}
-                  </div>
+              name="generalDetails.employeeCodeId"
+              control={control}
+              rules={{ required: "Employee is required" }}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col w-full">
+                 <Label htmlFor="employeeCodeId" className="pb-2">
+                  Employee Name
+                </Label>
+                {user?.role === "employee" ? (
+                  <>
+                  <Input
+                    readOnly
+                    value={
+                    branchEmp.find((emp) => emp.employeeCode === user.employeeCode)?.name
+                    }
+                    className="bg-gray-100 cursor-not-allowed"
+                  />
+                  {/* Hidden input to preserve value for submission */}
+                  <input type="hidden" name={field.name} value={user.employeeCode} />
+                  </>
+                ) : (
+                  <>
+                  <Select
+                    required
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Employee" />
+                    </SelectTrigger>
+                    <SelectContent>
+                    <div className="p-2">
+                      <Input
+                      placeholder="Search an Employee"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mb-2"
+                      />
+                    </div>
+                    {branchEmp.map((emp) => (
+                      <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
+                      {emp?.name}
+                      </SelectItem>
+                    ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                    {fieldState.error.message}
+                    </p>
+                  )}
+                  </>
                 )}
+                </div>
+              )}
               />
             )}
 
@@ -796,14 +837,13 @@ export default function CaseForm() {
             <Controller
               name="expireDetail.permitExpiry"
               control={control}
-              rules={{ required: "Parameter is required." }}
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
                   <Label
                     htmlFor="permitExpiry"
                     className="text-sm font-medium capitalize"
                   >
-                    Permit Expiry<span className="text-red-500">*</span>
+                    Permit Expiry
                   </Label>
                   <DateInput
                     id="permitExpiry"
@@ -1171,17 +1211,24 @@ export default function CaseForm() {
                 <Controller
                   name="ownerDetails.buyerName"
                   control={control}
-                  render={({ field, }) => (
+                  rules={{required:"Parameter is required."}}
+                  render={({ field,fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerName">Buyer Name</Label>
+                      <Label htmlFor="buyerName">Buyer Name<span className="text-red-500">*</span></Label>
                       <Input id="buyerName" placeholder="Buyer Name" {...field} />
+                {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                    )}
                     </div>
                   )}
                 />
                  <Controller
                   name="ownerDetails.buyerAadharNo"
                   control={control}
-                  rules={{
+                  rules={
+                    {required:"Parmater is required",
                   pattern: {
                     value: /^\d{12}$/,
                     message: "Aadhaar No must be a 12-digit number",
@@ -1189,7 +1236,7 @@ export default function CaseForm() {
                   }}
                   render={({ field, fieldState }) => (
                   <div className="flex flex-col gap-1">
-                    <Label htmlFor="buyerAadharNo">Buyer Aadhaar No</Label>
+                    <Label htmlFor="buyerAadharNo">Buyer Aadhaar No<span className="text-red-500">*</span></Label>
                     <Input
                     id="buyerAadharNo"
                     placeholder="Buyer Aadhaar No"
@@ -1211,19 +1258,26 @@ export default function CaseForm() {
                 <Controller
                   name="ownerDetails.buyerAddress"
                   control={control}
-                  render={({ field }) => (
+                  rules={{required:"Parameter is required."}}
+                  render={({ field,fieldState }) => (
                     <div className="flex flex-col gap-1 md:col-span-2">
-                      <Label htmlFor="buyerAddress">Buyer Address</Label>
+                      <Label htmlFor="buyerAddress">Buyer Address<span className="text-red-500">*</span></Label>
                       <Textarea id="buyerAddress" placeholder="Buyer Address" {...field} />
+                                      {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                    )}
                     </div>
                   )}
                 />
                 <Controller
                   name="ownerDetails.buyerState"
                   control={control}
-                  render={({ field }) => (
+                  rules={{required:"Parameter is required."}}
+                  render={({ field,fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerState">Buyer State</Label>
+                      <Label htmlFor="buyerState">Buyer State<span className="text-red-500">*</span></Label>
                       <Select
                         {...field}
                         value={field.value}
@@ -1254,7 +1308,11 @@ export default function CaseForm() {
                           ))}
                         </SelectContent>
                       </Select>
-
+                {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                    )}
                     </div>
                   )}
                 />
@@ -1262,6 +1320,7 @@ export default function CaseForm() {
                   name="ownerDetails.buyerPhoneNo"
                   control={control}
                   rules={{
+                    required:"Paramter is required.",
                   pattern: {
                     value: /^[6-9]\d{9}$/,
                     message: "Phone No must be a valid 10-digit",
@@ -1269,7 +1328,7 @@ export default function CaseForm() {
                   }}
                   render={({ field, fieldState }) => (
                   <div className="flex flex-col gap-1">
-                    <Label htmlFor="buyerPhoneNo">Buyer Phone No</Label>
+                    <Label htmlFor="buyerPhoneNo">Buyer Phone No<span className="text-red-500">*</span></Label>
                     <Input
                     id="buyerPhoneNo"
                     placeholder="Buyer Phone No"
