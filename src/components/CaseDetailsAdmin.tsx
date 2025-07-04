@@ -124,6 +124,35 @@ export default function CaseDescription() {
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
+//   useEffect(() => {
+//   setLoading(true);
+
+//   getActiveFirm()
+//     .then((resp) => {
+//       const activeFirms = resp?.data;
+//       setfirms(activeFirms);
+
+//       const isHPTValid = activeFirms.some((firm:any) => firm.id === td?.hptId);
+//       const isHPAValid = activeFirms.some((firm:any) => firm.id === td?.hpaId);
+
+//       if (!isHPTValid && td?.hptId) {
+//         toast.showToast("Warning", "Selected HPT firm is no longer active", "warning");
+//       }
+//       if (!isHPAValid && td?.hpaId) {
+//         toast.showToast("Warning", "Selected HPA firm is no longer active", "warning");
+//       }
+//     })
+//     .catch((err: any) => {
+//       if (err?.status == '401' || err?.response?.status == '401') {
+//         toast.showToast('Error', 'Session Expired', 'error');
+//         logout();
+//       }
+//       toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+//     })
+//     .finally(() => setLoading(false));
+// }, [refreshFlag]);
+
+
   useEffect(() => {
     setStatus(state);
   }, [refreshFlag])
@@ -530,6 +559,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
       return () => document.removeEventListener('input', handler, true);
     }, []);
 
+
     return (
       <div id="printable-content" className="p-12 text-sm leading-relaxed">
         {/* Letterhead */}
@@ -610,6 +640,60 @@ const reactToPrintFn = useReactToPrint({ contentRef });
     );
   };
 
+  const [options,setOptions] = useState(false); 
+
+useEffect(() => {
+  if (!td) return;
+
+  setLoading(true);
+
+  getActiveFirm()
+    .then((resp) => {
+      const activeFirms = resp?.data || [];
+      setfirms(activeFirms);
+
+      const { hptId, hpaId } = td;
+
+      const isHPTValid = activeFirms.some((firm: any) => firm.id === hptId);
+      const isHPAValid = activeFirms.some((firm: any) => firm.id === hpaId);
+
+      // Update invalid IDs to empty, so the field shows placeholder
+      if (!isHPTValid && hptId) {
+        setOptions(true);
+        toast.showToast("Warning", "Selected HPT firm is no longer active", "warning");
+        setCaseData((prev: any) => ({
+          ...prev,
+          transactionDetail: {
+            ...prev.transactionDetail,
+            hptId: undefined,
+          }
+        }));
+      }
+
+      if (!isHPAValid && hpaId) {
+                setOptions(true);
+        toast.showToast("Warning", "Selected HPA firm is no longer active", "warning");
+        setCaseData((prev: any) => ({
+          ...prev,
+          transactionDetail: {
+            ...prev.transactionDetail,
+            hpaId: undefined,
+          }
+        }));
+      }
+    })
+    .catch((err: any) => {
+      if (err?.status === 401 || err?.response?.status === 401) {
+        toast.showToast("Error", "Session Expired", "error");
+        logout();
+      } else {
+        toast.showToast("Error", err?.message || "Error during fetch of Firms", "error");
+      }
+    })
+    .finally(() => setLoading(false));
+}, [td]);
+
+
 const isDisabled = caseData? true : false;
   return (
     <>
@@ -662,6 +746,8 @@ const isDisabled = caseData? true : false;
         )}
       </div>
 
+
+{options && <span className="text-red-500">Either HPA/HPT ID are from inactive field.</span>}
 
       <h1 className="text-2xl font-bold mb-4">Case Details: #{caseNo}</h1>
 
@@ -779,7 +865,7 @@ const isDisabled = caseData? true : false;
         <RenderField
           label="HPT ID"
           required
-          value={editMode ? td?.hptId : getFirmNameById(td?.hptId)}
+          value={editMode ? td?.hptId?? "" : getFirmNameById(td?.hptId)}
           name="transactionDetail.hptId"
           options={filteredfirms}
           search={searchHPT}
@@ -790,7 +876,7 @@ const isDisabled = caseData? true : false;
         <RenderField
           label="HPA ID"
           required
-          value={editMode ? td?.hpaId : getFirmNameById(td?.hpaId)}
+          value={editMode ? td?.hpaId?? "" : getFirmNameById(td?.hpaId)}
           name="transactionDetail.hpaId"
           options={filteredfirms}
           search={searchHPA}

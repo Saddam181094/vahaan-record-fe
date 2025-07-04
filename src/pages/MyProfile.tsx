@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
     Dialog,
@@ -68,6 +68,8 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
     },[])
 
     useEffect(()=>{
+      if(user?.role !== 'superadmin') return;
+
       setLoading(true);
       getUpi().then((resp)=>{
         setUpiId(resp?.data?.upi);
@@ -130,7 +132,7 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
     const percentage = (utilized / limit) * 100;
 
     const getProgressColor = (value: number) => {
-      console.log(value);
+      // console.log(value);
         if (value >= 100) return "bg-red-500";
         if (value >= 80) return "bg-orange-500";
         return "bg-green-500";
@@ -178,7 +180,7 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
               </div>
             )}
           </div>
-<div className="flex items-center justify-between border px-3 py-2 rounded-md">
+{user?.role === 'superadmin' && (<div className="flex items-center justify-between border px-3 py-2 rounded-md">
   {!isEditingUpi ? (
     <>
       <span className="text-sm">
@@ -228,7 +230,7 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
       </Button>
     </div>
   )}
-</div>
+</div>)}
 
 
 

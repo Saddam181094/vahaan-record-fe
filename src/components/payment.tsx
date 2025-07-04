@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { QRCodeSVG } from "qrcode.react";
 import {
   Dialog,
   DialogContent,
@@ -112,6 +113,10 @@ const Payment = () => {
   };
 
   const onSubmit = async (data: FormData) => {
+      if ((data.paymentMethod === "CASH" || data.paymentMethod === "UPI") && !uploadedFileUrl) {
+    toast.showToast("Missing File", "Please upload a payment proof before proceeding.", "error");
+    return;
+  }
     setLoading(true);
 
     const payload: any = {
@@ -146,10 +151,12 @@ const Payment = () => {
 
   const handleLogout = () => logout();
 
-  const makeUpiPayment = () => {
-    const url = `upi://pay?pa=nirmalshah20519@okhdfcbank&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`
-    window.location.href = url;
-  }
+  // const makeUpiPayment = () => {
+  //   const url = `upi://pay?pa=nirmalshah20519@okhdfcbank&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`
+  // }
+
+  const upiUrl = `upi://pay?pa=nirmalshah20519@okhdfcbank&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`;
+
 
   return (
     <SidebarProvider>
@@ -243,15 +250,22 @@ const Payment = () => {
             />
           </div>
 
-          {
-            paymentMethod === "UPI" &&
-            <Button
-              onClick={() => makeUpiPayment()}
-              className=" cursor-pointer w-fit"
-            >
-              Pay With UPI
-            </Button>
-          }
+{paymentMethod === "UPI" && (
+  <div className="flex flex-col items-start gap-4">
+    {/* <Button
+      onClick={() => makeUpiPayment()}
+      className="cursor-pointer w-fit"
+    >
+      Pay With UPI
+    </Button> */}
+
+    <div className="flex flex-col justify-center items-center">
+      <p className="text-gray-700 font-medium">Scan this QR code:</p>
+      <QRCodeSVG value={upiUrl} size={180} />
+    </div>
+  </div>
+)}
+
 
           {(paymentMethod === "CASH" || paymentMethod === "UPI") && (
             <div className="mt-2 space-y-3">
@@ -291,7 +305,10 @@ const Payment = () => {
           )}
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting} style={{ cursor: "pointer" }} variant="default" className="px-8">
+            <Button type="submit"   disabled={
+    isSubmitting ||
+    ((paymentMethod === "CASH" || paymentMethod === "UPI") && !uploadedFileUrl)
+  } style={{ cursor: "pointer" }} variant="default" className="px-8">
               {isSubmitting ? "Processing..." : "Pay Now"}
             </Button>
           </div>
