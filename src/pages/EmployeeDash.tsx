@@ -43,7 +43,7 @@ const AdminDashboard = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [editTask, setEditTask] = useState(null);
-  const {logout} = useAuth();
+  const { logout, user } = useAuth();
 
   useEffect(() => {
 
@@ -55,8 +55,7 @@ const AdminDashboard = () => {
         setLoading(false);
       })
       .catch((err: any) => {
-                if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -79,8 +78,7 @@ const AdminDashboard = () => {
         setRefreshFlag((prev) => !prev); // Trigger a refresh
         reset();
       } catch (err: any) {
-                if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -98,8 +96,7 @@ const AdminDashboard = () => {
         toast.showToast('Success', 'Created a New Task', 'success');
         reset(); // Reset the form after successful submission
       } catch (err: any) {
-                if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -115,11 +112,10 @@ const AdminDashboard = () => {
       toast.showToast('Success', 'Task Completed Successfully!', 'success');
       setLoading(false);
     }).catch((err: any) => {
-              if(err?.status == '401' || err?.response?.status == '401')
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
+      if (err?.status == '401' || err?.response?.status == '401') {
+        toast.showToast('Error', 'Session Expired', 'error');
+        logout();
+      }
       toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
     }).finally(() => {
       setLoading(false);
@@ -155,8 +151,7 @@ const AdminDashboard = () => {
         setExpiryStats(resp?.data?.data)
       })
       .catch((err) => {
-                if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -170,10 +165,12 @@ const AdminDashboard = () => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <div className="flex w-full bg-white  lg:py-20 h-full min-h-[100vh] lg:ms-0">
-
+      <div className="flex w-full flex-col bg-white  lg:py-20 h-full min-h-[100vh] lg:ms-0">
+        <span className="text-xl md:text-2xl ml-5 font-semibold text-gray-800 tracking-wide mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
+          Welcome back, <span className="text-indigo-600">{user?.name || "Employee"}!</span>
+        </span>
         {/* Expiry Stats Cards Section */}
-        <div className="grid md:grid-cols-2 mb-8 grid-cols-1 w-full h-full min-h-screen overflow-y-auto">
+        <div className="grid md:grid-cols-2 py-5 lg:mr-5 border rounded-lg bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 mb-8 grid-cols-1 w-full h-full min-h-screen overflow-y-auto">
           <div>
             <span className="col-span-full text-4xl font-bold mb-10 block px-3">Summary of the Cases</span>
             <div className="grid grid-cols-2 gap-3 p-3">
@@ -185,7 +182,7 @@ const AdminDashboard = () => {
                 return (
                   <Card
                     key={item.expiryType}
-                    className={`shadow-md border-0 ${bgColor} ${textColor} rounded-lg flex flex-col j`}
+                    className={`shadow-md border-0 ${bgColor} ${textColor} rounded-lg flex flex-col  transition-transform transform hover:scale-[1.02] duration-200`}
                     onClick={() => handleClick(item.expiryType)}
                     style={{ cursor: "pointer" }}
                   >
@@ -207,7 +204,7 @@ const AdminDashboard = () => {
               <Button
                 style={{ cursor: "pointer" }}
                 onClick={() => setDialogOpen(true)}
-                className="mb-4  bg-[#5156DB] self-start"
+                className="mb-4  bg-[#5156DB] self-start bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold shadow-lg rounded-lg"
               >
                 Add Tasks
               </Button>
@@ -280,7 +277,10 @@ const AdminDashboard = () => {
               </Dialog>
 
               {task.length > 0 ? (
-                <Accordion type="multiple" className="space-y-2 w-96">
+                <Accordion
+                  type="multiple"
+                  className="space-y-3 w-full md:w-[28rem] bg-white rounded-xl shadow p-4"
+                >
                   {task.map((t) => (
                     <AccordionItem key={t.id} value={t.id}>
                       <AccordionTrigger className="text-left">
@@ -292,25 +292,25 @@ const AdminDashboard = () => {
                         <p className="text-sm mb-2">{t.task_text}</p>
                         <div className="text-xs text-muted-foreground space-y-1">
                           <div><strong>Created:</strong> {new Date(t.createdAt).toLocaleString()}</div>
-                            <div>
+                          <div>
                             <strong>Updated:</strong>{" "}
-{(() => {
-  const updatedDate = new Date(t.updatedAt);
-  const now = new Date();
-  const diffMs = now.getTime() - updatedDate.getTime();
+                            {(() => {
+                              const updatedDate = new Date(t.updatedAt);
+                              const now = new Date();
+                              const diffMs = now.getTime() - updatedDate.getTime();
 
-  const seconds = Math.floor(diffMs / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
+                              const seconds = Math.floor(diffMs / 1000);
+                              const minutes = Math.floor(seconds / 60);
+                              const hours = Math.floor(minutes / 60);
+                              const days = Math.floor(hours / 24);
 
-  if (days >= 1) return updatedDate.toLocaleDateString();
-  if (hours >= 1) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-  if (minutes >= 1) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-  return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
-})()}
+                              if (days >= 1) return updatedDate.toLocaleDateString();
+                              if (hours >= 1) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+                              if (minutes >= 1) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+                              return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
+                            })()}
 
-                            </div>
+                          </div>
                         </div>
                         <Button
                           size="sm"

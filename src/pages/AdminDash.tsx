@@ -76,7 +76,7 @@ const AdminDashboard = () => {
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [editTask, setEditTask] = useState(null);
   const [currExpiries, setcurrExpiries] = useState<ExpiryData>();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   useEffect(() => {
     setLoading(summaryLoading || tasksLoading);
@@ -213,12 +213,15 @@ const AdminDashboard = () => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <div className="flex w-full bg-white  lg:py-20 h-full min-h-[100vh]">
+      <div className="flex w-full flex-col mr-5 lg:py-20 h-full min-h-[100vh]">
+        <span className="text-xl md:text-2xl ml-5 font-semibold text-gray-800 tracking-wide mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
+          Welcome back Admin, <span className="text-indigo-600">{user?.name || "Admin"}!</span>
+        </span>
 
         {/* Expiry Stats Cards Section */}
-        <div className="grid md:grid-cols-2 mb-8 grid-cols-1 w-full h-full min-h-screen overflow-y-auto">
+        <div className="grid md:grid-cols-2 py-5 border rounded-lg bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 mb-8 grid-cols-1 w-full h-full min-h-screen overflow-y-auto">
           <div>
-            <span className="col-span-full text-4xl font-bold mb-10 block px-3">Summary of the Cases</span>
+            <span className="col-span-full text-4xl text-gray-800 font-bold mb-10 block px-3">Summary of the Cases</span>
             <div className="grid grid-cols-2 gap-3 p-3">
               {expiryStats.map((item, index) => {
                 const isEven = index % 2 === 0;
@@ -228,7 +231,7 @@ const AdminDashboard = () => {
                 return (
                   <Card
                     key={item.expiryType}
-                    className={`shadow-md border-0 ${bgColor} ${textColor} rounded-lg flex flex-col j`}
+                    className={`shadow-md border-0 ${bgColor} ${textColor} rounded-lg flex flex-col  transition-transform transform hover:scale-[1.02] duration-200`}
                     onClick={() => handleClick(item)}
                     style={{ cursor: "pointer" }}
                   >
@@ -250,7 +253,7 @@ const AdminDashboard = () => {
               <Button
                 style={{ cursor: "pointer" }}
                 onClick={() => setDialogOpen(true)}
-                className="mb-4  bg-[#5156DB] self-start"
+                className="mb-4  bg-[#5156DB] self-start bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold shadow-lg rounded-lg"
               >
                 Add Tasks
               </Button>
@@ -310,6 +313,7 @@ const AdminDashboard = () => {
                         <p className="text-red-600 text-sm">{errors.task_text.message}</p>
                       )}
                     </div>
+                    
                     <div className="flex justify-end gap-2">
                       <Button type="button" style={{ cursor: "pointer" }} variant="outline" onClick={handleDiagClick}>
                         Cancel
@@ -343,11 +347,11 @@ const AdminDashboard = () => {
                       {currExpiries?.cases.map((c, idx) => (
                         <TableRow key={idx}>
                           <TableCell>{c.CaseNo}</TableCell>
-                          <TableCell>{c.vehicleDetail?.vehicleNo ||<span className="text-red-500">N/A</span>}</TableCell>
+                          <TableCell>{c.vehicleDetail?.vehicleNo || <span className="text-red-500">N/A</span>}</TableCell>
                           <TableCell>
                             {new Date(c.expireDetail?.pucExpiry || c.expireDetail?.insuranceExpiry || c.expireDetail?.fitnessExpiry || c.expireDetail?.taxExpiry || c.expireDetail?.permitExpiry || '').toLocaleDateString()}
                           </TableCell>
-                          <TableCell>{c.ownerDetails?.buyerName ||<span className="text-red-500">N/A</span> }</TableCell>
+                          <TableCell>{c.ownerDetails?.buyerName || <span className="text-red-500">N/A</span>}</TableCell>
                           <TableCell>{c.ownerDetails?.buyerPhoneNo || <span className="text-red-500">N/A</span>}</TableCell>
                           <TableCell>
                             <Button variant={'outline'}
@@ -365,10 +369,13 @@ const AdminDashboard = () => {
               </Dialog>
 
               {task.length > 0 ? (
-                <Accordion type="multiple" className="space-y-2 w-88 md:w-96 border rounded-lg p-2">
+                <Accordion
+                  type="multiple"
+                  className="space-y-3 w-full md:w-[28rem] bg-white rounded-xl shadow p-4"
+                >
                   {task.map((t) => (
                     <AccordionItem key={t.id} value={t.id}>
-                      <AccordionTrigger className="text-left cursor-pointer">
+                      <AccordionTrigger className="cursor-pointer text-base font-semibold text-gray-800 hover:text-indigo-600 transition-colors">
                         <div className="flex items-center gap-2">
                           <div className="font-semibold text-base">{t.task_title}</div>
                         </div>

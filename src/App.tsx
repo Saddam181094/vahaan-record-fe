@@ -27,6 +27,7 @@ import EmployeeDetails from "@/components/EmployeeDetails"
 import ClientTransactions from "@/components/ClientTransactions"
 import Tasks from "@/pages/ToDoPage"
 import Bills from "@/components/ClientBills"
+import ClientDash from "@/pages/ClientDash"
 // import { Loader } from "lucide-react";
 export default function App() {
   const { isAuthenticated, user, isHydrated } = useAuth();
@@ -39,7 +40,7 @@ export default function App() {
         path="/"
         element={
           (isAuthenticated && isHydrated) ? (
-            <Navigate to={`/${user?.role === "client" ? `${user?.role}/cases` : user?.role}`} replace />
+            <Navigate to={`/${user?.role === "client" ? `${user?.role}` : user?.role}`} replace />
           ) : (
             <LoginPage />
           )
@@ -130,6 +131,12 @@ export default function App() {
 
 
       {/* Super Admin Routes */}
+
+      <Route path="/client" element={
+        <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
+          <ClientDash />
+        </ProtectedRoute>
+      } />
 
       <Route path="/client/cases" element={
         <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>

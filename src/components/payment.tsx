@@ -27,6 +27,7 @@ import { makePayment } from "@/service/client.service";
 import { uploadFileToServer } from "@/service/branch.service";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
+import { getProfile } from "@/service/auth.service";
 
 const paymentOptions = [
   { label: "Cash", value: "CASH" },
@@ -67,6 +68,7 @@ const Payment = () => {
   const [totalAmount, setTotalAmount] = useState(0);
   const { setLoading } = useLoading();
   const navigate = useNavigate();
+  const [person,setPerson] = useState<any>();
 
   useEffect(() => {
     if (amounts && amounts.length > 0) {
@@ -74,6 +76,35 @@ const Payment = () => {
       setTotalAmount(sum);
     }
   }, [amounts]);
+
+      useEffect(()=>{
+        setLoading(true);
+          getProfile().then((resp)=>{
+              setPerson(resp?.data);
+          }).catch((err)=>{
+                    if(err?.status == '401' || err?.response?.status == '401')
+          {
+            toast.showToast('Error', 'Session Expired', 'error');
+            logout();
+          }
+            toast.showToast('Error',err?.message || 'Error fetching personal Data','error')
+          }).finally(()=>{
+            setTimeout(()=> setLoading(false),3000)
+            setLoading(false);
+          })
+      },[])
+
+          const getProgressColor = (value: number) => {
+      // console.log(value);
+        if (value >= 100) return "bg-red-500";
+        if (value >= 80) return "bg-orange-500";
+        return "bg-green-500";
+    };
+
+        const utilized = Number(person?.client?.utilizedCredit) || 0;
+    const limit = Number(person?.client?.creditLimit) || 1; // avoid divide-by-zero
+
+    const percentage = (utilized / limit) * 100;
 
   const onFileChange = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -250,6 +281,29 @@ const Payment = () => {
             />
           </div>
 
+          {
+            paymentMethod === "CREDIT" && (
+              <div>
+                              <div className="flex-1">
+                <h3 className="text-lg font-semibold mb-2">Credit Summary</h3>
+                <div className="flex justify-between text-sm font-medium">
+                  <span>Utilized: ₹{person?.client?.utilizedCredit}</span>
+                  <span>Total Limit: ₹{person?.client?.creditLimit}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden mt-2">
+                  <div
+                    className={`h-full ${getProgressColor(percentage)} transition-all duration-500`}
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+                <div className="mt-1 text-right text-xs text-muted-foreground">
+                  {(utilized / limit * 100).toFixed(1)}% utilized
+                </div>
+              </div>
+              </div>
+            )
+          }
+
 {paymentMethod === "UPI" && (
   <div className="flex flex-col items-start gap-4">
     {/* <Button
@@ -259,9 +313,11 @@ const Payment = () => {
       Pay With UPI
     </Button> */}
 
-    <div className="flex flex-col justify-center items-center">
-      <p className="text-gray-700 font-medium">Scan this QR code:</p>
+    <div className="flex flex-col justify-center items-center w-full">
+      <p className="text-gray-700 font-medium mb-2 text-center">Scan this QR code:</p>
+      <div className="flex justify-center items-center w-full">
       <QRCodeSVG value={upiUrl} size={180} />
+      </div>
     </div>
   </div>
 )}

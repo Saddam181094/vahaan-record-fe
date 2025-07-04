@@ -286,7 +286,7 @@ const filteredCases = cases.filter((c) => {
                   {selectMode && (
                     <Checkbox
                       checked={selectedCaseIds.includes(id)}
-                      disabled={item.payment !== null} // ❗ Prevent selection if paid
+                      disabled={item.payment !== null && item.payment.status !== 'failed'} // ❗ Prevent selection if paid
                       onCheckedChange={() => toggleSelect(id)}
                       onClick={(e: any) => e.stopPropagation()}
                     />
