@@ -28,6 +28,7 @@ import { uploadFileToServer } from "@/service/branch.service";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
 import { getProfile } from "@/service/auth.service";
+import { getUpi } from "@/service/bills.service";
 
 const paymentOptions = [
   { label: "Cash", value: "CASH" },
@@ -41,7 +42,6 @@ type FormData = {
 };
 
 const Payment = () => {
-  const [open, setOpen] = useState(false);
   const { logout } = useAuth();
   const toast = useToast();
   const location = useLocation();
@@ -93,18 +93,6 @@ const Payment = () => {
             setLoading(false);
           })
       },[])
-
-          const getProgressColor = (value: number) => {
-      // console.log(value);
-        if (value >= 100) return "bg-red-500";
-        if (value >= 80) return "bg-orange-500";
-        return "bg-green-500";
-    };
-
-        const utilized = Number(person?.client?.utilizedCredit) || 0;
-    const limit = Number(person?.client?.creditLimit) || 1; // avoid divide-by-zero
-
-    const percentage = (utilized / limit) * 100;
 
   const onFileChange = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -179,48 +167,38 @@ const Payment = () => {
         setLoading(false);
       });
   };
+  const [upiPerson,setUpiPerson] = useState("");
 
-  const handleLogout = () => logout();
+    useEffect(()=>{
+
+      setLoading(true);
+      getUpi().then((resp)=>{
+        setUpiPerson(resp?.data?.upi);
+      }).catch((err:any)=>{
+                  if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+          toast.showToast('Error',err?.message || 'Error fetching UPI Id','error')
+        }).finally(()=>{
+          setLoading(false);
+        })
+
+    },[]);
 
   // const makeUpiPayment = () => {
   //   const url = `upi://pay?pa=nirmalshah20519@okhdfcbank&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`
   // }
 
-  const upiUrl = `upi://pay?pa=nirmalshah20519@okhdfcbank&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`;
+  const upiUrl = `upi://pay?pa=${upiPerson}&pn=Vahaan%20Record&am=${totalAmount}&tn=CASE_FEE`;
 
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh]">
-        <div className="flex justify-end mb-4">
-          <Button
-            variant="destructive"
-            className="cursor-pointer hover:bg-red-800"
-            onClick={() => setOpen(true)}
-          >
-            Logout
-          </Button>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirm Logout</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to logout?
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" style={{ cursor: "pointer" }} onClick={() => setOpen(false)}>
-                  Cancel
-                </Button>
-                <Button variant="destructive" style={{ cursor: "pointer" }} onClick={handleLogout}>
-                  Logout
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+      <div className="flex flex-col w-full bg-white lg:pr-6 lg:py-20 h-full min-h-[100vh]">
 
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -284,20 +262,10 @@ const Payment = () => {
           {
             paymentMethod === "CREDIT" && (
               <div>
-                              <div className="flex-1">
+              <div className="flex-1">
                 <h3 className="text-lg font-semibold mb-2">Credit Summary</h3>
                 <div className="flex justify-between text-sm font-medium">
-                  <span>Utilized: ₹{person?.client?.utilizedCredit}</span>
-                  <span>Total Limit: ₹{person?.client?.creditLimit}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden mt-2">
-                  <div
-                    className={`h-full ${getProgressColor(percentage)} transition-all duration-500`}
-                    style={{ width: `${percentage}%` }}
-                  />
-                </div>
-                <div className="mt-1 text-right text-xs text-muted-foreground">
-                  {(utilized / limit * 100).toFixed(1)}% utilized
+                  <span>Available Credit: ₹{person?.client?.creditLimit - person?.client?.utilizedCredit}</span>
                 </div>
               </div>
               </div>

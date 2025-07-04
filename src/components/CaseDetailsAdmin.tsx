@@ -33,7 +33,7 @@ import { getActiveFirm } from "@/service/firm.service";
 import type { Firm } from "./FirmForm";
 import { NumberPlate } from "@/components/CaseForm";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "./ui/button";
+// import { Button } from "./ui/button";
 import { getFirmsD } from "@/service/client.service";
 // import CaseDetails from "./CaseDetailsEmployee";
 
@@ -698,53 +698,64 @@ const isDisabled = caseData? true : false;
   return (
     <>
     <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
+      {/* <div className="flex sm:flex-row justify-between items-center gap-4 mb-4"> */}
+<div className="flex flex-wrap gap-2 w-full sm:flex-nowrap justify-between">
+  {/* Back and Print */}
+  <div className="flex sm:flex-row gap-2 w-full sm:w-auto justify-between">
+    <button
+      style={{ cursor: "pointer" }}
+      className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90 sm:w-auto"
+      onClick={() => navigate(-1)}
+      type="button"
+    >
+      ← Back
+    </button>
+
+    <button
+      type="button"
+      disabled={!isDisabled}
+      style={{ cursor: "pointer" }}
+      onClick={reactToPrintFn}
+      className="bg-primary text-white sm:w-auto rounded px-4 py-2"
+    >
+      🖨️ Print PDF
+    </button>
+  </div>
+
+  {/* Edit / Save + Cancel */}
+  {status?.toLowerCase() === "assigned" ? null : (
+    !editMode ? (
+      <button
+        style={{ cursor: "pointer" }}
+        className="px-4 py-2 rounded bg-secondary text-primary border border-primary hover:bg-secondary/80 w-full sm:w-auto"
+        onClick={() => setEditMode(true)}
+        type="button"
+      >
+        ✎ Edit
+      </button>
+    ) : (
+      <div className="flex sm:flex-row gap-2 w-full sm:w-auto">
         <button
           style={{ cursor: "pointer" }}
-          className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90"
-          onClick={() => navigate(-1)}
+          className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto"
+          type="submit"
+          disabled={isSubmitting}
+        >
+          Save
+        </button>
+        <button
+          style={{ cursor: "pointer" }}
+          className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600 w-full sm:w-auto"
+          onClick={onCancel}
           type="button"
         >
-          ← Back
+          ✖ Cancel
         </button>
-
-
-
-      <Button type="button" disabled={!isDisabled} style={{cursor:"pointer"}} onClick={reactToPrintFn} className="bg-primary text-white">
-        🖨️ Print PDF
-      </Button>
-        {status?.toLowerCase() === "assigned" ? null : (
-          !editMode ? (
-            <button
-              style={{ cursor: "pointer" }}
-              className="px-4 py-2 rounded bg-secondary text-primary border border-primary hover:bg-secondary/80"
-              onClick={() => setEditMode(true)}
-              type="button"
-            >
-              ✎ Edit
-            </button>
-          ) : (
-            <div className="flex gap-2">
-              <button
-                style={{ cursor: "pointer" }}
-                className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                Save
-              </button>
-              <button
-                style={{ cursor: "pointer" }}
-                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-                onClick={() => { onCancel(); }}
-                type="button"
-              >
-                ✖ Cancel
-              </button>
-            </div>
-          )
-        )}
       </div>
+    )
+  )}
+</div>
+
 
 
 {options && <span className="text-red-500">Either HPA/HPT ID are from inactive field.</span>}

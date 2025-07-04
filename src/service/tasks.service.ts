@@ -40,9 +40,9 @@ export const createTask = async (data:any) => {
     });
 };
 
-export const updateTask = async (Id: any, task_title: string, task_text:string) => {
+export const updateTask = async (Id: any, task_title: string, task_text:string, priority:string) => {
   const config = getConfig();
-  const data = {task_title,task_text}
+  const data = {task_title,task_text,priority}
 
   return axios.put(`${url}/task/update/${Id}`, data, config)
     .then((resp) => {

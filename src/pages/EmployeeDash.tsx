@@ -16,10 +16,12 @@ import {
 } from "@/components/ui/accordion"
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
-import type { Task } from "./ToDoPage";
+// import type { Task } from "@"
 import { createTask, getTasks, markDone, updateTask } from "@/service/tasks.service";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
+import type { Task } from "./AdminDash";
+import { DateInput } from "@/components/ui/date-input";
 
 type ExpiryData = {
   expiryType: string;
@@ -67,9 +69,15 @@ const AdminDashboard = () => {
 
   const onSubmit: SubmitHandler<Task> = async (data: Task) => {
     setLoading(true);
+    // Combine date and time into ISO string
+const { priorityDate, priorityTime, ...rest } = data;
+const combinedPriority = new Date(`${priorityDate}T${priorityTime}`).toISOString();
+const updatedData = { ...rest, priority: combinedPriority };
+
     if (editTask) {
       try {
-        const updated = await updateTask(data?.id, data.task_title, data.task_text);
+        const updated = await updateTask(updatedData?.id, updatedData.task_title, updatedData.task_text, updatedData.priority);
+
         setTask((prev) =>
           prev.map((t) => (t.id === data.id ? updated : t))
         );
@@ -84,12 +92,13 @@ const AdminDashboard = () => {
         }
         toast.showToast('Error:', err?.message || 'Error updating the Task', 'error');
       } finally {
+        setEditTask(null);
         setLoading(false);
       }
     }
     else {
       try {
-        const newTask = await createTask(data);
+        const newTask = await createTask(updatedData);
         setTask([...task, newTask]);
         setDialogOpen(false);
         setRefreshFlag((prev) => !prev); // Trigger a refresh
@@ -122,13 +131,22 @@ const AdminDashboard = () => {
     })
   };
 
-  const openUpdateDialog = (task: any) => {
-    setEditTask(task);
-    setValue("id", task.id);
-    setValue("task_title", task.task_title);
-    setValue("task_text", task.task_text);
-    setDialogOpen(true);
-  };
+const openUpdateDialog = (task: any) => {
+  setEditTask(task);
+
+  // Split ISO string into date and time
+  const isoDate = new Date(task.priority);
+  const dateStr = isoDate.toISOString().slice(0, 10); // yyyy-mm-dd
+  const timeStr = isoDate.toTimeString().slice(0, 5); // HH:MM
+
+  setValue("id", task.id);
+  setValue("task_title", task.task_title);
+  setValue("task_text", task.task_text);
+  setValue("priorityDate", dateStr);
+  setValue("priorityTime", timeStr);
+  
+  setDialogOpen(true);
+};
 
   const handleDiagClick = () => {
     setDialogOpen(false);
@@ -264,6 +282,44 @@ const AdminDashboard = () => {
                         <p className="text-red-600 text-sm">{errors.task_text.message}</p>
                       )}
                     </div>
+                    <div>
+  <label className="block mb-1 font-medium">Priority Date</label>
+  <Controller
+    name="priorityDate"
+    control={control}
+    rules={{ required: "Date is required" }}
+    render={({ field }) => (
+      <DateInput
+      id="priorityDate"
+        {...field}
+        className="w-full border rounded px-3 py-2"
+      />
+    )}
+  />
+  {errors.priorityDate && (
+    <p className="text-red-600 text-sm">{errors.priorityDate.message}</p>
+  )}
+</div>
+
+<div>
+  <label className="block mb-1 font-medium">Priority Time</label>
+  <Controller
+    name="priorityTime"
+    control={control}
+    rules={{ required: "Time is required" }}
+    render={({ field }) => (
+      <input
+        {...field}
+        type="time"
+        className="w-full border rounded px-3 py-2"
+      />
+    )}
+  />
+  {errors.priorityTime && (
+    <p className="text-red-600 text-sm">{errors.priorityTime.message}</p>
+  )}
+</div>
+
                     <div className="flex justify-end gap-2">
                       <Button type="button" style={{ cursor: "pointer" }} variant="outline" onClick={handleDiagClick}>
                         Cancel
@@ -307,7 +363,7 @@ const AdminDashboard = () => {
                               if (days >= 1) return updatedDate.toLocaleDateString();
                               if (hours >= 1) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
                               if (minutes >= 1) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-                              return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
+                              return `${seconds} ${seconds !== 1 ? "s" : ""} ago`;
                             })()}
 
                           </div>
