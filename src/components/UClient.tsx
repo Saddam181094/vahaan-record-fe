@@ -218,7 +218,7 @@ export default function UClient() {
     ];
 
   return (
-    <div className="flex flex-col w-full bg-white pr-6 lg:py-10 min-h-[100vh]">
+    <div className="flex flex-col w-full bg-white lg:pr-6 pr-2 lg:py-10 min-h-[100vh]">
       <div className="flex gap-4 mb-4">
         {unverifiedClients.length > 0 ? (
           <Button

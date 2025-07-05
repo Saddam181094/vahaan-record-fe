@@ -723,7 +723,7 @@ const isDisabled = caseData? true : false;
   </div>
 
   {/* Edit / Save + Cancel */}
-  {status?.toLowerCase() === "assigned" ? null : (
+  {(status?.toLowerCase() === "assigned" || status?.toLowerCase() === "paid" || status?.toLowerCase() === "closed")? null : (
     !editMode ? (
       <button
         style={{ cursor: "pointer" }}

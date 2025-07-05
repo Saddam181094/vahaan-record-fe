@@ -11,7 +11,7 @@ const ClientDash = () => {
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarTrigger />
-                <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ms-3">
+                <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ml-3">
                     <div className="flex flex-col w-full h-full min-h-screen overflow-y-auto">
 <div className="flex flex-col lg:flex-row items-center justify-between px-6 py-8 gap-8">
   {/* Navigation Cards Section */}

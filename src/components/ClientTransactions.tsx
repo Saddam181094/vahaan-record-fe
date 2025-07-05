@@ -188,7 +188,7 @@ const Client = () => {
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarTrigger />
-                <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ms-3">
+                <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ml-3">
 
                     {/* Extract clientDetails from the first transaction if available */}
                     <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={reactToPrintFn} className="w-fit bg-primary text-white mb-5">

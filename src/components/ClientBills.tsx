@@ -166,7 +166,7 @@ const ClientBills = () => {
   <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] lg:ms-0 ms-3">
+      <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] lg:ms-0 ml-3">
         <form
           onSubmit={handleSubmit(applyFilter)}
           className="flex flex-wrap gap-4 items-end md:flex-nowrap p-4"

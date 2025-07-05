@@ -141,7 +141,7 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
   <SidebarProvider>
     <AppSidebar />
     <SidebarTrigger />
-    <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ms-3">
+    <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ml-3">
       <div className="flex flex-col px-4">
         <Card className="p-6 space-y-6 max-w-5xl w-full mx-auto">
           <h2 className="text-xl font-semibold">My Profile</h2>
