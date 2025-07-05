@@ -58,16 +58,16 @@ const items1: Record<string, SidebarItem[]> = {
     { title: "Employees", url: "/superadmin/AddEmployee", icon: CircleUser },
     { title: "Clients", url: "/superadmin/clients", icon: UserRoundPen },
     { title: "My-Cases", url: "/superadmin/cases/Mycases", icon: PcCase },
-    { title: "Verified-Cases", url: "/superadmin/cases/all", icon: BriefcaseConveyorBelt},
+    { title: "Verified-Cases", url: "/superadmin/cases/all", icon: BriefcaseConveyorBelt },
     { title: "Payments", url: "/superadmin/VerifyPayments", icon: IndianRupee },
     // { title: "Tasks", url: "/superadmin/Tasks", icon: ClipboardList},
     { title: "My Profile", url: "/superadmin/Profile", icon: User },
   ],
   client: [
-    { title: "Home", url: "/client", icon:  Home },
+    { title: "Home", url: "/client", icon: Home },
     { title: "My Cases", url: "/client/cases", icon: UserRoundPen },
     { title: "My Transactions", url: "/client/Transactions", icon: IndianRupee },
-    { title: "My Bills", url: "/client/Bills", icon: ReceiptIndianRupee },    
+    { title: "My Bills", url: "/client/Bills", icon: ReceiptIndianRupee },
     { title: "My Profile", url: "/client/Profile", icon: User },
   ],
   employee: [
@@ -77,7 +77,7 @@ const items1: Record<string, SidebarItem[]> = {
       submenu: [
         { title: "New Case", url: "/employee/cases/new", icon: CircleUser },
         { title: "Draft Cases", url: "/employee/cases", icon: PcCase },
-        { title: "Verified Cases", url: "/employee/vcases", icon:BriefcaseConveyorBelt  },
+        { title: "Verified Cases", url: "/employee/vcases", icon: BriefcaseConveyorBelt },
       ]
     },
     // { title: "Tasks", url: "/employee/Tasks", icon: ClipboardList},
@@ -92,7 +92,7 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { state,isMobile } = useSidebar()
+  const { state, isMobile } = useSidebar()
   const isCollapsed = state === "collapsed"
 
   // Track open state for each collapsible menu by index
@@ -106,11 +106,11 @@ export function AppSidebar() {
     return initial;
   });
 
-    const [open, setOpen] = useState(false);
-    const { logout } = useAuth();
-    const handleLogout = () => {
-      logout();
-    };
+  const [open, setOpen] = useState(false);
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+  };
 
   const handleToggle = (idx: number) => {
     setOpenMenus((prev) => ({
@@ -120,14 +120,14 @@ export function AppSidebar() {
   };
 
   return (
- <Sidebar>
+    <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-                      {isCollapsed && (
-  <div className="flex justify-center mt-4">
-    <img src="/Vector.svg" alt="Logo" className="h-5" />
-  </div>
-)}
+          {isCollapsed && (
+            <div className="flex justify-center mt-4">
+              <img src="/Vector.svg" alt="Logo" className="h-5" />
+            </div>
+          )}
           <SidebarGroupLabel>
             <img src="/Group.svg" alt="Logo" className="h-10 mt-8" />
           </SidebarGroupLabel>
@@ -143,19 +143,19 @@ export function AppSidebar() {
                       <SidebarMenuItem
                         onClick={() => handleToggle(idx)}
                         className={
-                          (openMenus[idx] && !isCollapsed) ||
-                          item.submenu?.some(sub => sub.url === currentPath)
-                            ? "bg-black text-white rounded-lg"
-                            : ""
+                          openMenus[idx] && !isCollapsed
+                            ? "bg-gray-100 text-black rounded-lg"
+                            : item.submenu?.some(sub => sub.url === currentPath)
+                              ? "border-l-4 border-black bg-white"
+                              : ""
                         }
                       >
                         <SidebarMenuButton>
                           <item.icon />
                           {item.title}
                           <ChevronDown
-                            className={`ml-auto transition-transform ${
-                              openMenus[idx] ? "rotate-180" : ""
-                            }`}
+                            className={`ml-auto transition-transform ${openMenus[idx] ? "rotate-180" : ""
+                              }`}
                           />
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -210,9 +210,9 @@ export function AppSidebar() {
           className="w-full cursor-pointer hover:bg-red-800"
           onClick={() => setOpen(true)}
         >
-           <LogOut className="w-5 h-5" />
+          <LogOut className="w-5 h-5" />
           {/* Show Logout text unless sidebar is collapsed AND not mobile */}
-{(!isCollapsed || isMobile) && <span className="ml-2">Logout</span>}
+          {(!isCollapsed || isMobile) && <span className="ml-2">Logout</span>}
 
         </Button>
         <Dialog open={open} onOpenChange={setOpen}>

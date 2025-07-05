@@ -112,7 +112,27 @@ const Client = () => {
     );
 
     const contentRef = useRef<HTMLDivElement>(null);
-    const reactToPrintFn = useReactToPrint({ contentRef });
+   const reactToPrintFn = useReactToPrint({
+  contentRef,
+  documentTitle: "Client Report",
+  pageStyle: `
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printable-content, #printable-content * {
+        visibility: visible;
+      }
+      #printable-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  `
+});
+
 
 
     const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => (
@@ -188,7 +208,7 @@ const Client = () => {
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarTrigger />
-                <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] ml-3">
+                <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:py-20 h-full min-h-[100vh]">
 
                     {/* Extract clientDetails from the first transaction if available */}
                     <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={reactToPrintFn} className="w-fit bg-primary text-white mb-5">
@@ -268,7 +288,7 @@ const Client = () => {
                 </div>
                 {showModal && selectedTransaction && (
                     <Dialog open={showModal} onOpenChange={setShowModal}>
-                        <DialogContent className="max-w-lg">
+                        <DialogContent >
                             <DialogHeader>
                                 <DialogTitle>Transaction Details</DialogTitle>
                                 <DialogDescription>

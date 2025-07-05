@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/tabs";
 import { clientTransaction } from "@/service/client.service";
 import { useReactToPrint } from "react-to-print";
+import type { payment } from "./ClientPortal";
 
 // Dummy types – replace with actual types
 type CaseItem = {
@@ -57,6 +58,7 @@ type CaseItem = {
     email: string;
     role: string;
   };
+  payment : payment;
 };
 
 
@@ -313,7 +315,7 @@ return (
   <SidebarProvider>
     <AppSidebar />
     <SidebarTrigger />
-    <div className="flex flex-col w-full bg-white pr-6 lg:py-20 h-full min-h-[100vh] lg:ms-0 ms-2">
+    <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:py-20 h-full min-h-[100vh]">
       <div className="flex justify-end mb-4">
         <Button
           style={{ cursor: "pointer" }}
@@ -438,6 +440,7 @@ return (
           ) : (
             cases.map((caseData, idx) => {
               const isOpen = expandedIndex === idx;
+              const {payment} = caseData;
 
               return (
                 <Card key={caseData.id} className="border shadow-md mb-5">
@@ -447,7 +450,20 @@ return (
                   >
                     <div>
                       <h2 className="font-semibold text-lg">Case #{caseData?.CaseNo ?? ""}</h2>
-                      <p className="text-sm text-muted-foreground">{caseData?.status ?? ""}</p>
+                        {payment && payment.status ? (
+                      payment.status.toLowerCase() === "failed" ? (
+                        <p className="text-sm text-red-600 font-semibold flex items-center">
+                          <span className="inline-block w-2 h-2 rounded-full bg-red-600 mr-2"></span>
+                          {payment.status.toLocaleUpperCase()}
+                        </p>
+                      ) : payment.status.toLowerCase() === "success" ? (
+                        <p className="text-sm text-green-600 font-semibold"> <span className="inline-block w-2 h-2 rounded-full bg-green-600 mr-2"></span>{payment.status.toUpperCase()}</p>
+                      ) : (
+                        <p className="text-sm text-blue-600 font-semibold">{payment.status.toUpperCase()}</p>
+                      )
+                    ) : (
+                      <p className="text-sm text-blue-600 font-semibold">{caseData.status.toUpperCase()}</p>
+                    )}
                     </div>
                     {isOpen ? <ChevronUp /> : <ChevronDown />}
                   </CardHeader>

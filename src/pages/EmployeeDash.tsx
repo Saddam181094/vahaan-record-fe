@@ -31,6 +31,8 @@ type ExpiryData = {
 const AdminDashboard = () => {
   const [expiryStats, setExpiryStats] = useState<ExpiryData[]>([]);
   const toast = useToast();
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [tasksLoading, setTasksLoading] = useState(false);
   const { setLoading } = useLoading();
   const navigate = useNavigate();
   const {
@@ -48,31 +50,34 @@ const AdminDashboard = () => {
   const { logout, user } = useAuth();
 
   useEffect(() => {
+    setLoading(summaryLoading || tasksLoading);
+  }, [summaryLoading, tasksLoading, setLoading]);
 
-    setLoading(true);
+  useEffect(() => {
+    setTasksLoading(true);
+
     getTasks()
       .then((resp) => {
         setTask(resp?.data?.tasks || []);
-        // console.log(resp?.data?.tasks);
-        setLoading(false);
       })
-      .catch((err: any) => {
-        if (err?.status == '401' || err?.response?.status == '401') {
+      .catch((err) => {
+        if (err?.status === '401' || err?.response?.status === 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
         toast.showToast('Error', err?.message || 'Error Fetching the Tasks', 'error');
-        setLoading(false);
+      })
+      .finally(() => {
+        setTasksLoading(false);
       });
-
   }, [refreshFlag]);
 
   const onSubmit: SubmitHandler<Task> = async (data: Task) => {
     setLoading(true);
     // Combine date and time into ISO string
-const { priorityDate, priorityTime, ...rest } = data;
-const combinedPriority = new Date(`${priorityDate}T${priorityTime}`).toISOString();
-const updatedData = { ...rest, priority: combinedPriority };
+    const { priorityDate, priorityTime, ...rest } = data;
+    const combinedPriority = new Date(`${priorityDate}T${priorityTime}`).toISOString();
+    const updatedData = { ...rest, priority: combinedPriority };
 
     if (editTask) {
       try {
@@ -131,22 +136,22 @@ const updatedData = { ...rest, priority: combinedPriority };
     })
   };
 
-const openUpdateDialog = (task: any) => {
-  setEditTask(task);
+  const openUpdateDialog = (task: any) => {
+    setEditTask(task);
 
-  // Split ISO string into date and time
-  const isoDate = new Date(task.priority);
-  const dateStr = isoDate.toISOString().slice(0, 10); // yyyy-mm-dd
-  const timeStr = isoDate.toTimeString().slice(0, 5); // HH:MM
+    // Split ISO string into date and time
+    const isoDate = new Date(task.priority);
+    const dateStr = isoDate.toISOString().slice(0, 10); // yyyy-mm-dd
+    const timeStr = isoDate.toTimeString().slice(0, 5); // HH:MM
 
-  setValue("id", task.id);
-  setValue("task_title", task.task_title);
-  setValue("task_text", task.task_text);
-  setValue("priorityDate", dateStr);
-  setValue("priorityTime", timeStr);
-  
-  setDialogOpen(true);
-};
+    setValue("id", task.id);
+    setValue("task_title", task.task_title);
+    setValue("task_text", task.task_text);
+    setValue("priorityDate", dateStr);
+    setValue("priorityTime", timeStr);
+
+    setDialogOpen(true);
+  };
 
   const handleDiagClick = () => {
     setDialogOpen(false);
@@ -162,21 +167,22 @@ const openUpdateDialog = (task: any) => {
 
   // Simulate API fetch (replace this with actual API call)
   useEffect(() => {
-    // replace this with your actual API service
-    setLoading(true);
+    setSummaryLoading(true);
+
     getSummary()
       .then((resp) => {
-        setExpiryStats(resp?.data?.data)
+        setExpiryStats(resp?.data?.data);
       })
       .catch((err) => {
-        if (err?.status == '401' || err?.response?.status == '401') {
+        if (err?.status === '401' || err?.response?.status === 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-        toast.showToast('Error:', err?.message || 'Summary was not fetched due to some error', 'error')
-      }).finally(() => {
-        setLoading(false);
+        toast.showToast('Error', err?.message || 'Summary was not fetched due to some error', 'error');
       })
+      .finally(() => {
+        setSummaryLoading(false);
+      });
   }, []);
 
   return (
@@ -283,42 +289,42 @@ const openUpdateDialog = (task: any) => {
                       )}
                     </div>
                     <div>
-  <label className="block mb-1 font-medium">Priority Date</label>
-  <Controller
-    name="priorityDate"
-    control={control}
-    rules={{ required: "Date is required" }}
-    render={({ field }) => (
-      <DateInput
-      id="priorityDate"
-        {...field}
-        className="w-full border rounded px-3 py-2"
-      />
-    )}
-  />
-  {errors.priorityDate && (
-    <p className="text-red-600 text-sm">{errors.priorityDate.message}</p>
-  )}
-</div>
+                      <label className="block mb-1 font-medium">Priority Date</label>
+                      <Controller
+                        name="priorityDate"
+                        control={control}
+                        rules={{ required: "Date is required" }}
+                        render={({ field }) => (
+                          <DateInput
+                            id="priorityDate"
+                            {...field}
+                            className="w-full border rounded px-3 py-2"
+                          />
+                        )}
+                      />
+                      {errors.priorityDate && (
+                        <p className="text-red-600 text-sm">{errors.priorityDate.message}</p>
+                      )}
+                    </div>
 
-<div>
-  <label className="block mb-1 font-medium">Priority Time</label>
-  <Controller
-    name="priorityTime"
-    control={control}
-    rules={{ required: "Time is required" }}
-    render={({ field }) => (
-      <input
-        {...field}
-        type="time"
-        className="w-full border rounded px-3 py-2"
-      />
-    )}
-  />
-  {errors.priorityTime && (
-    <p className="text-red-600 text-sm">{errors.priorityTime.message}</p>
-  )}
-</div>
+                    <div>
+                      <label className="block mb-1 font-medium">Priority Time</label>
+                      <Controller
+                        name="priorityTime"
+                        control={control}
+                        rules={{ required: "Time is required" }}
+                        render={({ field }) => (
+                          <input
+                            {...field}
+                            type="time"
+                            className="w-full border rounded px-3 py-2"
+                          />
+                        )}
+                      />
+                      {errors.priorityTime && (
+                        <p className="text-red-600 text-sm">{errors.priorityTime.message}</p>
+                      )}
+                    </div>
 
                     <div className="flex justify-end gap-2">
                       <Button type="button" style={{ cursor: "pointer" }} variant="outline" onClick={handleDiagClick}>
@@ -342,12 +348,61 @@ const openUpdateDialog = (task: any) => {
                       <AccordionTrigger className="text-left">
                         <div className="flex items-center gap-2">
                           <div className="font-semibold text-base">{t.task_title}</div>
+                          <div
+                            className={`text-xs mt-2 ${(() => {
+                                const priority = t.priority;
+                                if (!priority) return "";
+                                const dateObj = new Date(priority);
+                                const now = new Date();
+                                return dateObj < now ? "text-red-600" : "text-green-600";
+                              })()
+                              }`}
+                          >
+                            <strong>Deadline:</strong>{" "}
+                            {(() => {
+                              const priority = t.priority;
+                              if (!priority) return <span>N/A</span>;
+                              const dateObj = new Date(priority);
+                              const now = new Date();
+                              const diffMs = dateObj.getTime() - now.getTime();
+                              const absDiffMs = Math.abs(diffMs);
+                              const diffDays = Math.floor(absDiffMs / (1000 * 60 * 60 * 24));
+                              const diffHours = Math.floor((absDiffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                              const diffMinutes = Math.floor((absDiffMs % (1000 * 60 * 60)) / (1000 * 60));
+                              const diffSeconds = Math.floor((absDiffMs % (1000 * 60)) / 1000);
+
+                              let timeStr = "";
+                              if (diffDays > 0) {
+                                timeStr += `${diffDays} day${diffDays !== 1 ? "s" : ""} `;
+                              } else {
+                                if (diffHours > 0) timeStr += `${diffHours} hr${diffHours !== 1 ? "s" : ""} `;
+                                if (diffMinutes > 0) timeStr += `${diffMinutes} min${diffMinutes !== 1 ? "s" : ""} `;
+                                if (diffHours === 0 && diffMinutes === 0)
+                                  timeStr += `${diffSeconds} sec${diffSeconds !== 1 ? "s" : ""} `;
+                              }
+
+                              if (diffMs < 0) {
+                                return (
+                                  <span>
+                                    ({timeStr.trim()} ago)
+                                  </span>
+                                );
+                              } else if (diffDays === 0 && diffHours === 0 && diffMinutes === 0) {
+                                return <span>(Now)</span>;
+                              } else {
+                                return (
+                                  <span>
+                                    (in {timeStr.trim()})
+                                  </span>
+                                );
+                              }
+                            })()}
+                          </div>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
                         <p className="text-sm mb-2">{t.task_text}</p>
                         <div className="text-xs text-muted-foreground space-y-1">
-                          <div><strong>Created:</strong> {new Date(t.createdAt).toLocaleString()}</div>
                           <div>
                             <strong>Updated:</strong>{" "}
                             {(() => {
@@ -366,6 +421,20 @@ const openUpdateDialog = (task: any) => {
                               return `${seconds} ${seconds !== 1 ? "s" : ""} ago`;
                             })()}
 
+                          </div>
+                          <div className="text-xs text-gray-500 mt-2">
+                            <strong>Deadline:</strong>{" "}
+                            {(() => {
+                              const priority = t.priority;
+                              if (!priority) return <span>N/A</span>;
+                              const dateObj = new Date(priority);
+                              return (
+                                <>
+                                  <span>{dateObj.toLocaleDateString()}</span>, <span> </span><span> </span>
+                                  <span>{dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                                </>
+                              );
+                            })()}
                           </div>
                         </div>
                         <Button

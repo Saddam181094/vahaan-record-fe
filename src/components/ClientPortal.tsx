@@ -274,7 +274,7 @@ const filteredCases = cases.filter((c) => {
       {filteredCases
         .map((item, idx) => {
           const isOpen = expandedIndex === idx;
-          const { id, case: caseData, TotalAmount } = item;
+          const { id, case: caseData, TotalAmount,payment } = item;
 
           return (
             <Card key={item.id} className="border shadow-md">
@@ -294,7 +294,20 @@ const filteredCases = cases.filter((c) => {
 
                   <div>
                     <h2 className="font-semibold text-lg">Case #{caseData.CaseNo}</h2>
-                    <p className="text-sm text-muted-foreground">{caseData.status}</p>
+                    {payment && payment.status ? (
+                      payment.status.toLowerCase() === "failed" ? (
+                        <p className="text-sm text-red-600 font-semibold flex items-center">
+                          <span className="inline-block w-2 h-2 rounded-full bg-red-600 mr-2"></span>
+                          {payment.status.toLocaleUpperCase()}
+                        </p>
+                      ) : payment.status.toLowerCase() === "success" ? (
+                        <p className="text-sm text-green-600 font-semibold"> <span className="inline-block w-2 h-2 rounded-full bg-green-600 mr-2"></span>{payment.status.toUpperCase()}</p>
+                      ) : (
+                        <p className="text-sm text-blue-600 font-semibold">{payment.status.toUpperCase()}</p>
+                      )
+                    ) : (
+                      <p className="text-sm text-blue-600 font-semibold">{caseData.status.toUpperCase()}</p>
+                    )}
                   </div>
                 </div>
                 {isOpen ? <ChevronUp /> : <ChevronDown />}

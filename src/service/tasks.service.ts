@@ -16,8 +16,9 @@ export const getTasks = async () => {
 };
 export const markDone= async (id:string) => {
   const config = getConfig();
+  const data = {};
   return axios
-    .get (`${url}/task/mark-as-done/${id}`, config)
+    .patch (`${url}/task/mark-as-done/${id}`,data, config)
     .then((response) => {
       return response.data;
     })
