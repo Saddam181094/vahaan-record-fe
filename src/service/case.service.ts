@@ -6,19 +6,22 @@ import type { Case } from "@/components/CaseForm";
 
 export const createCase = async (CaseData: any) => {
   const config = getConfig();
-  return axios
-    .post(`${url}/case/new`, CaseData, config)
-    .then((response) => {
-      const result = response.data;
-      if (!response.status || !result.success) {
-        throw new Error(result.message || "Failed to create Case");
-      }
-      return result || "Case created successfully";
-    })
-    .catch((error) => {
-      throw new Error(error.response?.data?.message || error.message || "Failed to create Case");
-    });
+  try {
+    const response = await axios.post(`${url}/case/new`, CaseData, config);
+    const result = response.data;
+
+    if (!result.success) {
+      // 🔥 Throw here for backend-level validation failures
+      throw new Error(result.message || "Failed to create Case");
+    }
+
+    return result;
+  } catch (error: any) {
+    // 🔥 This will now catch both HTTP and backend validation errors
+    throw new Error(error.response?.data?.message || error.message || "Failed to create Case");
+  }
 };
+
 
 export const getAllCases = async ( filterType: string,
   fromDate: string,

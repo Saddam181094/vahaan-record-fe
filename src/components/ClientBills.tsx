@@ -9,11 +9,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { useEffect, useState } from "react";
-import { billbyId, getBills, makebillPayment } from "@/service/bills.service";
+import { billbyId, getBills, getUpi, makebillPayment } from "@/service/bills.service";
 import { useAuth } from "@/context/AuthContext";
 import { type Payment } from "@/lib/tables.data";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { uploadFileToServer } from "@/service/branch.service";
+import { QRCodeSVG } from "qrcode.react";
 // import { useState } from "react";
 
 export interface Bill{
@@ -160,7 +161,32 @@ const ClientBills = () => {
     }
   };
 
+    const [upiPerson,setUpiPerson] = useState("");
+  
+      useEffect(()=>{
+  
+        setLoading(true);
+        getUpi().then((resp)=>{
+          setUpiPerson(resp?.data?.upi);
+        }).catch((err:any)=>{
+                    if(err?.status == '401' || err?.response?.status == '401')
+          {
+            toast.showToast('Error', 'Session Expired', 'error');
+            logout();
+          }
+            toast.showToast('Error',err?.message || 'Error fetching UPI Id','error')
+          }).finally(()=>{
+            setLoading(false);
+          })
+  
+      },[]);
+
   const canPay = watch('paymentProofUrl').length>0 && watch('paymentMethod').length>0
+    const upiUrl = `upi://pay?pa=${upiPerson}&pn=Vahaan%20Record&am=&tn=CASE_FEE`;
+
+//this part yet to figure out
+// ${totalAmount}
+
 
   return (
   <SidebarProvider>
@@ -263,6 +289,26 @@ const ClientBills = () => {
                   </RadioGroup>
                 )}
               />
+
+              
+{paymentMethod === "UPI" && (
+  <div className="flex flex-col items-start gap-4">
+    {/* <Button
+      onClick={() => makeUpiPayment()}
+      className="cursor-pointer w-fit"
+    >
+      Pay With UPI
+    </Button> */}
+
+    <div className="flex flex-col justify-center items-center w-full">
+      <p className="text-gray-700 font-medium mb-2 text-center">Scan this QR code:</p>
+      <div className="flex justify-center items-center w-full">
+      <QRCodeSVG value={upiUrl} size={180} />
+      </div>
+    </div>
+  </div>
+)}
+
             </div>
             <div className="space-y-3">
               {watch('paymentMethod').length>0 && <><Label className="font-semibold text-gray-800 text-lg block">

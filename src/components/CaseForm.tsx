@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -97,7 +97,7 @@ export interface ExpenseDetail {
   insuranceCharges: number | string;
   otherCharges: number | string;
   adminCharges: number | string;
-  recieptAmount:number | string;
+  receiptAmount:number | string;
 }
 
 export const TransactionTo = {
@@ -114,7 +114,69 @@ export const NumberPlate = {
 } as const;
 export type NumberPlate = (typeof NumberPlate)[keyof typeof NumberPlate];
 
+
 export default function CaseForm() {
+
+const defaultFormValues = useMemo(() => ({
+  generalDetails: {
+    firmName: "",
+    branchCodeId: "",
+    employeeCodeId: "",
+    incentiveAmount: "",
+    appointmentDate: "",
+    applicationNo: undefined,
+  },
+  vehicleDetail: {
+    vehicleNo: "",
+    rmaVehicleNo: "",
+    fromRTO: "",
+    toRTO: "",
+    chassisNo: "",
+    engineNo: "",
+  },
+  expireDetail: {
+    insuranceExpiry: "",
+    pucExpiry: "",
+    fitnessExpiry: "",
+    taxExpiry: "",
+    permitExpiry: "",
+  },
+  transactionDetail: {
+    to: "" as unknown as TransactionTo,
+    hptId: "",
+    hpaId: "",
+    fitness: false,
+    rrf: false,
+    rma: false,
+    alteration: false,
+    conversion: false,
+    numberPlate: "" as unknown as NumberPlate,
+    addressChange: false,
+    drc: false,
+    remarks: "",
+  },
+  ownerDetails: {
+    sellerName: "",
+    sellerAadharNo: "",
+    sellerAddress: "",
+    sellerState: "",
+    sellerPhoneNo: "",
+    buyerName: "",
+    buyerAadharNo: "",
+    buyerAddress: "",
+    buyerState: "",
+    buyerPhoneNo: "",
+  },
+  expenseDetail: {
+    pucCharges: "",
+    insuranceCharges: "",
+    otherCharges: "",
+    adminCharges: "",
+  },
+}), []); // dependency array empty → stable reference
+
+
+
   const {
     control,
     handleSubmit,
@@ -123,65 +185,7 @@ export default function CaseForm() {
     reset,
     formState: { errors },
   } = useForm<Case>({
-    defaultValues: {
-      generalDetails: {
-        firmName: "",
-        branchCodeId: "",
-        employeeCodeId: "",
-        incentiveAmount: "",
-        appointmentDate: "",
-        applicationNo:undefined,
-      },
-      vehicleDetail: {
-        vehicleNo: "",
-        rmaVehicleNo: "",
-        fromRTO: "",
-        toRTO: "",
-        chassisNo: "",
-        engineNo: "",
-      },
-      expireDetail: {
-        insuranceExpiry: "",
-        pucExpiry: "",
-        fitnessExpiry: "",
-        taxExpiry: "",
-        permitExpiry: "",
-      },
-      transactionDetail: {
-        to: "" as unknown as TransactionTo,
-        hptId: "",
-        hpaId: "",
-        fitness: false,
-        rrf: false,
-        rma: false,
-        alteration: false,
-        conversion: false,
-        numberPlate: "" as unknown as NumberPlate,
-        addressChange: false,
-        drc: false,
-        remarks: "",
-      },
-      ownerDetails: {
-        sellerName: "",
-        sellerAadharNo: "",
-        sellerAddress: "",
-        sellerState: "",
-        sellerPhoneNo: "",
-        buyerName: "",
-        buyerAadharNo: "",
-        buyerAddress: "",
-        buyerState: "",
-        buyerPhoneNo: "",
-      },
-      expenseDetail: {
-        pucCharges: "",
-        insuranceCharges: "",
-        otherCharges: "",
-        adminCharges: "",
-      },
-    },
-
-    mode: "onSubmit",
+    defaultValues:defaultFormValues,
   });
 
   type BranchEmployee = {
@@ -349,16 +353,16 @@ export default function CaseForm() {
       .toUpperCase();
   }
 
-  useEffect(() => {
-  // Listen to all input events, force uppercase
-  const handler = (e:any) => {
-    if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
-      e.target.value = e.target.value.toUpperCase();
-    }
-  };
-  document.addEventListener('input', handler, true);
-  return () => document.removeEventListener('input', handler, true);
-}, []);
+//   useEffect(() => {
+//   // Listen to all input events, force uppercase
+//   const handler = (e:any) => {
+//     if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
+//       e.target.value = e.target.value.toUpperCase();
+//     }
+//   };
+//   document.addEventListener('input', handler, true);
+//   return () => document.removeEventListener('input', handler, true);
+// }, []);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8 p-6">
@@ -538,37 +542,37 @@ export default function CaseForm() {
 
             {/* Incentive Type - Only show for superadmin */}
             {user?.role === "superadmin" && (
-              <Controller
-              name="generalDetails.incentiveAmount"
-              control={control}
-              rules={{
-                pattern: {
-                value: /^[6-9]\d{9}$/,
-                message: "Only numbers are allowed",
-                },
-              }}
-              render={({ field, fieldState }) => (
-                <div className="flex flex-col w-full">
-                <Label htmlFor="incentiveAmount" className="pb-2">
-                  Incentive Amount
-                </Label>
-                <Input
-                  placeholder="Amount"
-                  className="w-full"
-                  {...field}
-                  onChange={e => {
-              const value = e.target.value.replace(/\D/g, "");
-              field.onChange(value);
-                  }}
-                />
-                {fieldState.error && (
-                  <p className="text-red-500 text-xs mt-1">
-                  {fieldState.error.message}
-                  </p>
-                )}
-                </div>
-              )}
-              />
+      <Controller
+        name="generalDetails.incentiveAmount"
+        control={control}
+        rules={{
+        pattern: {
+          value: /^\d*$/,
+          message: "Only numeric values are allowed",
+        },
+        }}
+        render={({ field, fieldState }) => (
+        <div className="flex flex-col w-full">
+          <Label htmlFor="incentiveAmount" className="pb-2">
+          Incentive Amount
+          </Label>
+          <Input
+          id="incentiveAmount"
+          placeholder="Amount"
+          className={`w-full ${fieldState.error ? "border-red-500" : ""}`}
+          {...field}
+          inputMode="numeric"
+          pattern="[0-9]*"
+          onChange={(e) => {
+            // Only allow digits
+            const value = e.target.value.replace(/\D/g, "");
+            field.onChange(value);
+          }}
+          value={field.value ?? ""}
+          />
+        </div>
+        )}
+      />
             )}
             <Controller
               name="generalDetails.appointmentDate"
@@ -626,6 +630,8 @@ export default function CaseForm() {
                     className={`input input-bordered ${fieldState.error ? "input-error" : ""
                       }`}
                     {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())}
                   />
                   {errors.vehicleDetail?.vehicleNo && (
                     <p className="text-red-500 text-xs mt-1">
@@ -648,7 +654,9 @@ export default function CaseForm() {
                     placeholder="RMA Vehicle No"
                     className={`input input-bordered ${fieldState.error ? "input-error" : ""
                       }`}
-                    {...field}
+                                        {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())}
                   />
                 </div>
               )}
@@ -662,7 +670,9 @@ export default function CaseForm() {
                   <Label htmlFor="fromRTO" className="pb-2">
                     From RTO<span className="text-red-500">*</span>
                   </Label>
-                  <Input id="fromRTO" placeholder="From RTO" {...field} />
+                  <Input id="fromRTO" placeholder="From RTO"                     {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
                   {fieldState.error && (
                     <p className="text-red-600 text-xs mt-1">
                       {fieldState.error.message}
@@ -680,7 +690,9 @@ export default function CaseForm() {
                   <Label htmlFor="toRTO" className="pb-2">
                     To RTO<span className="text-red-500">*</span>
                   </Label>
-                  <Input id="toRTO" placeholder="To RTO" {...field} />
+                  <Input id="toRTO" placeholder="To RTO"                     {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
                   {fieldState.error && (
                     <p className="text-red-600 text-xs mt-1">
                       {fieldState.error.message}
@@ -698,7 +710,9 @@ export default function CaseForm() {
                   <Label htmlFor="chassisNo" className="pb-2">
                     Chassis No<span className="text-red-500">*</span>
                   </Label>
-                  <Input id="chassisNo" placeholder="Chassis No" {...field} />
+                  <Input id="chassisNo" placeholder="Chassis No"                     {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
                   {fieldState.error && (
                     <p className="text-red-600 text-xs mt-1">
                       {fieldState.error.message}
@@ -716,7 +730,9 @@ export default function CaseForm() {
                   <Label htmlFor="engineNo" className="pb-2">
                     Engine No<span className="text-red-500">*</span>
                   </Label>
-                  <Input id="engineNo" placeholder="Engine No" {...field} />
+                  <Input id="engineNo" placeholder="Engine No"                     {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
                   {fieldState.error && (
                     <p className="text-red-600 text-xs mt-1">
                       {fieldState.error.message}
@@ -1066,7 +1082,9 @@ export default function CaseForm() {
                   <Textarea
                     className=""
                     placeholder="Remarks"
-                    {...field}
+                                        {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())}
                   />
                 </div>
               )}
@@ -1090,7 +1108,9 @@ export default function CaseForm() {
                   render={({ field }) => (
                   <div className="flex flex-col gap-1">
                     <Label htmlFor="sellerName">Seller Name</Label>
-                    <Input id="sellerName" placeholder="Seller Name" {...field} />
+                    <Input id="sellerName" placeholder="Seller Name"                     {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
                   </div>
                   )}
                 />
@@ -1110,7 +1130,7 @@ export default function CaseForm() {
                     id="sellerAadharNo"
                     placeholder="Seller Aadhaar No"
                     maxLength={12}
-                    {...field}
+                                        {...field}
                     onChange={e => {
                       const val = e.target.value.replace(/\D/g, "");
                       field.onChange(val);
@@ -1130,7 +1150,9 @@ export default function CaseForm() {
                   render={({ field }) => (
                   <div className="flex flex-col gap-1 md:col-span-2">
                     <Label htmlFor="sellerAddress">Seller Address</Label>
-                    <Textarea id="sellerAddress" placeholder="Seller Address" {...field} />
+                    <Textarea id="sellerAddress" placeholder="Seller Address"                     {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
                   </div>
                   )}
                 />
@@ -1141,7 +1163,7 @@ export default function CaseForm() {
                   <div className="flex flex-col gap-1">
                     <Label htmlFor="sellerState">Seller State</Label>
                     <Select
-                    {...field}
+                                        {...field}
                     value={field.value}
                     onValueChange={(value) => {
                       field.onChange(value);
@@ -1215,7 +1237,9 @@ export default function CaseForm() {
                   render={({ field,fieldState }) => (
                     <div className="flex flex-col gap-1">
                       <Label htmlFor="buyerName">Buyer Name<span className="text-red-500">*</span></Label>
-                      <Input id="buyerName" placeholder="Buyer Name" {...field} />
+                      <Input id="buyerName" placeholder="Buyer Name"                     {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
                 {fieldState.error && (
                     <p className="text-red-500 text-xs mt-1">
                       {fieldState.error.message}
@@ -1241,7 +1265,7 @@ export default function CaseForm() {
                     id="buyerAadharNo"
                     placeholder="Buyer Aadhaar No"
                     maxLength={12}
-                    {...field}
+                                        {...field}
                     onChange={e => {
                       const val = e.target.value.replace(/\D/g, "");
                       field.onChange(val);
@@ -1262,7 +1286,9 @@ export default function CaseForm() {
                   render={({ field,fieldState }) => (
                     <div className="flex flex-col gap-1 md:col-span-2">
                       <Label htmlFor="buyerAddress">Buyer Address<span className="text-red-500">*</span></Label>
-                      <Textarea id="buyerAddress" placeholder="Buyer Address" {...field} />
+                      <Textarea id="buyerAddress" placeholder="Buyer Address"                     {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
                                       {fieldState.error && (
                     <p className="text-red-500 text-xs mt-1">
                       {fieldState.error.message}
@@ -1333,7 +1359,7 @@ export default function CaseForm() {
                     id="buyerPhoneNo"
                     placeholder="Buyer Phone No"
                     maxLength={10}
-                    {...field}
+                                        {...field}
                     onChange={e => {
                       const val = e.target.value.replace(/\D/g, "");
                       field.onChange(val);
@@ -1357,7 +1383,7 @@ export default function CaseForm() {
         <CardContent className="grid gap-4 p-6">
           <div className="text-xl font-semibold border-b-2">Expense Detail</div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {(["pucCharges", "insuranceCharges", "recieptAmount"] as const).map(
+            {(["pucCharges", "insuranceCharges", "receiptAmount"] as const).map(
               (key) => (
                 <Controller
                   key={key}

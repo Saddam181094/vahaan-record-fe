@@ -246,24 +246,10 @@ const handlePrint = () => {
   
       const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => (
           <div className="mb-2">
-              <span className="font-semibold">{label}:</span> {value || "-"}
+              <span className="font-medium">{label}:</span> {value || "-"}
           </div>
       );
 
-          const Section2 = ({
-        title,
-        children,
-        className = "",
-    }: {
-        title: string;
-        children: React.ReactNode;
-        className?: string;
-    }) => (
-        <div className={`mb-6 ${className}`}>
-            <h2 className="text-lg font-bold mb-2 border-b pb-1">{title}</h2>
-            <div className="grid grid-cols-2 gap-4">{children}</div>
-        </div>
-    );
   
       const PrintableCaseDetails = ({
           firstName,
@@ -274,51 +260,55 @@ const handlePrint = () => {
           transactions = [],
       }: any) => {
           return (
-              <div id="printable-content" className="p-12 text-sm leading-relaxed">
-                  {/* Letterhead */}
-                  <div className="mb-6 border-b pb-4">
-                      <img src="/Group.svg" alt="Letterhead" className="mb-5 max-h-24" />
-                      <p className="text-gray-600"></p>
-                  </div>
-  
-                  {/* Client Info Section */}
-                  <Section2 title="Client Details">
-                      <PrintField label="First Name" value={firstName} />
-                      <PrintField label="Last Name" value={lastName} />
-                      <PrintField label="Email" value={email} />
-                      <PrintField label="Phone No." value={phoneNo} />
-                      <PrintField label="Credit Limit" value={creditLimit} />
-                  </Section2>
-  
-                  {/* Transaction Table */}
-                  {transactions.length > 0 && (
-                      <div className="mt-8">
-                          <h2 className="text-lg font-semibold mb-2">Transaction History</h2>
-                          <table className="w-full text-left border border-collapse border-gray-300 text-xs">
-                              <thead className="bg-gray-100">
-                                  <tr>
-                                      <th className="border px-3 py-2">Date</th>
-                                      <th className="border px-3 py-2">Remarks</th>
-                                      <th className="border px-3 py-2">Mode</th>
-                                      <th className="border px-3 py-2">Amount</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                  {transactions.map((txn: any) => (
-                                      <tr >
-                                          <td className="border px-3 py-2">
-                                              {new Date(txn.paymentDate).toLocaleDateString()}
-                                          </td>
-                                          <td className="border px-3 py-2 capitalize">{txn.remark}</td>
-                                          <td className="border px-3 py-2">{txn.mode}</td>
-                                          <td className="border px-3 py-2">₹{txn.Amount}</td>
-                                      </tr>
-                                  ))}
-                              </tbody>
-                          </table>
-                      </div>
-                  )}
-              </div>
+<div id="printable-content" className="p-12 text-sm leading-relaxed font-sans text-gray-800">
+  {/* === Letterhead === */}
+  <div className="mb-6 border-b border-gray-300 pb-4 flex items-center justify-between">
+    <img src="/Group.svg" alt="Letterhead Logo" className="h-16" />
+  </div>
+
+  {/* === Client Info Section === */}
+  <div className="mb-8">
+    <h1 className="text-4xl font-semibold mb-4 border-b pb-1 border-gray-200">Client Details</h1>
+    <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-sm">
+      <PrintField label="First Name" value={firstName} />
+      <PrintField label="Last Name" value={lastName} />
+      <PrintField label="Email" value={email} />
+      <PrintField label="Phone No." value={phoneNo} />
+      <PrintField label="Credit Limit" value={creditLimit} />
+    </div>
+  </div>
+
+  {/* === Transaction Table === */}
+  {transactions.length > 0 && (
+    <div>
+      <h2 className="text-lg font-semibold mb-3 border-b pb-1 border-gray-200">Transaction History</h2>
+<table className="w-full border-collapse text-xs shadow-sm rounded-md overflow-hidden">
+  <thead className="bg-gray-200 text-gray-800 uppercase tracking-wide">
+    <tr>
+      <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Date</th>
+      <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Remarks</th>
+      <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Mode</th>
+      <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {transactions.map((txn: any, index: number) => (
+      <tr key={index} className="even:bg-gray-100 odd:bg-white">
+        <td className="border border-gray-300 px-4 py-2">
+          {new Date(txn.paymentDate).toLocaleDateString()}
+        </td>
+        <td className="border border-gray-300 px-4 py-2 capitalize">{txn.remark}</td>
+        <td className="border border-gray-300 px-4 py-2">{txn.mode}</td>
+        <td className="border border-gray-300 px-4 py-2">₹{txn.Amount}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+    </div>
+  )}
+</div>
+
           );
       };
 

@@ -495,6 +495,10 @@ const Section2 = ({
                 <input
                   type={type}
                   {...field}
+                   onChange={(e) => {
+          const value = e.target.value.toUpperCase();  // Convert to uppercase
+          field.onChange(value);
+        }}
                   className="border p-2 rounded-md w-full"
                 />
                 {fieldState.error && (
@@ -548,16 +552,16 @@ const reactToPrintFn = useReactToPrint({ contentRef });
     const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : "-");
     const getBool = (val?: boolean) => (val ? "Yes" : "No");
 
-      useEffect(() => {
-      // Listen to all input events, force uppercase
-      const handler = (e:any) => {
-        if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
-          e.target.value = e.target.value.toUpperCase();
-        }
-      };
-      document.addEventListener('input', handler, true);
-      return () => document.removeEventListener('input', handler, true);
-    }, []);
+    //   useEffect(() => {
+    //   // Listen to all input events, force uppercase
+    //   const handler = (e:any) => {
+    //     if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
+    //       e.target.value = e.target.value.toUpperCase();
+    //     }
+    //   };
+    //   document.addEventListener('input', handler, true);
+    //   return () => document.removeEventListener('input', handler, true);
+    // }, []);
 
 
     return (
@@ -1043,17 +1047,25 @@ const isDisabled = caseData? true : false;
           name="expenseDetail.insuranceCharges"
         />
         <RenderField
-          label="Other Charges"
+          label="Reciept Amount"
           required
-          value={exd?.otherCharges}
-          name="expenseDetail.otherCharges"
+          value={exd?.receiptAmount}
+          name="expenseDetail.receiptAmount"
         />
-        {user?.role === "superadmin" &&
+        {user?.role === "superadmin" &&(
+          <>
           <RenderField
             label="Admin Charges"
             value={exd?.adminCharges}
             name="expenseDetail.adminCharges"
-          />}
+          />
+          
+        <RenderField
+          label="Other Charges"
+          value={exd?.otherCharges}
+          name="expenseDetail.otherCharges"
+        />
+        </>)}
       </Section>
     </form>
   <div ref={contentRef} className="print:block hidden text-sm leading-relaxed">

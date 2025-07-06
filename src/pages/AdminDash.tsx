@@ -169,6 +169,7 @@ const AdminDashboard = () => {
     markDone(taskId).then(() => {
       toast.showToast('Success', 'Task Completed Successfully!', 'success');
       setLoading(false);
+      setRefreshFlag((prev)=> !prev);
     }).catch((err: any) => {
       if (err?.status == '401' || err?.response?.status == '401') {
         toast.showToast('Error', 'Session Expired', 'error');
