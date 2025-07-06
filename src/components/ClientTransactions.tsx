@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 // import UClient from "@/components/UClient";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTable } from "./DataTable";
 import { Label } from "./ui/label";
 import { Controller, useForm } from "react-hook-form";
@@ -14,7 +14,8 @@ import { useToast } from "@/context/ToastContext";
 import { useLoading } from "./LoadingContext";
 import { clientTransaction } from "@/service/client.service";
 import { clientTransactioncolumns } from "@/lib/tables.data";
-import { useReactToPrint } from "react-to-print";
+// import { useReactToPrint } from "react-to-print";
+import printJS from 'print-js';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
@@ -111,27 +112,36 @@ const Client = () => {
         </div>
     );
 
-    const contentRef = useRef<HTMLDivElement>(null);
-   const reactToPrintFn = useReactToPrint({
-  contentRef,
-  documentTitle: "Client Report",
-  pageStyle: `
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #printable-content, #printable-content * {
-        visibility: visible;
-      }
-      #printable-content {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
-    }
-  `
-});
+
+const handlePrint = () => {
+  printJS({
+    printable: 'printable-content',
+    type: 'html',
+    targetStyles: ['*'], // apply all styles
+  });
+};
+
+//     const contentRef = useRef<HTMLDivElement>(null);
+//    const reactToPrintFn = useReactToPrint({
+//   contentRef,
+//   documentTitle: "Client Report",
+//   pageStyle: `
+//     @media print {
+//       body * {
+//         visibility: hidden;
+//       }
+//       #printable-content, #printable-content * {
+//         visibility: visible;
+//       }
+//       #printable-content {
+//         position: absolute;
+//         left: 0;
+//         top: 0;
+//         width: 100%;
+//       }
+//     }
+//   `
+// });
 
 
 
@@ -211,7 +221,7 @@ const Client = () => {
                 <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:py-20 h-full min-h-[100vh]">
 
                     {/* Extract clientDetails from the first transaction if available */}
-                    <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={reactToPrintFn} className="w-fit bg-primary text-white mb-5">
+                    <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={handlePrint} className="w-fit bg-primary text-white mb-5">
                         🖨️ Print PDF
                     </Button>
                     <form
@@ -321,7 +331,7 @@ const Client = () => {
 
 
 
-                <div ref={contentRef} className="print:block hidden text-sm leading-relaxed">
+                <div className="print:block hidden text-sm leading-relaxed">
                     <PrintableCaseDetails
                         firstName={filteredCases?.clientDetails?.firstName}
                         lastName={filteredCases?.clientDetails?.lastName}

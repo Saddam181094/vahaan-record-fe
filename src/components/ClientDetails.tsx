@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -26,8 +26,13 @@ import {
   TabsContent,
 } from "@/components/ui/tabs";
 import { clientTransaction } from "@/service/client.service";
-import { useReactToPrint } from "react-to-print";
+// import { useReactToPrint } from "react-to-print";
 import type { payment } from "./ClientPortal";
+import printJS from "print-js";
+import { DataTable } from "./DataTable";
+import { clientTransactioncolumns } from "@/lib/tables.data";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
 // Dummy types – replace with actual types
 type CaseItem = {
@@ -229,8 +234,14 @@ const filterType = watch("filterType");
     setExpandedIndex((prev) => (prev === idx ? null : idx));
   };
 
-      const contentRef = useRef<HTMLDivElement>(null);
-      const reactToPrintFn = useReactToPrint({ contentRef });
+const handlePrint = () => {
+  console.log("working");
+  printJS({
+    printable: 'printable-content',
+    type: 'html',
+    targetStyles: ['*'], // apply all styles
+  });
+};
   
   
       const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => (
@@ -310,6 +321,10 @@ const filterType = watch("filterType");
               </div>
           );
       };
+
+    const [showModal, setShowModal] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState<any | null>(null);
+
 
 return (
   <SidebarProvider>
@@ -510,7 +525,7 @@ return (
         {/* Tab: Transaction History */}
         <TabsContent value="transaction">
           {/* Filter Form */}
-                              <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={reactToPrintFn} className="w-fit bg-primary text-white mb-5">
+                              <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={handlePrint} className="w-fit bg-primary text-white mb-5">
                         🖨️ Print PDF
                     </Button>
                     <form
@@ -559,12 +574,68 @@ return (
                             Filter
                         </Button>
                     </form>
+                    <DataTable
+                                            data={filteredCases?.transactions ?? []}
+                                            columns={[...clientTransactioncolumns,
+                                            {
+                                                header: "Actions",
+                                                id: "actions",
+                                                cell: ({ row }) => (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="cursor-pointer"
+                                                        onClick={() => {
+                                                            setSelectedTransaction(row.original); // Set modal data
+                                                            setShowModal(true); // Open modal
+                                                        }}
+                                                    >
+                                                        View Details
+                                                    </Button>
+                                                ),
+                                            }
+                    
+                    
+                                            ]
+                                            }
+                                        />
+                                                        {showModal && selectedTransaction && (
+                    <Dialog open={showModal} onOpenChange={setShowModal}>
+                        <DialogContent >
+                            <DialogHeader>
+                                <DialogTitle>Transaction Details</DialogTitle>
+                                <DialogDescription>
+                                    Below are the linked case details for this transaction.
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="mt-4 space-y-2">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Case No</TableHead>
+                                            <TableHead>Vehicle No</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {selectedTransaction.cases?.map((c: any) => (
+                                            <TableRow key={c.id}>
+                                                <TableCell>{c.caseNo}</TableCell>
+                                                <TableCell>{c.vehicleNo}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                )}
         </TabsContent>
       </Tabs>
     </div>
 
 
-                    <div ref={contentRef} className="print:block hidden text-sm leading-relaxed">
+                    <div className="print:block hidden text-sm leading-relaxed">
                     <PrintableCaseDetails
                         firstName={filteredCases?.clientDetails?.firstName}
                         lastName={filteredCases?.clientDetails?.lastName}
