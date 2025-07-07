@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { useAuth } from "@/context/AuthContext";
+import {type ownerDetails } from "./CaseForm";
 
 interface DetailedCase {
   id: string;
@@ -13,6 +14,7 @@ interface DetailedCase {
   status: string;
   createdAt: string;
   updatedAt: string;
+  ownerDetails:ownerDetails;
   vehicleDetail: {
     vehicleNo: string;
     fromRTO: string;
@@ -122,7 +124,7 @@ export default function CaseDescription() {
     const caseNo = caseData?.CaseNo;
     const gd = caseData?.generalDetail;
     const vd = caseData?.vehicleDetail;
-    const ed = caseData?.expireDetail;
+    const owd = caseData?.ownerDetails;
     const td = caseData?.transactionDetail;
 
     return (
@@ -173,7 +175,7 @@ export default function CaseDescription() {
                     value={vd?.engineNo}
                 />
             </Section>
-
+{/* 
             <Section title="Expire Details">
                 <RenderField
                     label="Insurance Expiry"
@@ -195,7 +197,7 @@ export default function CaseDescription() {
                     label="Permit Expiry"
                     value={formatDate(ed?.permitExpiry)}
                 />
-            </Section>
+            </Section> */}
 
             <Section title="Transaction Details">
                 <RenderField
@@ -239,6 +241,58 @@ export default function CaseDescription() {
                     value={td?.remarks}
                 />
             </Section>
+
+    {owd && (
+        <>     
+        <Section title="Seller Details">
+        <RenderField
+          label="Seller Name"
+          value={owd?.sellerName}
+        />
+        <RenderField
+          label="Seller Aadhar Number"
+          value={owd?.sellerAadharNo}
+        />
+        <RenderField
+          label="Seller Address"
+          value={owd?.sellerAddress}
+        />
+        <RenderField
+          label="Seller State"
+          value={owd?.sellerState}
+        />
+        <RenderField
+          label="Seller Mobile Number"
+          value={owd?.sellerPhoneNo}
+        />
+      </Section>
+
+      <Section title="Buyer Details">
+        <RenderField
+          label="Buyer Name"
+          value={owd?.buyerName}
+        />
+        <RenderField
+          label="Buyer Aadhar Number"
+          value={owd?.buyerAadharNo}
+        />
+        <RenderField
+          label="Buyer Address"          
+          value={owd?.buyerAddress}
+
+        />
+        <RenderField
+          label="Buyer State"          
+          value={owd?.buyerState}
+
+        />
+        <RenderField
+          label="Buyer Mobile Number"
+          value={owd?.buyerPhoneNo}
+        />
+      </Section>
+      </>
+      )}
         </div>
     );
 }

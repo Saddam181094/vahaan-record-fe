@@ -259,6 +259,10 @@ export default function CaseDescription() {
 
   const getFormattedCaseData = (data: FinalDetails): FinalDetails => ({
     ...data,
+    generalDetail:{
+      ...data.generalDetail,
+      appointmentDate:formatDate(data.generalDetail.appointmentDate)??""
+    },
     expireDetail: {
       ...data.expireDetail,
       insuranceExpiry: formatDate(data.expireDetail.insuranceExpiry) ?? "",

@@ -2,6 +2,7 @@ import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import {
   Dialog,
   DialogContent,
@@ -46,122 +47,7 @@ type PaymentData = {
   caseAssignments: caseAssignment[];
 };
 
-const paymentTableColumns = (
-  openProofDialog: (url: string) => void,
-  onVerify: (id: string) => void,
-  onReject: (id: string) => void
-): ColumnDef<PaymentData>[] => [
-    // {
-    //   accessorKey: "id",
-    //   header: "Payment ID",
-    //   cell: ({ row }) => <span className="font-mono text-sm">{row.original.id}</span>,
-    // },
-    {
-      // accessorKey: "paymentBy",
-      header: "Paid By",
-      // accessorFn:(row)=>`${row.paymentBy}`,
-      cell: ({ row }) => {
-        const { name, phoneNo, id } = row.original.paymentBy;
-        return id ? `${name} | ${phoneNo}` : ``;
-      }
-    },
-    {
-      id: "Amount",
-      header: "Amount",
-      cell: ({ row }) =>
-        `₹ ${(+row.original.Amount).toFixed(2)}`,
-    },
-    {
-      accessorKey: "Mode",
-      header: "Mode",
-    },
-    {
-      // accessorKey: "PaymentDate",
-      header: "Payment Date",
-      cell: ({ row }) =>
-        new Date(row.original.PaymentDate).toLocaleDateString(),
-    },
-    {
-      id: "viewProof",
-      header: "Payment Proof",
-      cell: ({ row }) =>
-        row.original.PaymentProofUrl ? (
-          <button
-            style={{ cursor: "pointer" }}
-            onClick={() => openProofDialog(row.original.PaymentProofUrl!)}
-            className="text-blue-600 underline hover:text-blue-800"
-            type="button"
-          >
-            View Proof
-          </button>
-        ) : (
-          <span className="text-gray-400 italic">No proof</span>
-        ),
-    },
-    // {
-    //   accessorKey: "PaymentProofUrl",
-    //   header: "Payment Proof",
-    //   cell: ({ row }) =>
-    //     row.original.PaymentProofUrl ? (
-    //       <button
-    //         onClick={() => openProofDialog(row.original.PaymentProofUrl!)}
-    //         className="text-blue-600 underline hover:text-blue-800"
-    //       >
-    //         View Proof
-    //       </button>
-    //     ) : (
-    //       <span className="text-gray-400 italic">No proof</span>
-    //     ),
-    // },
-    {
-      accessorKey: "Remarks",
-      header: "Remarks",
-      cell: ({ row }) => row.original.Remarks || "—",
-    },
-    {
-      // accessorKey: "caseAssignments",
-      header: "Cases",
-      cell: ({ row }) => (
-        <ul className="list list-inside text-sm max-h-24 overflow-auto">
-          {row.original.caseAssignments.length===0 && <span className=" text-red-500">NA</span>}
-          {row.original.caseAssignments.map((assignment) => (
-            <li className="list-item" key={assignment.id}>
-              {assignment.case.caseNo} (₹{assignment.TotalAmount})
-              <br />
-              <span className="text-xs text-gray-500">
-                Vehicle: {assignment.case.vehicleDetail.vehicleNo}
-              </span>
-            </li>
-          ))}
-        </ul>
-      ),
-    },
 
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => (
-        <div className="text-center space-x-2">
-          <Button
-            variant="default"
-            style={{cursor:"pointer"}}
-            title="Verify Payment"
-            onClick={() => onVerify(row.original.id)}
-          >
-            ✓
-          </Button>
-          <Button
-            variant="destructive"
-            style={{cursor:"pointer"}}
-            title="Reject Payment"
-            onClick={() => onReject(row.original.id)}
-          >
-            ✗
-          </Button>
-        </div>
-      ),
-    },
-  ];
 
 
 const verifyPayment = () => {
@@ -251,6 +137,124 @@ const handleConfirmAction = () => {
     setSelectedProofUrl(null);
     setDialogOpen(false);
   };
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<any | null>(null);
+
+  const paymentTableColumns = (
+  openProofDialog: (url: string) => void,
+  onVerify: (id: string) => void,
+  onReject: (id: string) => void
+): ColumnDef<PaymentData>[] => [
+    // {
+    //   accessorKey: "id",
+    //   header: "Payment ID",
+    //   cell: ({ row }) => <span className="font-mono text-sm">{row.original.id}</span>,
+    // },
+    {
+      // accessorKey: "paymentBy",
+      header: "Paid By",
+      // accessorFn:(row)=>`${row.paymentBy}`,
+      cell: ({ row }) => {
+        const { name, phoneNo, id } = row.original.paymentBy;
+        return id ? `${name} | ${phoneNo}` : ``;
+      }
+    },
+    {
+      id: "Amount",
+      header: "Amount",
+      cell: ({ row }) =>
+        `₹ ${(+row.original.Amount).toFixed(2)}`,
+    },
+    {
+      accessorKey: "Mode",
+      header: "Mode",
+    },
+    {
+      // accessorKey: "PaymentDate",
+      header: "Payment Date",
+      cell: ({ row }) =>
+        new Date(row.original.PaymentDate).toLocaleDateString(),
+    },
+    {
+      id: "viewProof",
+      header: "Payment Proof",
+      cell: ({ row }) =>
+        row.original.PaymentProofUrl ? (
+          <button
+            style={{ cursor: "pointer" }}
+            onClick={() => openProofDialog(row.original.PaymentProofUrl!)}
+            className="text-blue-600 underline hover:text-blue-800"
+            type="button"
+          >
+            View Proof
+          </button>
+        ) : (
+          <span className="text-gray-400 italic">No proof</span>
+        ),
+    },
+    // {
+    //   accessorKey: "PaymentProofUrl",
+    //   header: "Payment Proof",
+    //   cell: ({ row }) =>
+    //     row.original.PaymentProofUrl ? (
+    //       <button
+    //         onClick={() => openProofDialog(row.original.PaymentProofUrl!)}
+    //         className="text-blue-600 underline hover:text-blue-800"
+    //       >
+    //         View Proof
+    //       </button>
+    //     ) : (
+    //       <span className="text-gray-400 italic">No proof</span>
+    //     ),
+    // },
+    {
+      accessorKey: "Remarks",
+      header: "Remarks",
+      cell: ({ row }) => row.original.Remarks || "—",
+    },
+    {
+      // accessorKey: "caseAssignments",
+      header: "Cases",
+     cell: ({ row }) => (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        setSelectedTransaction(row.original); // Set modal data
+                                        setShowModal(true); // Open modal
+                                    }}
+                                >
+                                    View Details
+                                </Button>
+                            ),
+    },
+
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="text-center space-x-2">
+          <Button
+            variant="default"
+            style={{cursor:"pointer"}}
+            title="Verify Payment"
+            onClick={() => onVerify(row.original.id)}
+          >
+            ✓
+          </Button>
+          <Button
+            variant="destructive"
+            style={{cursor:"pointer"}}
+            title="Reject Payment"
+            onClick={() => onReject(row.original.id)}
+          >
+            ✗
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
 
   return (
@@ -310,6 +314,39 @@ const handleConfirmAction = () => {
         <div className="flex flex-col w-full h-full min-h-screen ml-3">
 
           <DataTable columns={paymentTableColumns(openProofDialog, onVerify, onReject)} data={payments} />
+
+{showModal && selectedTransaction && (
+  <Dialog open={showModal} onOpenChange={setShowModal}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Transaction Details</DialogTitle>
+        <DialogDescription>
+          Below are the linked case details for this transaction.
+        </DialogDescription>
+      </DialogHeader>
+
+      <div className="mt-4 space-y-2">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Case No</TableHead>
+              <TableHead>Vehicle No</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {selectedTransaction.caseAssignments?.map((assignment: any) => (
+              <TableRow key={assignment.id}>
+                <TableCell>{assignment.case?.caseNo}</TableCell>
+                <TableCell>{assignment.case?.vehicleDetail?.vehicleNo}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </DialogContent>
+  </Dialog>
+)}
+
           {/* Proof Dialog */}
           <Dialog open={dialogOpen} onOpenChange={closeProofDialog}>
             <DialogContent className="max-w-3xl max-h-[80vh] p-4">
