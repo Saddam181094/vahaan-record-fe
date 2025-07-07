@@ -173,6 +173,12 @@ export const clientTransactioncolumns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => (row.original.mode).toUpperCase(),
   },
     {
+    accessorKey: "remark",
+    header: "Particulars",
+    cell: ({ row }) => (row.original.mode).toUpperCase(),
+  },
+
+    {
     // accessorKey: "Amount",
     accessorFn: (row) => `${row.Amount}`,
     header: "Amount (₹)",

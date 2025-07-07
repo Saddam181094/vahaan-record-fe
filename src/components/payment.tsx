@@ -191,7 +191,7 @@ const Payment = () => {
   //   const url = `upi://pay?pa=nirmalshah20519@okhdfcbank&pn=Deepak%20Khatri&am=${totalAmount}&tn=CASE_FEE`
   // }
 
-  const upiUrl = `upi://pay?pa=${upiPerson}&pn=Vahaan%20Record&am=${totalAmount}&tn=CASE_FEE`;
+  const upiUrl = `upi://pay?pa=${upiPerson}&pn=VAHAAN%20RECORD&am=${totalAmount}&tn=CASE%20FEE`;
 
 
   return (

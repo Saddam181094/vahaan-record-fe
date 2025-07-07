@@ -157,6 +157,8 @@ const ClientBills = () => {
       toast.showToast("Payment failed", error.message || "Something went wrong", "error");
     } finally {
       setFlag(f =>!f);
+      setBdata([]);
+      setBill(null);
       setLoading(false);
     }
   };
@@ -182,10 +184,10 @@ const ClientBills = () => {
       },[]);
 
   const canPay = watch('paymentProofUrl').length>0 && watch('paymentMethod').length>0
-    const upiUrl = `upi://pay?pa=${upiPerson}&pn=Vahaan%20Record&am=&tn=CASE_FEE`;
+    const upiUrl = `upi://pay?pa=${upiPerson}&pn=Vahaan%20Record&am=${bill?.totalAmount}&tn=CASE_FEE`;
 
 //this part yet to figure out
-// ${totalAmount}
+// 
 
 
   return (

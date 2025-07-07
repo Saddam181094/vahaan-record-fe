@@ -303,7 +303,7 @@ const filteredCases = cases.filter((c) => {
                       ) : payment.status.toLowerCase() === "success" ? (
                         <p className="text-sm text-green-600 font-semibold"> <span className="inline-block w-2 h-2 rounded-full bg-green-600 mr-2"></span>{payment.status.toUpperCase()}</p>
                       ) : (
-                        <p className="text-sm text-blue-600 font-semibold">{payment.status.toUpperCase()}</p>
+                        <p className="text-sm text-amber-600 font-semibold">{payment.status.toUpperCase()}</p>
                       )
                     ) : (
                       <p className="text-sm text-blue-600 font-semibold">{caseData.status.toUpperCase()}</p>
