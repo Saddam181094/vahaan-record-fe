@@ -57,7 +57,7 @@ export function ForgotPasswordModal({open, onOpenChange}: ForgotPasswordModalPro
             required
           />
           <Button style={{cursor:"pointer"}} type="submit" disabled={loading}>
-            {loading ? "Sending..." : "Send Reset Link"}
+            {loading ? "Sending..." : "Send Credentials"}
           </Button>
           {message && <p className="text-green-600 text-sm">{message}</p>}
           {/* {error && <p className="text-red-600 text-sm">{error}</p>} */}

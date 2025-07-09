@@ -8,6 +8,7 @@ import { useLoading } from "@/components/LoadingContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   Accordion,
   AccordionContent,
@@ -26,13 +27,41 @@ import { DateInput } from "@/components/ui/date-input";
 type ExpiryData = {
   expiryType: string;
   count: number;
+  cases: CurrExpiry[];
 };
+
+type CurrExpiry = {
+  id: string,
+  CaseNo: number,
+  status: string,
+  createdAt: string,
+  vehicleDetail: vehicleDetail,
+  expireDetail: expireDetail
+  ownerDetails: ownerDetails
+}
+type expireDetail = {
+  pucExpiry?: string
+  insuranceExpiry?: string,
+  fitnessExpiry?: string,
+  taxExpiry?: string,
+  permitExpiry?: string
+}
+type vehicleDetail = {
+  vehicleNo: string
+}
+
+type ownerDetails = {
+  buyerName: string;
+  buyerPhoneNo: string;
+}
 
 const AdminDashboard = () => {
   const [expiryStats, setExpiryStats] = useState<ExpiryData[]>([]);
   const toast = useToast();
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [tasksLoading, setTasksLoading] = useState(false);
+  const [DialogOpen2, setDialogOpen2] = useState(false);
+  const [currExpiries, setcurrExpiries] = useState<ExpiryData>();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
   const {
@@ -160,9 +189,16 @@ const AdminDashboard = () => {
 
 
 
-  const handleClick = (data: any) => {
-    const type = data;
-    navigate(`/employee/vcases`, { state: { type } });
+  // const handleClick = (data: any) => {
+  //   const type = data;
+  //   navigate(`/employee/vcases`, { state: { type } });
+  // }
+
+    const handleClick = (data: any) => {
+    // const type = data;
+    // console.log(data);
+    setDialogOpen2(true)
+    setcurrExpiries(data)
   }
 
   // Simulate API fetch (replace this with actual API call)
@@ -337,6 +373,48 @@ const AdminDashboard = () => {
                   </form>
                 </DialogContent>
               </Dialog>
+
+                            <Dialog open={DialogOpen2} onOpenChange={setDialogOpen2}>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>{currExpiries?.expiryType} EXPIRIES IN THIS MONTH</DialogTitle>
+                                </DialogHeader>
+              
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead>Case No</TableHead>
+                                      <TableHead>Vehicle No</TableHead>
+                                      <TableHead>Expiry date</TableHead>
+                                      <TableHead>Owner Name</TableHead>
+                                      <TableHead>Owner Contact</TableHead>
+                                      <TableHead>Action</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {currExpiries?.cases.map((c, idx) => (
+                                      <TableRow key={idx}>
+                                        <TableCell>{c.CaseNo}</TableCell>
+                                        <TableCell>{c.vehicleDetail?.vehicleNo || <span className="text-red-500">N/A</span>}</TableCell>
+                                        <TableCell>
+                                          {new Date(c.expireDetail?.pucExpiry || c.expireDetail?.insuranceExpiry || c.expireDetail?.fitnessExpiry || c.expireDetail?.taxExpiry || c.expireDetail?.permitExpiry || '').toLocaleDateString()}
+                                        </TableCell>
+                                        <TableCell>{c.ownerDetails?.buyerName || <span className="text-red-500">N/A</span>}</TableCell>
+                                        <TableCell>{c.ownerDetails?.buyerPhoneNo || <span className="text-red-500">N/A</span>}</TableCell>
+                                        <TableCell>
+                                          <Button variant={'outline'}
+                                            className=" cursor-pointer"
+                                            onClick={() => navigate(`/superadmin/cases/${c.CaseNo}`, { state: { id: c.id } })}
+                                          >
+                                            View Details
+                                          </Button>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </DialogContent>
+                            </Dialog>
 
               {task.length > 0 ? (
                 <Accordion
