@@ -243,7 +243,7 @@ const AdminDashboard = () => {
                   <Card
                     key={item.expiryType}
                     className={`shadow-md border-0 ${bgColor} ${textColor} rounded-lg flex flex-col  transition-transform transform hover:scale-[1.02] duration-200`}
-                    onClick={() => handleClick(item.expiryType)}
+                    onClick={() => handleClick(item)}
                     style={{ cursor: "pointer" }}
                   >
                     <CardHeader className="text-lg font-semibold">
@@ -392,7 +392,7 @@ const AdminDashboard = () => {
                                     </TableRow>
                                   </TableHeader>
                                   <TableBody>
-                                    {currExpiries?.cases.map((c, idx) => (
+                                    {currExpiries?.cases?.map((c, idx) => (
                                       <TableRow key={idx}>
                                         <TableCell>{c.CaseNo}</TableCell>
                                         <TableCell>{c.vehicleDetail?.vehicleNo || <span className="text-red-500">N/A</span>}</TableCell>
@@ -404,7 +404,7 @@ const AdminDashboard = () => {
                                         <TableCell>
                                           <Button variant={'outline'}
                                             className=" cursor-pointer"
-                                            onClick={() => navigate(`/superadmin/cases/${c.CaseNo}`, { state: { id: c.id } })}
+                                            onClick={() => navigate(`/employee/cases/${c.CaseNo}`, { state: { id: c.id } })}
                                           >
                                             View Details
                                           </Button>
