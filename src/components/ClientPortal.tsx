@@ -223,46 +223,7 @@ const filteredCases = cases.filter((c) => {
 </Button> */}
 </div>
 
-      {activeTab === "unpaid" && (
-  <div className="flex justify-end items-center mb-4">
-    {!selectMode ? (
-      filteredCases.length === 0 ? (
-        <Button style={{ cursor: "pointer" }} variant="default" disabled>
-          Make Payment
-        </Button>
-      ) : (
-        <Button
-          style={{ cursor: "pointer" }}
-          variant="default"
-          onClick={() => setSelectMode(true)}
-        >
-          Make Payment
-        </Button>
-      )
-    ) : (
-      <div className="flex gap-2">
-        <Button
-          style={{ cursor: "pointer" }}
-          variant="outline"
-          onClick={() => {
-            setSelectMode(false);
-            setSelectedCaseIds([]);
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          style={{ cursor: "pointer" }}
-          variant="default"
-          onClick={handleMakePayment}
-          disabled={selectedCaseIds.length === 0}
-        >
-          Proceed
-        </Button>
-      </div>
-    )}
-  </div>
-)}
+
 
 {filteredCases.length === 0 && (
   <div className="text-center text-muted-foreground py-10 text-sm border rounded-md">
@@ -343,6 +304,47 @@ const filteredCases = cases.filter((c) => {
             </Card>
           );
         })}
+
+              {activeTab === "unpaid" && (
+  <div className="flex justify-end items-center mb-4">
+    {!selectMode ? (
+      filteredCases.length === 0 ? (
+        <Button style={{ cursor: "pointer" }} variant="default" disabled>
+          Make Payment
+        </Button>
+      ) : (
+        <Button
+          style={{ cursor: "pointer" }}
+          variant="default"
+          onClick={() => setSelectMode(true)}
+        >
+          Make Payment
+        </Button>
+      )
+    ) : (
+      <div className="flex gap-2">
+        <Button
+          style={{ cursor: "pointer" }}
+          variant="outline"
+          onClick={() => {
+            setSelectMode(false);
+            setSelectedCaseIds([]);
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          style={{ cursor: "pointer" }}
+          variant="default"
+          onClick={handleMakePayment}
+          disabled={selectedCaseIds.length === 0}
+        >
+          Proceed
+        </Button>
+      </div>
+    )}
+  </div>
+)}
     </div>
   );
 }
