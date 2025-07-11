@@ -571,7 +571,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
     return (
       <div id="printable-content" className="p-12 text-sm leading-relaxed">
         {/* Letterhead */}
-        <div className="mb-6 border-b pb-4">
+        <div className="mb-6 border-b pb-10">
           <img
             src="/Group.svg"
             alt="Letterhead"
@@ -581,14 +581,14 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           <p className="text-gray-600">Case No: #{caseNo}</p>
         </div>
 
-        <Section2 title="General Details">
+        <Section2 title="General Details" className="pt-8">
           <PrintField label="Firm Name" value={generalDetail?.firmName} />
           <PrintField label="Appointment Date" value={formatDate(generalDetail?.appointmentDate)} />
           <PrintField label="Application No." value={generalDetail?.applicationNo} />
           <PrintField label="Incentive Amount" value={generalDetail?.incentiveAmount} />
         </Section2>
 
-        <Section2 title="Vehicle Details">
+        <Section2 title="Vehicle Details" className="pt-8">
           <PrintField label="Vehicle No" value={vehicleDetail?.vehicleNo} />
           <PrintField label="From RTO" value={vehicleDetail?.fromRTO} />
           <PrintField label="To RTO" value={vehicleDetail?.toRTO} />
@@ -605,7 +605,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           <PrintField label="Permit Expiry" value={formatDate(expireDetail?.permitExpiry)} />
         </Section2>
 
-        <Section2 title="Transaction Details" className="break-before-page mt-10">
+        <Section2 title="Transaction Details" className="break-before-page pt-20">
           <PrintField label="To RTO" value={transactionDetail?.to} />
           <PrintField label="HPT Firm" value={transactionDetail?.hptFirmName} />
           <PrintField label="HPA Firm" value={transactionDetail?.hpaFirmName} />
@@ -621,7 +621,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
         </Section2>
 
 {owd && (<>
-        <Section2 title="Seller Details">
+        <Section2 title="Seller Details" className="pt-8">
           <PrintField label="Seller Name" value={ownerDetails?.sellerName} />
           <PrintField label="Seller Aadhar" value={ownerDetails?.sellerAadharNo} />
           <PrintField label="Seller Address" value={ownerDetails?.sellerAddress} />
@@ -629,7 +629,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           <PrintField label="Seller Phone" value={ownerDetails?.sellerPhoneNo} />
         </Section2>
 
-        <Section2 title="Buyer Details">
+        <Section2 title="Buyer Details" className="pt-8">
           <PrintField label="Buyer Name" value={ownerDetails?.buyerName} />
           <PrintField label="Buyer Aadhar" value={ownerDetails?.buyerAadharNo} />
           <PrintField label="Buyer Address" value={ownerDetails?.buyerAddress} />
@@ -638,11 +638,12 @@ const reactToPrintFn = useReactToPrint({ contentRef });
         </Section2>
 </>
 )}
-        <Section2 title="Expense Details">
+        <Section2 title="Expense Details" className="pt-8">
           <PrintField label="PUC Charges" value={expenseDetail?.pucCharges} />
           <PrintField label="Insurance Charges" value={expenseDetail?.insuranceCharges} />
-          <PrintField label="Other Charges" value={expenseDetail?.otherCharges} />
-          <PrintField label="Admin Charges" value={expenseDetail?.adminCharges} />
+          <PrintField label="Reciept Amount" value={expenseDetail?.receiptAmount} />
+          {user?.role==='superadmin' && <PrintField label="Other Charges" value={expenseDetail?.otherCharges} />}
+         {user?.role === 'superadmin' && <PrintField label="Admin Charges" value={expenseDetail?.adminCharges} />}
         </Section2>
       </div>
     );
@@ -705,7 +706,7 @@ useEffect(() => {
 const isDisabled = caseData? true : false;
   return (
     <>
-    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 no-print">
       {/* <div className="flex sm:flex-row justify-between items-center gap-4 mb-4"> */}
 <div className="flex flex-wrap gap-2 w-full sm:flex-nowrap justify-between">
   {/* Back and Print */}
@@ -1072,7 +1073,7 @@ const isDisabled = caseData? true : false;
         </>)}
       </Section>
     </form>
-  <div ref={contentRef} className="print:block hidden text-sm leading-relaxed">
+  <div ref={contentRef} className="print:block hidden text-sm leading-relaxed printable-section">
  <PrintableCaseDetails
     caseNo={caseNo}
     generalDetail={gd}
