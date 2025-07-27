@@ -218,7 +218,7 @@ const handlePrint = () => {
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarTrigger />
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full print:hidden">
                 <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:pt-20 h-full min-h-[100vh] print:hidden">
 
                     {/* Extract clientDetails from the first transaction if available */}
@@ -330,16 +330,6 @@ const handlePrint = () => {
                 )}
 
 
-                <div className="print:block hidden text-sm leading-relaxed">
-                    <PrintableCaseDetails
-                        firstName={filteredCases?.clientDetails?.firstName}
-                        lastName={filteredCases?.clientDetails?.lastName}
-                        email={filteredCases?.clientDetails?.email}
-                        phoneNo={filteredCases?.clientDetails?.phoneNo}
-                        creditLimit={filteredCases?.clientDetails?.client?.creditLimit}
-                        transactions={filteredCases?.transactions || []}
-                    />
-                </div>
                          <footer className="w-full mt-70 py-4 bg-gray-100 border-t text-center text-xs md:text-sm flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
                 <span>
                   <strong>Customer Care:</strong> 7801878800
@@ -355,6 +345,16 @@ const handlePrint = () => {
                         </footer>
 
             </div>
+                <div className="print:block hidden text-sm leading-relaxed">
+                    <PrintableCaseDetails
+                        firstName={filteredCases?.clientDetails?.firstName}
+                        lastName={filteredCases?.clientDetails?.lastName}
+                        email={filteredCases?.clientDetails?.email}
+                        phoneNo={filteredCases?.clientDetails?.phoneNo}
+                        creditLimit={filteredCases?.clientDetails?.client?.creditLimit}
+                        transactions={filteredCases?.transactions || []}
+                    />
+                </div>
             </SidebarProvider>
         </>
     );

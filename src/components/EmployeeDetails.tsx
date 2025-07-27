@@ -21,6 +21,7 @@ import { Controller, useForm } from "react-hook-form";
 import { DateInput } from "./ui/date-input";
 import { getCasesbyEmployee } from "@/service/case.service";
 import { useAuth } from "@/context/AuthContext";
+import printJS from "print-js";
 
 // Dummy types – replace with actual types
 type CaseItem = {
@@ -49,9 +50,10 @@ export default function ClientDetails() {
     const toast = useToast();
     const [cases, setCases] = useState<CaseItem[]>([]);
     const { setLoading } = useLoading();
-    const {logout} = useAuth();
+    const { logout } = useAuth();
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
     const [incentiveDialogOpen, setIncentiveDialogOpen] = useState(false);
+    const [isDisabled, setisDisabled] = useState(true);
 
 
     const { handleSubmit, setValue, control } = useForm<FilterFormValues>({
@@ -72,12 +74,13 @@ export default function ClientDetails() {
         try {
             const response = await getCasesbyEmployee(filterType, fromDate, toDate, employee?.id ?? "");
             setCases(Array.isArray(response?.data?.cases) ? response.data.cases : []);
-        } catch (err:any) {
-            if(err?.status == '401' || err?.response?.status == '401')
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
+
+            setisDisabled(response?.data?.cases?.length === 0);
+        } catch (err: any) {
+            if (err?.status == '401' || err?.response?.status == '401') {
+                toast.showToast('Error', 'Session Expired', 'error');
+                logout();
+            }
             console.error("Error fetching filtered cases:", err);
             toast.showToast("Error", "Failed to apply filter", "error");
         } finally {
@@ -104,11 +107,10 @@ export default function ClientDetails() {
                     setCases(Array.isArray(response?.data?.cases) ? response.data.cases : []);
                 })
                 .catch((err) => {
-                    if(err?.status == '401' || err?.response?.status == '401')
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
+                    if (err?.status == '401' || err?.response?.status == '401') {
+                        toast.showToast('Error', 'Session Expired', 'error');
+                        logout();
+                    }
                     toast.showToast("Error", "Failed to fetch cases", "error");
                 })
                 .finally(() => {
@@ -116,6 +118,66 @@ export default function ClientDetails() {
                 });
         }
     }, [setValue]);
+
+    const handlePrint = () => {
+        printJS({
+            printable: 'printable-content',
+            type: 'html',
+            targetStyles: ['*'], // apply all styles
+        });
+    };
+
+    const PrintableIncentiveDetails = ({ cases = [] }: { cases: any[] }) => {
+        const totalIncentive = cases.reduce(
+            (sum, c) => sum + Number(c.generalDetail?.incentiveAmount || 0),
+            0
+        );
+
+        return (
+            <div id="printable-content" className="p-12 text-sm leading-relaxed font-sans text-gray-800">
+                {/* === Letterhead === */}
+                <div className="mb-6 border-b border-gray-300 pb-4 flex items-center justify-between">
+                    <img src="/Group.svg" alt="Letterhead Logo" className="h-16" />
+                </div>
+
+                {/* === Incentive Header === */}
+                <div className="mb-8">
+                    <h1 className="text-4xl font-semibold mb-4 border-b pb-1 border-gray-200">Incentive Details</h1>
+                    <p className="text-gray-600 mb-2">Summary of incentives for the selected period.</p>
+                </div>
+
+                {/* === Incentive Table === */}
+                {cases.length > 0 ? (
+                    <div>
+                        <table className="w-full border-collapse text-xs shadow-sm rounded-md overflow-hidden">
+                            <thead className="bg-gray-200 text-gray-800 uppercase tracking-wide">
+                                <tr>
+                                    <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Case No</th>
+                                    <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Vehicle No</th>
+                                    <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Incentive Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {cases.map((c, idx) => (
+                                    <tr key={idx} className="even:bg-gray-100 odd:bg-white">
+                                        <td className="border border-gray-300 px-4 py-2">{c.CaseNo}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{c.vehicleDetail?.vehicleNo || "-"}</td>
+                                        <td className="border border-gray-300 px-4 py-2">₹{Number(c.generalDetail?.incentiveAmount || 0).toFixed(2)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        <div className="text-right font-semibold text-base mt-6">
+                            Total Incentive: ₹{totalIncentive.toFixed(2)}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center text-gray-500 mt-6">No incentive records available.</div>
+                )}
+            </div>
+        );
+    };
 
 
     const toggleCard = (idx: number) => {
@@ -159,7 +221,7 @@ export default function ClientDetails() {
                     <Card>
                         <CardHeader>
                             <div className="flex gap-4 flex-1 md:items-center">
-                                <div className="h-16 w-24 md:h-24 md:w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 md:text-4xl text-2xl font-bold">
+                                <div className="h-16 w-16 md:h-24 md:w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 md:text-4xl text-2xl font-bold">
                                     {employee?.firstName?.[0] ?? ''}{employee?.lastName?.[0] ?? ''}
                                 </div>
                                 <div className="space-y-1">
@@ -340,7 +402,7 @@ export default function ClientDetails() {
                 </div>
             </div>
             <Dialog open={incentiveDialogOpen} onOpenChange={setIncentiveDialogOpen}>
-                <DialogContent className="max-w-3xl">
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Incentive Details</DialogTitle>
                         <DialogDescription>Summary of incentives for the selected period.</DialogDescription>
@@ -373,9 +435,16 @@ export default function ClientDetails() {
                             .reduce((sum, c) => sum + Number(c.generalDetail?.incentiveAmount || 0), 0)
                             .toFixed(2)}
                     </div>
+
+                    <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={handlePrint} className="w-full sm:w-auto mt-2 sm:mt-0">
+                        🖨️ Print Incentive PDF
+                    </Button>
                 </DialogContent>
             </Dialog>
 
+            <div className="print:block hidden text-sm leading-relaxed">
+                <PrintableIncentiveDetails cases={cases} />
+            </div>
         </SidebarProvider>
     );
 }
@@ -389,3 +458,5 @@ function RenderField({ label, value }: { label: string; value?: string }) {
         </div>
     );
 }
+
+

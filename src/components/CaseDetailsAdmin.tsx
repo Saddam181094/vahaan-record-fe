@@ -707,7 +707,7 @@ useEffect(() => {
 const isDisabled = caseData? true : false;
   return (
     <>
-    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 no-print">
+    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 no-print print:hidden">
       {/* <div className="flex sm:flex-row justify-between items-center gap-4 mb-4"> */}
 <div className="flex flex-wrap gap-2 w-full sm:flex-nowrap justify-between">
   {/* Back and Print */}

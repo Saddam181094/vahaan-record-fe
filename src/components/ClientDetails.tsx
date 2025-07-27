@@ -235,7 +235,6 @@ const filterType = watch("filterType");
   };
 
 const handlePrint = () => {
-  console.log("working");
   printJS({
     printable: 'printable-content',
     type: 'html',
@@ -320,7 +319,7 @@ return (
   <SidebarProvider>
     <AppSidebar />
     <SidebarTrigger />
-    <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:py-20 h-full min-h-[100vh]">
+    <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:py-20 h-full min-h-[100vh] print:hidden">
       <div className="flex justify-end mb-4">
         <Button
           style={{ cursor: "pointer" }}

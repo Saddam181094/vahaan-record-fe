@@ -88,25 +88,26 @@ export default function UClient() {
   };
 
 
-  useEffect(() => {
-    setLoading(true);
-    getClient()
-      .then((resp: any) => {
-        const verified = resp.data.find((group: any) => group.isVerified)?.clients || [];
-        const unverified = resp.data.find((group: any) => !group.isVerified)?.clients || [];
-        setVerifiedClients(verified);
-        setUnverifiedClients(unverified);
-      })
-      .catch((err: any) =>{
-                if(err?.status == '401' || err?.response?.status == '401')
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-         toast.showToast('Error:', err?.message || 'Error during fetch of Clients', 'error')}
-      )
-      .finally(() => setLoading(false));
-  }, [refreshFlag]);
+useEffect(() => {
+  setLoading(true);
+  getClient()
+    .then((resp: any) => {
+      console.log("Client API response", resp.data); // Always useful
+      const verified = resp.data.filter((client: any) => client.isVerified);
+      const unverified = resp.data.filter((client: any) => !client.isVerified);
+      setVerifiedClients(verified);
+      setUnverifiedClients(unverified);
+    })
+    .catch((err: any) => {
+      if (err?.status == '401' || err?.response?.status == '401') {
+        toast.showToast('Error', 'Session Expired', 'error');
+        logout();
+      }
+      toast.showToast('Error:', err?.message || 'Error during fetch of Clients', 'error');
+    })
+    .finally(() => setLoading(false));
+}, [refreshFlag]);
+
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setLoading(true);
