@@ -7,6 +7,7 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -19,7 +20,15 @@ import { useLoading } from "@/components/LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { Pencil } from "lucide-react";
 import { getUpi, updateUpi } from "@/service/bills.service";
+import { addDocument, deleteDocument, getDocuments, updateDocument } from "@/service/document.service";
+// import { url } from "react-router-dom";
 // import { Progress } from "@/components/ui/progress";
+
+
+type DocumentFormInputs = {
+  name: string;
+  url: string;
+};
 
 
 export interface PasswordFormInputs {
@@ -30,25 +39,62 @@ export interface PasswordFormInputs {
 
 const MyProfile: React.FC = () => {
     const { setLoading } = useLoading();
-    const [showDialog, setShowDialog] = useState(false);
+
+    const [showDialog, setShowDialog] = useState(false);    
+    const [showAddDialog, setShowAddDialog] = useState(false);
     const [upiId, setUpiId] = useState<string>("");
-const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
+    const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
+    const [documents, setDocuments] = useState<any[]>([]);
+    const [loading, setLoadingDoc] = useState(false); // Loading state for document add
+
+    // State for editing document
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editedLink, setEditedLink] = useState<string>("");
 
     // const [message, setMessage] = useState("");
-    const {
-      control,
-        handleSubmit,
-        reset,
-        watch,
-        formState: { errors },
-    } = useForm<PasswordFormInputs>();
+const {
+  control: passwordControl,
+  handleSubmit: handlePasswordSubmit,
+  reset: resetPassword,
+  watch,
+  formState: { errors: passwordErrors },
+} = useForm<PasswordFormInputs>();
+
+const {
+  control: docControl,
+  handleSubmit: handleDocSubmit,
+  reset: resetDoc,
+  formState: { errors: docErrors },
+} = useForm<DocumentFormInputs>({
+  defaultValues: {
+    name: "",
+    url: "",
+  },
+});
+
     const { user,logout } = useAuth();
     // const creditLimit = 100000;
     // const utilizedLimit = 45000;
 
     const [person,setPerson] = useState<any>();
-
     const toast = useToast();
+
+        useEffect(()=>{
+      setLoading(true);
+        getDocuments().then((resp)=>{
+        setDocuments(resp?.data);
+        }).catch((err)=>{
+                  if(err?.status == '401' || err?.response?.status == '401')
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+          toast.showToast('Error',err?.message || 'Error fetching personal Data','error')
+        }).finally(()=>{
+          setTimeout(()=> setLoading(false),3000)
+          setLoading(false);
+        })
+    },[])
 
     useEffect(()=>{
       setLoading(true);
@@ -119,7 +165,7 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
             toast.showToast('Success', err?.message ?? 'Something went wrong', 'success')
         })
         .finally(() => {
-            reset();
+            resetPassword();
             setLoading(false);
             setShowDialog(false);
         })
@@ -137,6 +183,67 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
         if (value >= 80) return "bg-orange-500";
         return "bg-green-500";
     };
+
+const handleAddDocument = (data: DocumentFormInputs) => {
+  setLoading(true);
+  setLoadingDoc(true);
+
+  addDocument({ name: data.name.trim(), url: data.url.trim() })
+    .then((resp) => {
+      setDocuments((prev) => [...prev, resp.data]);
+      toast.showToast("Success", "Document added", "success");
+      setShowAddDialog(false);
+      resetDoc(); // Reset form values
+    })
+    .catch((err:any) => {
+      toast.showToast("Error", err?.message || "Failed to add document", "error");
+    })
+    .finally(() =>{ setLoading(false)
+      setLoadingDoc(false);
+    });
+};
+
+
+const handleEdit = (updatedDoc: DocumentFormInputs & { id: string }) => {
+  setLoading(true);
+  setEditingId(updatedDoc.id);
+
+  updateDocument(updatedDoc.id, {
+    name: updatedDoc.name.trim(),
+    url: updatedDoc.url.trim(),
+  })
+    .then((resp) => {
+      setDocuments((prev) =>
+        prev.map((doc) => (doc.id === updatedDoc.id ? resp.data : doc))
+      );
+      toast.showToast("Success", "Document updated", "success");
+      setShowAddDialog(false);
+      resetDoc(); // reset form if you're using useForm for edit
+    })
+    .catch((err) => {
+      toast.showToast("Error", err?.message || "Failed to update document", "error");
+    })
+    .finally(() => {setLoading(false)
+      setEditingId(null);
+      setEditedLink("");
+    });
+};
+
+const handleDelete = (id: string) => {
+  setLoading(true);
+
+  deleteDocument(id)
+    .then(() => {
+      setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+      toast.showToast("Success", "Document deleted", "success");
+    })
+    .catch((err) => {
+      toast.showToast("Error", err?.message || "Failed to delete document", "error");
+    })
+    .finally(() => setLoading(false));
+};
+
+
    return (
   <SidebarProvider>
     <AppSidebar />
@@ -167,6 +274,9 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
                 <div className="flex justify-between text-sm font-medium">
                   <span>Utilized: ₹{person?.client?.utilizedCredit}</span>
                   <span>Total Limit: ₹{person?.client?.creditLimit}</span>
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {(utilized / limit * 100).toFixed(1)}% utilized
+                </div>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden mt-2">
                   <div
@@ -174,12 +284,16 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <div className="mt-1 text-right text-xs text-muted-foreground">
-                  {(utilized / limit * 100).toFixed(1)}% utilized
-                </div>
               </div>
             )}
           </div>
+
+          {user?.role === "client" && (
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded mb-4 mt-2 text-sm text-yellow-800">
+              <strong>NOTE:</strong> Billing date is the last date of the month and the due date of the bill is the 15th of the following month.
+            </div>
+          )}
+
 {user?.role === 'superadmin' && (<div className="flex items-center justify-between border px-3 py-2 rounded-md">
   {!isEditingUpi ? (
     <>
@@ -253,10 +367,10 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
                   Change Password
                 </DialogTitle>
               </DialogHeader>
-<form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+<form onSubmit={handlePasswordSubmit(onSubmit)} className="space-y-5">
   <Controller
     name="currentPassword"
-    control={control}
+    control={passwordControl}
     rules={{
       required: "Current Password is required",
     }}
@@ -272,9 +386,9 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
           autoComplete="current-password"
           className="w-full"
         />
-        {errors.currentPassword && (
+        {passwordErrors.currentPassword && (
           <p className="text-xs text-red-500 mt-1">
-            {errors.currentPassword.message}
+            {passwordErrors.currentPassword.message}
           </p>
         )}
       </div>
@@ -283,7 +397,7 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
 
   <Controller
     name="newPassword"
-    control={control}
+    control={passwordControl}
     rules={{
       required: "New Password is required",
       minLength: {
@@ -303,9 +417,9 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
           autoComplete="new-password"
           className="w-full"
         />
-        {errors.newPassword && (
+        {passwordErrors.newPassword && (
           <p className="text-xs text-red-500 mt-1">
-            {errors.newPassword.message}
+            {passwordErrors.newPassword.message}
           </p>
         )}
       </div>
@@ -314,7 +428,7 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
 
   <Controller
     name="confirmPassword"
-    control={control}
+    control={passwordControl}
     rules={{
       required: "Confirm Password is required",
       minLength: {
@@ -336,9 +450,9 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
           autoComplete="new-password"
           className="w-full"
         />
-        {errors.confirmPassword && (
+        {passwordErrors.confirmPassword && (
           <p className="text-xs text-red-500 mt-1">
-            {errors.confirmPassword.message}
+            {passwordErrors.confirmPassword.message}
           </p>
         )}
       </div>
@@ -364,6 +478,200 @@ const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
             </DialogContent>
           </Dialog>
         </Card>
+
+
+        <h2 className="text-lg font-semibold mt-10 mb-4">Important Documents</h2>
+
+
+{user?.role === "superadmin" && (
+  <div className="space-y-4">
+    <div className="flex justify-start py-10">
+      <Button onClick={() => setShowAddDialog(true)} className="text-white cursor-pointer">
+        + Add Document
+      </Button>
+    </div>
+    <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+      <DialogContent className="sm:max-w-[400px] rounded-lg shadow-lg">
+        <DialogHeader>
+          <DialogTitle className="text-center text-lg font-bold">Add Document</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleDocSubmit(handleAddDocument)} className="space-y-5">
+          <div>
+            <Label htmlFor="docName" className="mb-1 block">Name</Label>
+            <Controller
+              name="name"
+              control={docControl}
+              rules={{ required: "Document name is required" }}
+              render={({ field }) => (
+                <Input
+                  id="docName"
+                  placeholder="Document Name"
+                  {...field}
+                  className="w-full"
+                />
+              )}
+            />
+            {docErrors.name && (
+              <p className="text-xs text-red-500 mt-1">{docErrors.name.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="docLink" className="mb-1 block">Form url</Label>
+            <Controller
+              name="url"
+              control={docControl}
+              rules={{
+                required: "Form url is required",
+                pattern: {
+                  value: /^https?:\/\/\S+$/i,
+                  message: "Enter a valid URL",
+                },
+              }}
+              render={({ field }) => (
+                <Input
+                  id="docLink"
+                  placeholder="https://example.com/form"
+                  {...field}
+                  className="w-full"
+                />
+              )}
+            />
+            {docErrors.url && (
+              <p className="text-xs text-red-500 mt-1">{docErrors.url.message}</p>
+            )}
+          </div>
+
+          <DialogFooter className="flex justify-between gap-2 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-1/2"
+              onClick={() => setShowAddDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" className="w-1/2" disabled={loading}>
+              {loading ? "Adding..." : "Add"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  </div>
+)}
+
+
+
+{documents.length === 0 ? (
+  <p className="text-muted-foreground">No documents added.</p>
+) : (
+  <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead>Name</TableHead>
+        <TableHead>Form url</TableHead>
+        {user?.role==="superadmin" &&(<TableHead className="text-right">Actions</TableHead>)}
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {documents.map((doc) => {
+        const isEditing = editingId === doc.id;
+
+        return (
+          <TableRow key={doc.id}>
+            <TableCell>{doc.name}</TableCell>
+            <TableCell>
+              {isEditing ? (
+                <Input
+                  value={editedLink}
+                  onChange={(e) => setEditedLink(e.target.value)}
+                  className="w-full"
+                />
+              ) : (
+                <a
+                  href={doc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 font-semibold underline"
+                >
+                  LINK
+                </a>
+              )}
+            </TableCell>
+
+{user?.role === "superadmin" && 
+  (<TableCell className="text-right space-x-2">
+              {isEditing ? (
+                <>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="cursor-pointer"
+                    onClick={() =>
+                      handleEdit({ id: doc.id, name: doc.name, url: editedLink })
+                    }
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setEditingId(null);
+                      setEditedLink("");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setEditingId(doc.id);
+                    setEditedLink(doc.url || "");
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+
+              <Button
+                variant="destructive"
+                size="sm"
+                className="cursor-pointer"
+                onClick={() => handleDelete(doc.id)}
+              >
+                Delete
+              </Button>
+            </TableCell>)}
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  </Table>
+)}
+
+
+
+       {(user?.role === "client" || user?.role === "employee") && 
+       ( <footer className="w-full mt-50 py-4 px-2 bg-gray-100 border-t text-center text-xs md:text-sm flex flex-col md:flex-row items-center justify-center gap-2">
+          <span>
+            <strong>Customer Care:</strong> 7801878800
+          </span>
+          <span className="hidden md:inline mx-2">|</span>
+          <span>
+            <strong>Mail:</strong> info@vahaanrecord.com
+          </span>
+          <span className="hidden md:inline mx-2">|</span>
+          <span>
+            Contact us For any Query or help
+          </span>
+        </footer>)}
       </div>
     </div>
   </SidebarProvider>

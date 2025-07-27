@@ -59,6 +59,19 @@ export async function changePassword(currentPassword:string,newPassword:string){
       throw error;
     });
 }
+export async function toggleEmployee(id:string){
+  const data = {}
+  const config = getConfig();
+  return axios
+    .post(`${url}/auth/toggle-user-activation/${id}`,data, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error :", error);
+      throw error;
+    });
+}
 
 // Login
 export async function login(

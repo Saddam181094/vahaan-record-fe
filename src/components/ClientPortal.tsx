@@ -151,9 +151,10 @@ const filteredCases = cases.filter((c) => {
 
 
   return (
-    <div className="p-4 space-y-4 h-screen">
+    <div className="w-full space-y-4">
       <h1 className="text-xl font-bold">Your Cases</h1>
-      <div className="flex gap-2 mb-4">
+      <div className="w-full overflow-x-auto mb-4">
+        <div className="flex gap-2 min-w-[340px] sm:min-w-0">
           <Button
             style={{ cursor: "pointer", position: "relative" }}
             variant={activeTab === "unpaid" ? "default" : "outline"}
@@ -203,25 +204,8 @@ const filteredCases = cases.filter((c) => {
           >
             Verified
           </Button>
-                  {/* <Button
-  style={{ cursor: "pointer", position: "relative" }}
-  variant={activeTab === "failed" ? "default" : "outline"}
-  onClick={() => {
-    setActiveTab("failed");
-    setSelectMode(false);
-  }}
->
-  Failed
-  {cases.some((c) => c.payment?.status === "failed") && (
-    <Badge
-      variant="destructive"
-      className="absolute -top-2 -right-2 px-2 py-0.5 text-xs"
-    >
-      {cases.filter((c) => c.payment?.status === "failed").length}
-    </Badge>
-  )}
-</Button> */}
-</div>
+        </div>
+      </div>
 
 
 

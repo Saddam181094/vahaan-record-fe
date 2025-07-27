@@ -38,8 +38,21 @@ const Client = () => {
               </DialogContent>
             </Dialog>
           </div> */}
-          <div className="flex flex-col w-full h-full min-h-screen ml-3">
+          <div className="flex flex-col w-full ml-3">
             <ClientPortal/>
+                         <footer className="w-full mt-85 py-4 bg-gray-100 border-t text-center text-xs md:text-sm flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+                <span>
+                  <strong>Customer Care:</strong> 7801878800
+                </span>
+                <span className="hidden md:inline mx-2">|</span>
+                <span>
+                  <strong>Mail:</strong> info@vahaanrecord.com
+                </span>
+                <span className="hidden md:inline mx-2">|</span>
+                <span>
+                  Contact us For any Query or help
+                </span>
+              </footer>
           </div>
         </div>
       </SidebarProvider>

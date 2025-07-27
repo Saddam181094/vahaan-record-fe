@@ -36,6 +36,7 @@ import { useAuth } from "@/context/AuthContext";
 // import { Button } from "./ui/button";
 import { getFirmsD } from "@/service/client.service";
 // import CaseDetails from "./CaseDetailsEmployee";
+import { TransactionTo } from "@/components/CaseForm";
 
 export interface FinalDetails {
   CaseNo: string;
@@ -880,6 +881,7 @@ const isDisabled = caseData? true : false;
           label="To RTO"
           required
           value={td?.to}
+          options={Object.values(TransactionTo)}
           name="transactionDetail.to"
         />
         <RenderField

@@ -28,6 +28,7 @@ import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { employeeTableColumns } from "@/lib/tables.data";
 import { useNavigate } from "react-router-dom";
+import { toggleEmployee } from "@/service/auth.service";
 // import { useAuth } from "@/context/AuthContext";
 // import { Toaster } from "@/components/ui/sonner";
 
@@ -42,6 +43,7 @@ export interface Employee {
   email: string;
   phoneNo: string;
   role: string;
+  isActive?: boolean;
 }
 
 
@@ -130,6 +132,24 @@ export default function EmployeeForm() {
     setDialogOpen(false);
     reset(); // Reset the form when dialog is closed
   };
+
+  const handleToggle = async (id: string) => {
+    setLoading(true);
+    try {
+      await toggleEmployee(id);
+      toast.showToast('Success', 'Employee status updated successfully', 'info');
+      setRefreshFlag((prev) => !prev); // Trigger a refresh
+    } catch (err: any) {
+      if (err?.status === '401' || err?.response?.status === '401') {
+        toast.showToast('Error', 'Session Expired', 'error');
+        logout();
+      } else {
+        toast.showToast('Error', err?.message || 'Error occurred while toggling employee status', 'error');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
 
   return (
@@ -325,6 +345,23 @@ export default function EmployeeForm() {
         onClick={() => navigate("/superadmin/employee/employeeDetails", { state: { employee: row.original } })}
       >
         View Details
+      </Button>
+    )
+    }
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      return (
+      <Button
+        style={{cursor:"pointer"}}
+        variant =  {row.original.isActive? "default" : "destructive"}
+        size="sm"
+        color="white"
+        onClick={() => handleToggle(row.original.id || "")}
+      >
+      {row.original.isActive? "Deactivate" : "Activate"}
       </Button>
     )
     }

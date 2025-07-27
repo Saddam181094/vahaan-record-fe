@@ -218,7 +218,8 @@ const handlePrint = () => {
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarTrigger />
-                <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:py-20 h-full min-h-[100vh]">
+            <div className="flex flex-col w-full">
+                <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:pt-20 h-full min-h-[100vh] print:hidden">
 
                     {/* Extract clientDetails from the first transaction if available */}
                     <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={handlePrint} className="w-fit bg-primary text-white mb-5">
@@ -329,8 +330,6 @@ const handlePrint = () => {
                 )}
 
 
-
-
                 <div className="print:block hidden text-sm leading-relaxed">
                     <PrintableCaseDetails
                         firstName={filteredCases?.clientDetails?.firstName}
@@ -341,6 +340,21 @@ const handlePrint = () => {
                         transactions={filteredCases?.transactions || []}
                     />
                 </div>
+                         <footer className="w-full mt-70 py-4 bg-gray-100 border-t text-center text-xs md:text-sm flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+                <span>
+                  <strong>Customer Care:</strong> 7801878800
+                </span>
+                <span className="hidden md:inline mx-2">|</span>
+                <span>
+                  <strong>Mail:</strong> info@vahaanrecord.com
+                </span>
+                <span className="hidden md:inline mx-2">|</span>
+                <span>
+                  Contact us For any Query or help
+                </span>
+                        </footer>
+
+            </div>
             </SidebarProvider>
         </>
     );

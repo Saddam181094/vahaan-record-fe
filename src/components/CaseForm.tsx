@@ -113,6 +113,47 @@ export const NumberPlate = {
   NA: "NA",
 } as const;
 export type NumberPlate = (typeof NumberPlate)[keyof typeof NumberPlate];
+export const RTOOptions = [
+  { value: "GJ01 (AHMEDABAD)", label: "GJ01 (AHMEDABAD)" },
+  { value: "GJ02 (MEHSANA)", label: "GJ02 (MEHSANA)" },
+  { value: "GJ03 (RAJKOT)", label: "GJ03 (RAJKOT)" },
+  { value: "GJ04 (BHAVNAGAR)", label: "GJ04 (BHAVNAGAR)" },
+  { value: "GJ05 (SURAT)", label: "GJ05 (SURAT)" },
+  { value: "GJ06 (VADODARA)", label: "GJ06 (VADODARA)" },
+  { value: "GJ07 (KHEDA)", label: "GJ07 (KHEDA)" },
+  { value: "GJ08 (BANASKANTHA)", label: "GJ08 (BANASKANTHA)" },
+  { value: "GJ09 (SABARKANTHA)", label: "GJ09 (SABARKANTHA)" },
+  { value: "GJ10 (JAMNAGAR)", label: "GJ10 (JAMNAGAR)" },
+  { value: "GJ11 (JUNAGADH)", label: "GJ11 (JUNAGADH)" },
+  { value: "GJ12 (KACHCHH)", label: "GJ12 (KACHCHH)" },
+  { value: "GJ13 (SURENDRANAGAR)", label: "GJ13 (SURENDRANAGAR)" },
+  { value: "GJ14 (AMRELI)", label: "GJ14 (AMRELI)" },
+  { value: "GJ15 (VALSAD)", label: "GJ15 (VALSAD)" },
+  { value: "GJ16 (BHARUCH)", label: "GJ16 (BHARUCH)" },
+  { value: "GJ17 (PANCHMAHAL)", label: "GJ17 (PANCHMAHAL)" },
+  { value: "GJ18 (GANDHINAGAR)", label: "GJ18 (GANDHINAGAR)" },
+  { value: "GJ19 (BARDOLI)", label: "GJ19 (BARDOLI)" },
+  { value: "GJ20 (DAHOD)", label: "GJ20 (DAHOD)" },
+  { value: "GJ21 (NAVSARI)", label: "GJ21 (NAVSARI)" },
+  { value: "GJ22 (NARMADA)", label: "GJ22 (NARMADA)" },
+  { value: "GJ23 (ANAND)", label: "GJ23 (ANAND)" },
+  { value: "GJ24 (PATAN)", label: "GJ24 (PATAN)" },
+  { value: "GJ25 (PORBANDAR)", label: "GJ25 (PORBANDAR)" },
+  { value: "GJ26 (TAPI)", label: "GJ26 (TAPI)" },
+  { value: "GJ27 (AHMEDABAD EAST)", label: "GJ27 (AHMEDABAD EAST)" },
+  { value: "GJ30 (AAHWA)", label: "GJ30 (AAHWA)" },
+  { value: "GJ31 (MODASA)", label: "GJ31 (MODASA)" },
+  { value: "GJ32 (VERAVAL)", label: "GJ32 (VERAVAL)" },
+  { value: "GJ33 (BOTAD)", label: "GJ33 (BOTAD)" },
+  { value: "GJ34 (CHHOTAUDAIPUR)", label: "GJ34 (CHHOTAUDAIPUR)" },
+  { value: "GJ35 (LUNAVADA)", label: "GJ35 (LUNAVADA)" },
+  { value: "GJ36 (MORBI)", label: "GJ36 (MORBI)" },
+  { value: "GJ37 (KHAMBHALIYA)", label: "GJ37 (KHAMBHALIYA)" },
+  { value: "GJ38 (AHMEDABAD  BAWLA ARTO)", label: "GJ38 (AHMEDABAD  BAWLA ARTO)" },
+  { value: "GJ39 (KACHCHH EAST)", label: "GJ39 (KACHCHH EAST)" },
+  { value: "GJ40 (THARAD-VAV)", label: "GJ40 (THARAD-VAV)" },
+] as const;
+
 
 
 export default function CaseForm() {
@@ -193,6 +234,8 @@ const defaultFormValues = useMemo(() => ({
     name: string;
     employeeCode: string;
   };
+
+  
 
   const { user,logout } = useAuth();
   const [branches, setBranches] = useState<Branch[]>([]);
@@ -312,11 +355,12 @@ const defaultFormValues = useMemo(() => ({
 
   const [searchHPT, setSearchHPT] = useState("");
   const [searchHPA, setSearchHPA] = useState("");
-
+  const [searchRTO, setSearchRTO] = useState("");
 
   const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
 
-
+  const filteredCode = RTOOptions.filter(f => f.label.toLowerCase().includes(searchRTO.toLowerCase()));
+  
   // Add a submit handler function
   const onSubmit = (data: any) => {
     setLoading(true);
@@ -661,46 +705,88 @@ const defaultFormValues = useMemo(() => ({
                 </div>
               )}
             />
-            <Controller
-              name="vehicleDetail.fromRTO"
-              control={control}
-              rules={{ required: "From RTO is required" }}
-              render={({ field, fieldState }) => (
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="fromRTO" className="pb-2">
-                    From RTO<span className="text-red-500">*</span>
-                  </Label>
-                  <Input id="fromRTO" placeholder="From RTO"                     {...field}
-                    value={field.value?.toUpperCase() ?? ""}
-                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
-                  {fieldState.error && (
-                    <p className="text-red-600 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
-            <Controller
-              name="vehicleDetail.toRTO"
-              control={control}
-              rules={{ required: "To RTO is required" }}
-              render={({ field, fieldState }) => (
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="toRTO" className="pb-2">
-                    To RTO<span className="text-red-500">*</span>
-                  </Label>
-                  <Input id="toRTO" placeholder="To RTO"                     {...field}
-                    value={field.value?.toUpperCase() ?? ""}
-                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
-                  {fieldState.error && (
-                    <p className="text-red-600 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
+<Controller
+  name="vehicleDetail.fromRTO"
+  control={control}
+  rules={{ required: "From RTO is required" }}
+  render={({ field, fieldState }) => (
+    <div className="flex flex-col gap-1">
+      <Label htmlFor="fromRTO" className="pb-2">
+        From RTO<span className="text-red-500">*</span>
+      </Label>
+      <Select
+        value={field.value || ""}
+        onValueChange={field.onChange}
+      >
+        <SelectTrigger id="fromRTO" className="w-full">
+          <SelectValue placeholder="Select From RTO..." />
+        </SelectTrigger>
+        <SelectContent>
+                      <div className="p-2">
+                        <Input
+                          placeholder="Search a Firm"
+                          value={searchRTO}
+                          onChange={(e) => setSearchRTO(e.target.value)}
+                          className="mb-2"
+                          onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
+                          onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
+                        />
+                      </div>
+          {filteredCode.map((opt) => (
+            <SelectItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {fieldState.error && (
+        <p className="text-red-600 text-xs mt-1">
+          {fieldState.error.message}
+        </p>
+      )}
+    </div>
+  )}
+/>
+
+<Controller
+  name="vehicleDetail.toRTO"
+  control={control}
+  rules={{ required: "To RTO is required" }}
+  render={({ field, fieldState }) => (
+    <div className="flex flex-col gap-1">
+      <Label htmlFor="toRTO" className="pb-2">
+        To RTO<span className="text-red-500">*</span>
+      </Label>
+      <Select
+        value={field.value || ""}
+        onValueChange={field.onChange}
+      >
+        <SelectTrigger id="toRTO" className="w-full">
+          <SelectValue placeholder="Select To RTO..." />
+        </SelectTrigger>
+        <SelectContent>
+                            <Input
+                    placeholder="Search a Firm"
+                    value={searchRTO}
+                    onChange={(e) => setSearchRTO(e.target.value)}
+                    className="mb-2"
+                  />
+          {filteredCode.map((opt) => (
+            <SelectItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {fieldState.error && (
+        <p className="text-red-600 text-xs mt-1">
+          {fieldState.error.message}
+        </p>
+      )}
+    </div>
+  )}
+/>
+
             <Controller
               name="vehicleDetail.chassisNo"
               control={control}
@@ -866,11 +952,6 @@ const defaultFormValues = useMemo(() => ({
                     error={!!fieldState.error}
                     {...field}
                   />
-                  {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                  )}
                 </div>
               )}
             />
