@@ -28,6 +28,7 @@ import ClientTransactions from "@/components/ClientTransactions"
 // import Tasks from "@/pages/ToDoPage"
 import Bills from "@/components/ClientBills"
 import ClientDash from "@/pages/ClientDash"
+import Documents from "@/pages/documents"
 // import { Loader } from "lucide-react";
 export default function App() {
   const { isAuthenticated, user, isHydrated } = useAuth();
@@ -87,6 +88,11 @@ export default function App() {
       <Route path="/superadmin/clients" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <Client />
+        </ProtectedRoute>
+      } />
+            <Route path="/superadmin/documents" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <Documents />
         </ProtectedRoute>
       } />
 

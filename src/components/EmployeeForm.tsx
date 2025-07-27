@@ -29,6 +29,7 @@ import { DataTable } from "./DataTable";
 import { employeeTableColumns } from "@/lib/tables.data";
 import { useNavigate } from "react-router-dom";
 import { toggleEmployee } from "@/service/auth.service";
+import { Switch } from "./ui/switch";
 // import { useAuth } from "@/context/AuthContext";
 // import { Toaster } from "@/components/ui/sonner";
 
@@ -329,46 +330,46 @@ export default function EmployeeForm() {
       </Dialog>
 
 <div className="flex w-full h-[99vh] overflow-hidden">
-      <DataTable columns={[...employeeTableColumns,
-      
+  <DataTable
+    columns={[
+      ...employeeTableColumns,
       {
-    id: "viewDetails",
-    header: "View Details",
-    cell: ({ row }) => {
-      return (
-      <Button
-      style={{cursor:"pointer"}}
-      variant="default"
-        size="sm"
-        color="white"
-        className="bg-[#5156DB]"
-        onClick={() => navigate("/superadmin/employee/employeeDetails", { state: { employee: row.original } })}
-      >
-        View Details
-      </Button>
-    )
-    }
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => {
-      return (
-      <Button
-        style={{cursor:"pointer"}}
-        variant =  {row.original.isActive? "default" : "destructive"}
-        size="sm"
-        color="white"
-        onClick={() => handleToggle(row.original.id || "")}
-      >
-      {row.original.isActive? "Deactivate" : "Activate"}
-      </Button>
-    )
-    }
-  },
-  
-  ]} data={Employee2} />
-  </div>
+        id: "viewDetails",
+        header: "View Details",
+        cell: ({ row }) => (
+          <Button
+            style={{ cursor: "pointer" }}
+            variant="default"
+            size="sm"
+            color="white"
+            className="bg-[#5156DB]"
+            onClick={() =>
+              navigate("/superadmin/employee/employeeDetails", {
+                state: { employee: row.original },
+              })
+            }
+          >
+            View Details
+          </Button>
+        ),
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={!!row.original.isActive}
+              onCheckedChange={() => handleToggle(row.original.id || "")}
+              aria-label="Toggle employee active status"
+            />
+          </div>
+        ),
+      },
+    ]}
+    data={Employee2}
+  />
+</div>
     </div>
   );
 }

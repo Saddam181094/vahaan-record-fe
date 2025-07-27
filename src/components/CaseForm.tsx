@@ -44,7 +44,7 @@ export interface GeneralDetails {
   employeeCodeId: string;
   incentiveAmount?: string;
   appointmentDate?: string;
-  applicationNo?:string;
+  applicationNo?: string;
 }
 
 export interface VehicleDetail {
@@ -97,7 +97,7 @@ export interface ExpenseDetail {
   insuranceCharges: number | string;
   otherCharges: number | string;
   adminCharges: number | string;
-  receiptAmount:number | string;
+  receiptAmount: number | string;
 }
 
 export const TransactionTo = {
@@ -158,63 +158,63 @@ export const RTOOptions = [
 
 export default function CaseForm() {
 
-const defaultFormValues = useMemo(() => ({
-  generalDetails: {
-    firmName: "",
-    branchCodeId: "",
-    employeeCodeId: "",
-    incentiveAmount: "",
-    appointmentDate: "",
-    applicationNo: undefined,
-  },
-  vehicleDetail: {
-    vehicleNo: "",
-    rmaVehicleNo: "",
-    fromRTO: "",
-    toRTO: "",
-    chassisNo: "",
-    engineNo: "",
-  },
-  expireDetail: {
-    insuranceExpiry: "",
-    pucExpiry: "",
-    fitnessExpiry: "",
-    taxExpiry: "",
-    permitExpiry: "",
-  },
-  transactionDetail: {
-    to: "" as unknown as TransactionTo,
-    hptId: "",
-    hpaId: "",
-    fitness: false,
-    rrf: false,
-    rma: false,
-    alteration: false,
-    conversion: false,
-    numberPlate: "" as unknown as NumberPlate,
-    addressChange: false,
-    drc: false,
-    remarks: "",
-  },
-  ownerDetails: {
-    sellerName: "",
-    sellerAadharNo: "",
-    sellerAddress: "",
-    sellerState: "",
-    sellerPhoneNo: "",
-    buyerName: "",
-    buyerAadharNo: "",
-    buyerAddress: "",
-    buyerState: "",
-    buyerPhoneNo: "",
-  },
-  expenseDetail: {
-    pucCharges: "",
-    insuranceCharges: "",
-    otherCharges: "",
-    adminCharges: "",
-  },
-}), []); // dependency array empty → stable reference
+  const defaultFormValues = useMemo(() => ({
+    generalDetails: {
+      firmName: "",
+      branchCodeId: "",
+      employeeCodeId: "",
+      incentiveAmount: "",
+      appointmentDate: "",
+      applicationNo: undefined,
+    },
+    vehicleDetail: {
+      vehicleNo: "",
+      rmaVehicleNo: "",
+      fromRTO: "",
+      toRTO: "",
+      chassisNo: "",
+      engineNo: "",
+    },
+    expireDetail: {
+      insuranceExpiry: "",
+      pucExpiry: "",
+      fitnessExpiry: "",
+      taxExpiry: "",
+      permitExpiry: "",
+    },
+    transactionDetail: {
+      to: "" as unknown as TransactionTo,
+      hptId: "",
+      hpaId: "",
+      fitness: false,
+      rrf: false,
+      rma: false,
+      alteration: false,
+      conversion: false,
+      numberPlate: "" as unknown as NumberPlate,
+      addressChange: false,
+      drc: false,
+      remarks: "",
+    },
+    ownerDetails: {
+      sellerName: "",
+      sellerAadharNo: "",
+      sellerAddress: "",
+      sellerState: "",
+      sellerPhoneNo: "",
+      buyerName: "",
+      buyerAadharNo: "",
+      buyerAddress: "",
+      buyerState: "",
+      buyerPhoneNo: "",
+    },
+    expenseDetail: {
+      pucCharges: "",
+      insuranceCharges: "",
+      otherCharges: "",
+      adminCharges: "",
+    },
+  }), []); // dependency array empty → stable reference
 
 
 
@@ -226,7 +226,7 @@ const defaultFormValues = useMemo(() => ({
     reset,
     formState: { errors },
   } = useForm<Case>({
-    defaultValues:defaultFormValues,
+    defaultValues: defaultFormValues,
   });
 
   type BranchEmployee = {
@@ -235,9 +235,9 @@ const defaultFormValues = useMemo(() => ({
     employeeCode: string;
   };
 
-  
 
-  const { user,logout } = useAuth();
+
+  const { user, logout } = useAuth();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [b, setB] = useState<string>("");
   const { setLoading } = useLoading();
@@ -273,8 +273,7 @@ const defaultFormValues = useMemo(() => ({
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -295,8 +294,7 @@ const defaultFormValues = useMemo(() => ({
         setbranchEmp(resp?.data);
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -315,8 +313,7 @@ const defaultFormValues = useMemo(() => ({
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -325,18 +322,17 @@ const defaultFormValues = useMemo(() => ({
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
-  
+
   useEffect(() => {
     setLoading(true);
 
     getFirmsD()
       .then((resp) => {
-        const f = resp?.data.map((f:string) => f.toUpperCase());
+        const f = resp?.data.map((f: string) => f.toUpperCase());
         setfirmsD(f);
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -355,12 +351,13 @@ const defaultFormValues = useMemo(() => ({
 
   const [searchHPT, setSearchHPT] = useState("");
   const [searchHPA, setSearchHPA] = useState("");
-  const [searchRTO, setSearchRTO] = useState("");
+  const [searchRTOto, setSearchRTOto] = useState("");
+  const [searchRTOfrom, setSearchRTOfrom] = useState("");
 
   const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
 
-  const filteredCode = RTOOptions.filter(f => f.label.toLowerCase().includes(searchRTO.toLowerCase()));
-  
+  const filteredCode1 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOfrom).toLowerCase()));
+  const filteredCode2 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOto).toLowerCase()));
   // Add a submit handler function
   const onSubmit = (data: any) => {
     setLoading(true);
@@ -369,15 +366,14 @@ const defaultFormValues = useMemo(() => ({
         toast.showToast('Success', resp?.message, 'success');
         reset();
 
-        if(user?.role === "employee")
-        navigate('/employee/cases');
+        if (user?.role === "employee")
+          navigate('/employee/cases');
 
-        else if(user?.role === "superadmin")
-        navigate('/superadmin/cases/Mycases')
+        else if (user?.role === "superadmin")
+          navigate('/superadmin/cases/Mycases')
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
-        {
+        if (err?.status == '401' || err?.response?.status == '401') {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -397,16 +393,16 @@ const defaultFormValues = useMemo(() => ({
       .toUpperCase();
   }
 
-//   useEffect(() => {
-//   // Listen to all input events, force uppercase
-//   const handler = (e:any) => {
-//     if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
-//       e.target.value = e.target.value.toUpperCase();
-//     }
-//   };
-//   document.addEventListener('input', handler, true);
-//   return () => document.removeEventListener('input', handler, true);
-// }, []);
+  //   useEffect(() => {
+  //   // Listen to all input events, force uppercase
+  //   const handler = (e:any) => {
+  //     if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
+  //       e.target.value = e.target.value.toUpperCase();
+  //     }
+  //   };
+  //   document.addEventListener('input', handler, true);
+  //   return () => document.removeEventListener('input', handler, true);
+  // }, []);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8 p-6">
@@ -415,208 +411,208 @@ const defaultFormValues = useMemo(() => ({
         <CardContent className="grid gap-4">
           <div className="text-xl font-semibold">General Details</div>
           <hr />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Controller
               name="generalDetails.firmName"
               control={control}
               rules={{ required: "Firm Name is required" }}
               render={({ field, fieldState }) => (
-              <div className="flex flex-col w-full">
-                <Label htmlFor="firmName" className="pb-2">
-                Firm Name <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                required
-                value={field.value}
-                onValueChange={field.onChange}
-                >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Firm" />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="p-2">
-                  <Input
-                    placeholder="Search a Firm"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="mb-2"
-                  />
-                  </div>
-                  {firmsD
-                  .map((firm) => (
-                    <SelectItem key={firm} value={firm}>
-                    {firm}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-                </Select>
-                {fieldState.error && (
-                <p className="text-red-500 text-xs mt-1">
-                  {fieldState.error.message}
-                </p>
-                )}
-              </div>
-              )}
-            />
-            {user?.role !== "superadmin" && (
-              <Controller
-              name="generalDetails.branchCodeId"
-              control={control}
-              rules={{ required: "Branch is required" }}
-              render={({ field, fieldState }) => (
                 <div className="flex flex-col w-full">
-                 <Label htmlFor="branchCodeId" className="pb-2">
-                  Branch Name
-                </Label>
-                {user?.role === "employee" ? (
-                  <div className="flex flex-col w-full">
-                  <Input
-                    readOnly
-                    value={
-                    branches.find((branch) => branch.branchCode === user.branchCode)?.name
-                    }
-                    className="bg-gray-100 cursor-not-allowed"
-                  />
-                  {/* Hidden input, but do NOT spread `field`, only needed name + value */}
-                  <input type="hidden" name={field.name} value={user.branchCode} />
-                  </div>
-                ) : (
-                  <div className="flex flex-col w-full">
-                  <Select
-                    required
-                    value={field.value}
-                    onValueChange={(val) => {
-                    field.onChange(val);
-                    setB(val);
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Branch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                    <div className="p-2">
-                      <Input
-                      placeholder="Search a Branch"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="mb-2"
-                      />
-                    </div>
-                    {branches.map((branch) => (
-                      <SelectItem
-                      key={branch?.branchCode}
-                      value={branch?.branchCode || "default"}
-                      >
-                      {branch.name}
-                      </SelectItem>
-                    ))}
-                    </SelectContent>
-                  </Select>
-                  </div>
-                )}
-
-                {fieldState.error && (
-                  <p className="text-red-500 text-xs mt-1">
-                  {fieldState.error.message}
-                  </p>
-                )}
-                </div>
-              )}
-              />)}
-            {user?.role !== "superadmin" && (
-              <Controller
-              name="generalDetails.employeeCodeId"
-              control={control}
-              rules={{ required: "Employee is required" }}
-              render={({ field, fieldState }) => (
-                <div className="flex flex-col w-full">
-                 <Label htmlFor="employeeCodeId" className="pb-2">
-                  Employee Name
-                </Label>
-                {user?.role === "employee" ? (
-                  <>
-                  <Input
-                    readOnly
-                    value={
-                    branchEmp.find((emp) => emp.employeeCode === user.employeeCode)?.name
-                    }
-                    className="bg-gray-100 cursor-not-allowed"
-                  />
-                  {/* Hidden input to preserve value for submission */}
-                  <input type="hidden" name={field.name} value={user.employeeCode} />
-                  </>
-                ) : (
-                  <>
+                  <Label htmlFor="firmName" className="pb-2">
+                    Firm Name <span className="text-red-500">*</span>
+                  </Label>
                   <Select
                     required
                     value={field.value}
                     onValueChange={field.onChange}
                   >
                     <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Employee" />
+                      <SelectValue placeholder="Select Firm" />
                     </SelectTrigger>
                     <SelectContent>
-                    <div className="p-2">
-                      <Input
-                      placeholder="Search an Employee"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="mb-2"
-                      />
-                    </div>
-                    {branchEmp.map((emp) => (
-                      <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
-                      {emp?.name}
-                      </SelectItem>
-                    ))}
+                      <div className="p-2">
+                        <Input
+                          placeholder="Search a Firm"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="mb-2"
+                        />
+                      </div>
+                      {firmsD
+                        .map((firm) => (
+                          <SelectItem key={firm} value={firm}>
+                            {firm}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   {fieldState.error && (
                     <p className="text-red-500 text-xs mt-1">
-                    {fieldState.error.message}
+                      {fieldState.error.message}
                     </p>
                   )}
-                  </>
-                )}
                 </div>
               )}
+            />
+            {user?.role !== "superadmin" && (
+              <Controller
+                name="generalDetails.branchCodeId"
+                control={control}
+                rules={{ required: "Branch is required" }}
+                render={({ field, fieldState }) => (
+                  <div className="flex flex-col w-full">
+                    <Label htmlFor="branchCodeId" className="pb-2">
+                      Branch Name
+                    </Label>
+                    {user?.role === "employee" ? (
+                      <div className="flex flex-col w-full">
+                        <Input
+                          readOnly
+                          value={
+                            branches.find((branch) => branch.branchCode === user.branchCode)?.name
+                          }
+                          className="bg-gray-100 cursor-not-allowed"
+                        />
+                        {/* Hidden input, but do NOT spread `field`, only needed name + value */}
+                        <input type="hidden" name={field.name} value={user.branchCode} />
+                      </div>
+                    ) : (
+                      <div className="flex flex-col w-full">
+                        <Select
+                          required
+                          value={field.value}
+                          onValueChange={(val) => {
+                            field.onChange(val);
+                            setB(val);
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Branch" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <div className="p-2">
+                              <Input
+                                placeholder="Search a Branch"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="mb-2"
+                              />
+                            </div>
+                            {branches.map((branch) => (
+                              <SelectItem
+                                key={branch?.branchCode}
+                                value={branch?.branchCode || "default"}
+                              >
+                                {branch.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {fieldState.error && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />)}
+            {user?.role !== "superadmin" && (
+              <Controller
+                name="generalDetails.employeeCodeId"
+                control={control}
+                rules={{ required: "Employee is required" }}
+                render={({ field, fieldState }) => (
+                  <div className="flex flex-col w-full">
+                    <Label htmlFor="employeeCodeId" className="pb-2">
+                      Employee Name
+                    </Label>
+                    {user?.role === "employee" ? (
+                      <>
+                        <Input
+                          readOnly
+                          value={
+                            branchEmp.find((emp) => emp.employeeCode === user.employeeCode)?.name
+                          }
+                          className="bg-gray-100 cursor-not-allowed"
+                        />
+                        {/* Hidden input to preserve value for submission */}
+                        <input type="hidden" name={field.name} value={user.employeeCode} />
+                      </>
+                    ) : (
+                      <>
+                        <Select
+                          required
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Employee" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <div className="p-2">
+                              <Input
+                                placeholder="Search an Employee"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="mb-2"
+                              />
+                            </div>
+                            {branchEmp.map((emp) => (
+                              <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
+                                {emp?.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {fieldState.error && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {fieldState.error.message}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               />
             )}
 
 
             {/* Incentive Type - Only show for superadmin */}
             {user?.role === "superadmin" && (
-      <Controller
-        name="generalDetails.incentiveAmount"
-        control={control}
-        rules={{
-        pattern: {
-          value: /^\d*$/,
-          message: "Only numeric values are allowed",
-        },
-        }}
-        render={({ field, fieldState }) => (
-        <div className="flex flex-col w-full">
-          <Label htmlFor="incentiveAmount" className="pb-2">
-          Incentive Amount
-          </Label>
-          <Input
-          id="incentiveAmount"
-          placeholder="Amount"
-          className={`w-full ${fieldState.error ? "border-red-500" : ""}`}
-          {...field}
-          inputMode="numeric"
-          pattern="[0-9]*"
-          onChange={(e) => {
-            // Only allow digits
-            const value = e.target.value.replace(/\D/g, "");
-            field.onChange(value);
-          }}
-          value={field.value ?? ""}
-          />
-        </div>
-        )}
-      />
+              <Controller
+                name="generalDetails.incentiveAmount"
+                control={control}
+                rules={{
+                  pattern: {
+                    value: /^\d*$/,
+                    message: "Only numeric values are allowed",
+                  },
+                }}
+                render={({ field, fieldState }) => (
+                  <div className="flex flex-col w-full">
+                    <Label htmlFor="incentiveAmount" className="pb-2">
+                      Incentive Amount
+                    </Label>
+                    <Input
+                      id="incentiveAmount"
+                      placeholder="Amount"
+                      className={`w-full ${fieldState.error ? "border-red-500" : ""}`}
+                      {...field}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      onChange={(e) => {
+                        // Only allow digits
+                        const value = e.target.value.replace(/\D/g, "");
+                        field.onChange(value);
+                      }}
+                      value={field.value ?? ""}
+                    />
+                  </div>
+                )}
+              />
             )}
             <Controller
               name="generalDetails.appointmentDate"
@@ -635,21 +631,21 @@ const defaultFormValues = useMemo(() => ({
               )}
             />
             <Controller
-                name="generalDetails.applicationNo"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col w-full">
-                    <Label htmlFor="applicationNo" className="pb-2">
-                      Application No
-                    </Label>
-                    <Input
-                      placeholder="No."
-                      className="w-full"
-                      {...field}
-                    />
-                  </div>
-                )}
-              />
+              name="generalDetails.applicationNo"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col w-full">
+                  <Label htmlFor="applicationNo" className="pb-2">
+                    Application No
+                  </Label>
+                  <Input
+                    placeholder="No."
+                    className="w-full"
+                    {...field}
+                  />
+                </div>
+              )}
+            />
           </div>
         </CardContent>
       </Card>
@@ -698,94 +694,96 @@ const defaultFormValues = useMemo(() => ({
                     placeholder="RMA Vehicle No"
                     className={`input input-bordered ${fieldState.error ? "input-error" : ""
                       }`}
-                                        {...field}
+                    {...field}
                     value={field.value?.toUpperCase() ?? ""}
                     onChange={e => field.onChange(e.target.value.toUpperCase())}
                   />
                 </div>
               )}
             />
-<Controller
-  name="vehicleDetail.fromRTO"
-  control={control}
-  rules={{ required: "From RTO is required" }}
-  render={({ field, fieldState }) => (
-    <div className="flex flex-col gap-1">
-      <Label htmlFor="fromRTO" className="pb-2">
-        From RTO<span className="text-red-500">*</span>
-      </Label>
-      <Select
-        value={field.value || ""}
-        onValueChange={field.onChange}
-      >
-        <SelectTrigger id="fromRTO" className="w-full">
-          <SelectValue placeholder="Select From RTO..." />
-        </SelectTrigger>
-        <SelectContent>
+            <Controller
+              name="vehicleDetail.fromRTO"
+              control={control}
+              rules={{ required: "From RTO is required" }}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="fromRTO" className="pb-2">
+                    From RTO<span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={field.value || ""}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger id="fromRTO" className="w-full">
+                      <SelectValue placeholder="Select From RTO..." />
+                    </SelectTrigger>
+                    <SelectContent>
                       <div className="p-2">
                         <Input
                           placeholder="Search a Firm"
-                          value={searchRTO}
-                          onChange={(e) => setSearchRTO(e.target.value)}
+                          value={searchRTOfrom}
+                          onChange={(e) => setSearchRTOfrom(e.target.value)}
                           className="mb-2"
                           onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
                           onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                         />
                       </div>
-          {filteredCode.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {fieldState.error && (
-        <p className="text-red-600 text-xs mt-1">
-          {fieldState.error.message}
-        </p>
-      )}
-    </div>
-  )}
-/>
+                      {filteredCode1.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <p className="text-red-600 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
 
-<Controller
-  name="vehicleDetail.toRTO"
-  control={control}
-  rules={{ required: "To RTO is required" }}
-  render={({ field, fieldState }) => (
-    <div className="flex flex-col gap-1">
-      <Label htmlFor="toRTO" className="pb-2">
-        To RTO<span className="text-red-500">*</span>
-      </Label>
-      <Select
-        value={field.value || ""}
-        onValueChange={field.onChange}
-      >
-        <SelectTrigger id="toRTO" className="w-full">
-          <SelectValue placeholder="Select To RTO..." />
-        </SelectTrigger>
-        <SelectContent>
-                            <Input
-                    placeholder="Search a Firm"
-                    value={searchRTO}
-                    onChange={(e) => setSearchRTO(e.target.value)}
-                    className="mb-2"
-                  />
-          {filteredCode.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {fieldState.error && (
-        <p className="text-red-600 text-xs mt-1">
-          {fieldState.error.message}
-        </p>
-      )}
-    </div>
-  )}
-/>
+            <Controller
+              name="vehicleDetail.toRTO"
+              control={control}
+              rules={{ required: "To RTO is required" }}
+              render={({ field, fieldState }) => (
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="toRTO" className="pb-2">
+                    To RTO<span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={field.value || ""}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger id="toRTO" className="w-full">
+                      <SelectValue placeholder="Select To RTO..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <Input
+                        placeholder="Search a Firm"
+                        value={searchRTOto}
+                        onChange={(e) => setSearchRTOto(e.target.value)}
+                        className="mb-2"
+                        onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
+                        onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
+                      />
+                      {filteredCode2.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.error && (
+                    <p className="text-red-600 text-xs mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
 
             <Controller
               name="vehicleDetail.chassisNo"
@@ -1163,7 +1161,7 @@ const defaultFormValues = useMemo(() => ({
                   <Textarea
                     className=""
                     placeholder="Remarks"
-                                        {...field}
+                    {...field}
                     value={field.value?.toUpperCase() ?? ""}
                     onChange={e => field.onChange(e.target.value.toUpperCase())}
                   />
@@ -1182,131 +1180,131 @@ const defaultFormValues = useMemo(() => ({
             <div>
               <div className="font-semibold mb-1">Seller Details</div>
               <hr />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                 <Controller
                   name="ownerDetails.sellerName"
                   control={control}
                   render={({ field }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="sellerName">Seller Name</Label>
-                    <Input id="sellerName" placeholder="Seller Name"                     {...field}
-                    value={field.value?.toUpperCase() ?? ""}
-                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
-                  </div>
+                    <div className="flex flex-col gap-1">
+                      <Label htmlFor="sellerName">Seller Name</Label>
+                      <Input id="sellerName" placeholder="Seller Name"                     {...field}
+                        value={field.value?.toUpperCase() ?? ""}
+                        onChange={e => field.onChange(e.target.value.toUpperCase())} />
+                    </div>
                   )}
                 />
                 <Controller
                   name="ownerDetails.sellerAadharNo"
                   control={control}
                   rules={{
-                  pattern: {
-                    value: /^\d{12}$/,
-                    message: "Aadhaar No must be a 12-digit number",
-                  },
+                    pattern: {
+                      value: /^\d{12}$/,
+                      message: "Aadhaar No must be a 12-digit number",
+                    },
                   }}
                   render={({ field, fieldState }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="sellerAadharNo">Seller Aadhaar No</Label>
-                    <Input
-                    id="sellerAadharNo"
-                    placeholder="Seller Aadhaar No"
-                    maxLength={12}
-                                        {...field}
-                    onChange={e => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      field.onChange(val);
-                    }}
-                    />
-                    {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                    )}
-                  </div>
+                    <div className="flex flex-col gap-1">
+                      <Label htmlFor="sellerAadharNo">Seller Aadhaar No</Label>
+                      <Input
+                        id="sellerAadharNo"
+                        placeholder="Seller Aadhaar No"
+                        maxLength={12}
+                        {...field}
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          field.onChange(val);
+                        }}
+                      />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </div>
                   )}
                 />
                 <Controller
                   name="ownerDetails.sellerAddress"
                   control={control}
                   render={({ field }) => (
-                  <div className="flex flex-col gap-1 md:col-span-2">
-                    <Label htmlFor="sellerAddress">Seller Address</Label>
-                    <Textarea id="sellerAddress" placeholder="Seller Address"                     {...field}
-                    value={field.value?.toUpperCase() ?? ""}
-                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
-                  </div>
+                    <div className="flex flex-col gap-1 md:col-span-2">
+                      <Label htmlFor="sellerAddress">Seller Address</Label>
+                      <Textarea id="sellerAddress" placeholder="Seller Address"                     {...field}
+                        value={field.value?.toUpperCase() ?? ""}
+                        onChange={e => field.onChange(e.target.value.toUpperCase())} />
+                    </div>
                   )}
                 />
                 <Controller
                   name="ownerDetails.sellerState"
                   control={control}
                   render={({ field }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="sellerState">Seller State</Label>
-                    <Select
-                                        {...field}
-                    value={field.value}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSearchSellerState('');
-                    }}
-                    >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a state" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <div className="p-2">
-                      <Input
-                        placeholder="Search a State"
-                        value={searchSellerState}
-                        onChange={(e) => setSearchSellerState(e.target.value)}
-                        className="mb-2"
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => e.stopPropagation()}
-                      />
-                      </div>
-                      {ind2.map((state) => (
-                      <SelectItem key={state} value={state}>
-                        {state}
-                      </SelectItem>
-                      ))}
-                    </SelectContent>
-                    </Select>
-                  </div>
+                    <div className="flex flex-col gap-1">
+                      <Label htmlFor="sellerState">Seller State</Label>
+                      <Select
+                        {...field}
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setSearchSellerState('');
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a state" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <div className="p-2">
+                            <Input
+                              placeholder="Search a State"
+                              value={searchSellerState}
+                              onChange={(e) => setSearchSellerState(e.target.value)}
+                              className="mb-2"
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => e.stopPropagation()}
+                            />
+                          </div>
+                          {ind2.map((state) => (
+                            <SelectItem key={state} value={state}>
+                              {state}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   )}
                 />
                 <Controller
                   name="ownerDetails.sellerPhoneNo"
                   control={control}
                   rules={{
-                  pattern: {
-                    value: /^[6-9]\d{9}$/,
-                    message: "Phone No must be a valid 10-digit",
-                  },
+                    pattern: {
+                      value: /^[6-9]\d{9}$/,
+                      message: "Phone No must be a valid 10-digit",
+                    },
                   }}
                   render={({ field, fieldState }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="sellerPhoneNo">Seller Phone No</Label>
-                    <Input
-                    id="sellerPhoneNo"
-                    placeholder="Seller Phone No"
-                    maxLength={10}
-                    {...field}
-                    onChange={e => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      field.onChange(val);
-                    }}
-                    />
-                    {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                    )}
-                  </div>
+                    <div className="flex flex-col gap-1">
+                      <Label htmlFor="sellerPhoneNo">Seller Phone No</Label>
+                      <Input
+                        id="sellerPhoneNo"
+                        placeholder="Seller Phone No"
+                        maxLength={10}
+                        {...field}
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          field.onChange(val);
+                        }}
+                      />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </div>
                   )}
                 />
-                </div>
               </div>
+            </div>
             <div>
               <div className="font-semibold mb-1">Buyer Details</div>
               <hr />
@@ -1314,75 +1312,76 @@ const defaultFormValues = useMemo(() => ({
                 <Controller
                   name="ownerDetails.buyerName"
                   control={control}
-                  rules={{required:"Parameter is required."}}
-                  render={({ field,fieldState }) => (
+                  rules={{ required: "Parameter is required." }}
+                  render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
                       <Label htmlFor="buyerName">Buyer Name<span className="text-red-500">*</span></Label>
                       <Input id="buyerName" placeholder="Buyer Name"                     {...field}
-                    value={field.value?.toUpperCase() ?? ""}
-                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
-                {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                    )}
+                        value={field.value?.toUpperCase() ?? ""}
+                        onChange={e => field.onChange(e.target.value.toUpperCase())} />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                      )}
                     </div>
                   )}
                 />
-                 <Controller
+                <Controller
                   name="ownerDetails.buyerAadharNo"
                   control={control}
                   rules={
-                    {required:"Parmater is required",
-                  pattern: {
-                    value: /^\d{12}$/,
-                    message: "Aadhaar No must be a 12-digit number",
-                  },
-                  }}
-                  render={({ field, fieldState }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="buyerAadharNo">Buyer Aadhaar No<span className="text-red-500">*</span></Label>
-                    <Input
-                    id="buyerAadharNo"
-                    placeholder="Buyer Aadhaar No"
-                    maxLength={12}
-                                        {...field}
-                    onChange={e => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      field.onChange(val);
+                    {
+                      required: "Parmater is required",
+                      pattern: {
+                        value: /^\d{12}$/,
+                        message: "Aadhaar No must be a 12-digit number",
+                      },
                     }}
-                    />
-                    {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                    )}
-                  </div>
+                  render={({ field, fieldState }) => (
+                    <div className="flex flex-col gap-1">
+                      <Label htmlFor="buyerAadharNo">Buyer Aadhaar No<span className="text-red-500">*</span></Label>
+                      <Input
+                        id="buyerAadharNo"
+                        placeholder="Buyer Aadhaar No"
+                        maxLength={12}
+                        {...field}
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          field.onChange(val);
+                        }}
+                      />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </div>
                   )}
                 />
                 <Controller
                   name="ownerDetails.buyerAddress"
                   control={control}
-                  rules={{required:"Parameter is required."}}
-                  render={({ field,fieldState }) => (
+                  rules={{ required: "Parameter is required." }}
+                  render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1 md:col-span-2">
                       <Label htmlFor="buyerAddress">Buyer Address<span className="text-red-500">*</span></Label>
                       <Textarea id="buyerAddress" placeholder="Buyer Address"                     {...field}
-                    value={field.value?.toUpperCase() ?? ""}
-                    onChange={e => field.onChange(e.target.value.toUpperCase())} />
-                                      {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                    )}
+                        value={field.value?.toUpperCase() ?? ""}
+                        onChange={e => field.onChange(e.target.value.toUpperCase())} />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                      )}
                     </div>
                   )}
                 />
                 <Controller
                   name="ownerDetails.buyerState"
                   control={control}
-                  rules={{required:"Parameter is required."}}
-                  render={({ field,fieldState }) => (
+                  rules={{ required: "Parameter is required." }}
+                  render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
                       <Label htmlFor="buyerState">Buyer State<span className="text-red-500">*</span></Label>
                       <Select
@@ -1415,11 +1414,11 @@ const defaultFormValues = useMemo(() => ({
                           ))}
                         </SelectContent>
                       </Select>
-                {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                    )}
+                      {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                      )}
                     </div>
                   )}
                 />
@@ -1427,31 +1426,31 @@ const defaultFormValues = useMemo(() => ({
                   name="ownerDetails.buyerPhoneNo"
                   control={control}
                   rules={{
-                    required:"Paramter is required.",
-                  pattern: {
-                    value: /^[6-9]\d{9}$/,
-                    message: "Phone No must be a valid 10-digit",
-                  },
+                    required: "Paramter is required.",
+                    pattern: {
+                      value: /^[6-9]\d{9}$/,
+                      message: "Phone No must be a valid 10-digit",
+                    },
                   }}
                   render={({ field, fieldState }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="buyerPhoneNo">Buyer Phone No<span className="text-red-500">*</span></Label>
-                    <Input
-                    id="buyerPhoneNo"
-                    placeholder="Buyer Phone No"
-                    maxLength={10}
-                                        {...field}
-                    onChange={e => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      field.onChange(val);
-                    }}
-                    />
-                    {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {fieldState.error.message}
-                    </p>
-                    )}
-                  </div>
+                    <div className="flex flex-col gap-1">
+                      <Label htmlFor="buyerPhoneNo">Buyer Phone No<span className="text-red-500">*</span></Label>
+                      <Input
+                        id="buyerPhoneNo"
+                        placeholder="Buyer Phone No"
+                        maxLength={10}
+                        {...field}
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          field.onChange(val);
+                        }}
+                      />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </div>
                   )}
                 />
               </div>
@@ -1507,53 +1506,53 @@ const defaultFormValues = useMemo(() => ({
             {/* Show adminCharges only for superadmin */}
             {user?.role === "superadmin" && (
               <>
-              <Controller
-                name="expenseDetail.adminCharges"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label className="py-3" htmlFor="adminCharges">
-                      Admin Charges
-                    </Label>
-                    <Input
-                      required
-                      id="adminCharges"
-                      type="number"
-                      placeholder="Enter a value"
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        field.onChange(val === "" ? "" : Number(val));
-                      }}
-                    />
-                  </div>
-                )}
-              />
+                <Controller
+                  name="expenseDetail.adminCharges"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1">
+                      <Label className="py-3" htmlFor="adminCharges">
+                        Admin Charges
+                      </Label>
+                      <Input
+                        required
+                        id="adminCharges"
+                        type="number"
+                        placeholder="Enter a value"
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          field.onChange(val === "" ? "" : Number(val));
+                        }}
+                      />
+                    </div>
+                  )}
+                />
 
-               <Controller
-                name="expenseDetail.otherCharges"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label className="py-3" htmlFor="adminCharges">
-                      Other Charges
-                    </Label>
-                    <Input
-                      required
-                      id="otherCharges"
-                      type="number"
-                      placeholder="Enter a value"
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        field.onChange(val === "" ? "" : Number(val));
-                      }}
-                    />
-                  </div>
-                )}
-              />
+                <Controller
+                  name="expenseDetail.otherCharges"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1">
+                      <Label className="py-3" htmlFor="adminCharges">
+                        Other Charges
+                      </Label>
+                      <Input
+                        required
+                        id="otherCharges"
+                        type="number"
+                        placeholder="Enter a value"
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          field.onChange(val === "" ? "" : Number(val));
+                        }}
+                      />
+                    </div>
+                  )}
+                />
               </>
             )}
           </div>

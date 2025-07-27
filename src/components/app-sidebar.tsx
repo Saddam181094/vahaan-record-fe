@@ -60,6 +60,7 @@ const items1: Record<string, SidebarItem[]> = {
     { title: "My-Cases", url: "/superadmin/cases/Mycases", icon: PcCase },
     { title: "Verified-Cases", url: "/superadmin/cases/all", icon: BriefcaseConveyorBelt },
     { title: "Payments", url: "/superadmin/VerifyPayments", icon: IndianRupee },
+    { title: "Documents", url: "/superadmin/documents", icon: PcCase },
     // { title: "Tasks", url: "/superadmin/Tasks", icon: ClipboardList},
     { title: "My Profile", url: "/superadmin/Profile", icon: User },
   ],
