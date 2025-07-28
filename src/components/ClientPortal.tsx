@@ -154,7 +154,7 @@ const filteredCases = cases.filter((c) => {
     <div className="w-full space-y-4">
       <h1 className="text-xl font-bold">Your Cases</h1>
       <div className="w-full overflow-x-auto mb-4">
-        <div className="flex gap-2 min-w-[340px] sm:min-w-0">
+        <div className="flex gap-2 min-w-[340px] sm:min-w-0 py-5">
           <Button
             style={{ cursor: "pointer", position: "relative" }}
             variant={activeTab === "unpaid" ? "default" : "outline"}

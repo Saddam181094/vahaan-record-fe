@@ -244,6 +244,7 @@ export default function CaseForm() {
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
   const [firmsD, setfirmsD] = useState<string[]>([]);
+  const [searchfirm, setSearchfirm] = useState("");
   const [search, setSearch] = useState("");
   // const [done,setDone] = useState("");
   const toast = useToast();
@@ -353,6 +354,7 @@ export default function CaseForm() {
   const [searchHPA, setSearchHPA] = useState("");
   const [searchRTOto, setSearchRTOto] = useState("");
   const [searchRTOfrom, setSearchRTOfrom] = useState("");
+  const mainFirms = firmsD.filter(f => f.toLowerCase().includes(searchfirm.toLowerCase()));
 
   const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
 
@@ -433,12 +435,14 @@ export default function CaseForm() {
                       <div className="p-2">
                         <Input
                           placeholder="Search a Firm"
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
+                          value={searchfirm}
+                          onChange={(e) => setSearchfirm(e.target.value)}
                           className="mb-2"
+                          onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
+                          onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                         />
                       </div>
-                      {firmsD
+                      {mainFirms
                         .map((firm) => (
                           <SelectItem key={firm} value={firm}>
                             {firm}

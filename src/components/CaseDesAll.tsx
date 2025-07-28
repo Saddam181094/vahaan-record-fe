@@ -129,7 +129,7 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
                                     />
                                 </div>
                                 {filteredClients.map((client: any) => (
-                                    <SelectItem key={client.id} value={client.id} className="w-full">
+                                    <SelectItem key={client.id} value={client?.users[0].id} className="w-full">
                                         {client.firstName} {client.lastName}
                                     </SelectItem>
                                 ))}
