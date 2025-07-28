@@ -163,7 +163,7 @@ export default function CaseDes() {
 
             },
             ]}
-            data={cases.filter((items) => String(items.status) === 'Created')}
+            data={cases.filter((items) => String(items.status) === 'Created' || String(items.status) === 'Updated')}
           />
 
 
