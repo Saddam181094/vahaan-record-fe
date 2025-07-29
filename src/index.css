@@ -177,5 +177,42 @@ input[type="number"] {
   #printable-content {
     padding: 1in;
     box-sizing: border-box;
+    background-color: white !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+  
+  .print-content {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  .print-content .bg-gray-50 {
+    background-color: white !important;
+  }
+  
+  .print-content .bg-white {
+    background-color: white !important;
+    border: 1px solid #e5e7eb !important;
+  }
+  
+  .print-content .shadow-lg {
+    box-shadow: none !important;
+  }
+  
+  .print-content .text-green-600 {
+    color: #059669 !important;
+  }
+  
+  .print-content .text-red-600 {
+    color: #dc2626 !important;
+  }
+  
+  .print-content .bg-green-50 {
+    background-color: #f0fdf4 !important;
+  }
+  
+  .print-content .bg-red-50 {
+    background-color: #fef2f2 !important;
   }
 }

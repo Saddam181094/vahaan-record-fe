@@ -70,11 +70,12 @@ const MyProfile: React.FC = () => {
     getProfile().then((resp) => {
       setPerson(resp?.data);
     }).catch((err) => {
-      if (err?.status == '401' || err?.response?.status == '401') {
+      if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
+      } else {
+        toast.showToast('Error:', err?.message || 'Some error Occured during fetch', 'error');
       }
-      toast.showToast('Error', err?.message || 'Error fetching personal Data', 'error')
     }).finally(() => {
       setTimeout(() => setLoading(false), 3000)
       setLoading(false);
@@ -88,11 +89,12 @@ const MyProfile: React.FC = () => {
     getUpi().then((resp) => {
       setUpiId(resp?.data?.upi);
     }).catch((err: any) => {
-      if (err?.status == '401' || err?.response?.status == '401') {
+      if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
+      } else {
+        toast.showToast('Error:', err?.message || 'Some error Occured during fetch', 'error');
       }
-      toast.showToast('Error', err?.message || 'Error fetching UPI Id', 'error')
     }).finally(() => {
       setLoading(false);
     })
@@ -118,11 +120,12 @@ const MyProfile: React.FC = () => {
     getDocuments().then((resp) => {
       setDocuments(resp?.data);
     }).catch((err) => {
-      if (err?.status == '401' || err?.response?.status == '401') {
+      if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
+      } else {
+        toast.showToast('Error:', err?.message || 'Some error Occured during fetch', 'error');
       }
-      toast.showToast('Error', err?.message || 'Error fetching personal Data', 'error')
     }).finally(() => {
       setTimeout(() => setLoading(false), 3000)
       setLoading(false);
@@ -140,7 +143,7 @@ const MyProfile: React.FC = () => {
       (resp) =>
         toast.showToast('Success', resp?.message, 'success')
     ).catch((err: any) => {
-      if (err?.status == '401' || err?.response?.status == '401') {
+      if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
       }

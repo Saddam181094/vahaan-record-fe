@@ -51,11 +51,12 @@ const AddFirm = () => {
     getDocuments().then((resp) => {
       setDocuments(resp?.data);
     }).catch((err) => {
-      if (err?.status == '401' || err?.response?.status == '401') {
+      if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
+      } else {
+        toast.showToast('Error:', err?.message || 'Some error Occured during fetch', 'error');
       }
-      toast.showToast('Error', err?.message || 'Error fetching personal Data', 'error')
     }).finally(() => {
       setTimeout(() => setLoading(false), 3000)
       setLoading(false);

@@ -37,6 +37,8 @@ import { useAuth } from "@/context/AuthContext";
 import { getFirmsD } from "@/service/client.service";
 // import CaseDetails from "./CaseDetailsEmployee";
 import { TransactionTo } from "@/components/CaseForm";
+import { Input } from "./ui/input";
+import React from "react";
 
 export interface FinalDetails {
   CaseNo: string;
@@ -92,11 +94,19 @@ export default function CaseDescription() {
 
   const [searchHPT, setSearchHPT] = useState("");
   const [searchHPA, setSearchHPA] = useState("");
+  // const [searchRTOfrom, setSearchRTOfrom] = useState("");
   const {logout} = useAuth();
 
 
   const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
+  // const filteredCode1 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOfrom).toLowerCase()));
 
+  const filteredHPTFirms = React.useMemo(() => (
+    (filteredfirms ?? []).filter(f => f.name.toLowerCase().includes(searchHPT.toLowerCase()))
+  ), [filteredfirms, searchHPT]);
+  const filteredHPAFirms = React.useMemo(() => (
+    (filteredfirms ?? []).filter(f => f.name.toLowerCase().includes(searchHPA.toLowerCase()))
+  ), [filteredfirms, searchHPA]);
 
   const {
     handleSubmit,
@@ -115,7 +125,7 @@ export default function CaseDescription() {
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
+        if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -144,7 +154,7 @@ export default function CaseDescription() {
 //       }
 //     })
 //     .catch((err: any) => {
-//       if (err?.status == '401' || err?.response?.status == '401') {
+//       if (err?.status == 401 || err?.response?.status == 401) {
 //         toast.showToast('Error', 'Session Expired', 'error');
 //         logout();
 //       }
@@ -167,7 +177,7 @@ export default function CaseDescription() {
           setFirm(f);
         })
         .catch((err: any) => {
-          if(err?.status == '401' || err?.response?.status == '401')
+          if(err?.status == 401 || err?.response?.status == 401)
           {
             toast.showToast('Error', 'Session Expired', 'error');
             logout();
@@ -190,7 +200,7 @@ export default function CaseDescription() {
         // console.log(resp?.data);
         setCaseData(resp?.data);
       }).catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
+        if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -242,7 +252,7 @@ export default function CaseDescription() {
       setEditMode(false);
     } catch (err: any) {
       // console.error(err);
-      if(err?.status == '401' || err?.response?.status == '401')
+      if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -319,18 +329,38 @@ const Section2 = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <div className={`mb-6 ${className}`}>
-    <h2 className="text-lg font-bold mb-2 border-b pb-1">{title}</h2>
-    <div className="grid grid-cols-2 gap-4">{children}</div>
+  <div className={`mb-8 ${className}`}>
+    <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-t-lg shadow-sm">
+      <h3 className="text-lg font-bold">{title}</h3>
+    </div>
+    <div className="bg-white border border-gray-200 rounded-b-lg shadow-sm p-6">
+      <div className="space-y-1">
+        {children}
+      </div>
+    </div>
   </div>
 );
 
 
-  const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => (
-    <div className="mb-2">
-      <span className="font-semibold">{label}:</span> {value || "-"}
-    </div>
-  );
+  const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => {
+    const isBoolean = typeof value === 'boolean' || value === 'Yes' || value === 'No';
+    const isYes = value === true || value === 'Yes';
+    
+    return (
+      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+        <span className="font-medium text-gray-700 min-w-[140px]">{label}</span>
+        <span className={`font-semibold text-right flex-1 ${
+          isBoolean 
+            ? isYes 
+              ? 'text-green-600 bg-green-50 px-2 py-1 rounded' 
+              : 'text-red-600 bg-red-50 px-2 py-1 rounded'
+            : 'text-gray-900'
+        }`}>
+          {value || "-"}
+        </span>
+      </div>
+    );
+  };
 
   const RenderField = ({
     label,
@@ -390,45 +420,45 @@ const Section2 = ({
             )}
           />
         ) : options ? (
-<Controller
-  name={name as any}
-  control={control}
-  render={({ field }) => (
-<Select
-  onValueChange={field.onChange}
-  value={field.value || ""}
->
-  <SelectTrigger className="w-full">
-    <SelectValue placeholder="Select..." />
-  </SelectTrigger>
-  <SelectContent>
-    {setSearch && (
-      <div className="px-2 py-1">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search..."
-          className="w-full px-2 py-1 text-sm border rounded"
-        />
-      </div>
-    )}
-    {(options ?? [])
-      .filter((opt) =>
-        !search
-          ? true
-          : getOptionLabel(opt).toLowerCase().includes(search.toLowerCase())
-      )
-      .map((opt) => (
-        <SelectItem key={getOptionValue(opt)} value={getOptionValue(opt)}>
-          {getOptionLabel(opt)}
-        </SelectItem>
-      ))}
-  </SelectContent>
-</Select>
-
-  )}
-/>
+          <Controller
+            name={name as any}
+            control={control}
+            render={({ field }) => (
+              <Select
+                onValueChange={field.onChange}
+                value={field.value || ""}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {setSearch && (
+                    <div className="px-2 py-1">
+                      <Input
+                        placeholder="Search..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full px-2 py-1 text-sm border rounded"
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                  )}
+                  {(options ?? [])
+                    .filter((opt) =>
+                      !search
+                        ? true
+                        : getOptionLabel(opt).toLowerCase().includes(search.toLowerCase())
+                    )
+                    .map((opt) => (
+                      <SelectItem key={getOptionValue(opt)} value={getOptionValue(opt)}>
+                        {getOptionLabel(opt)}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
 
         ) : type === "Mobile" ? (
           <Controller
@@ -570,17 +600,33 @@ const reactToPrintFn = useReactToPrint({ contentRef });
 
 
     return (
-      <div id="printable-content" className="p-12 text-sm leading-relaxed">
+      <div 
+        id="printable-content" 
+        className="p-8 text-sm leading-relaxed bg-gray-50 min-h-screen print-content"
+      >
         {/* Letterhead */}
-        <div className="mb-6 border-b pb-10">
-          <img
-            src="/Group.svg"
-            alt="Letterhead"
-            className="mb-5 max-h-24"
-          />
-          <h1 className="text-xl font-bold mt-5">Case Details</h1>
-          <p className="text-gray-600">Case No: #{caseNo}</p>
+        <div className="bg-white rounded-lg shadow-lg p-8 mb-8 border border-gray-200">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <img
+                src="/Group.svg"
+                alt="Letterhead"
+                className="h-16 w-auto pr-5"
+              />
+              <div>
+                <h1 className="text-xl font-bold text-gray-800">Case Details Report</h1>
+                <p className="text-gray-600 text-sm">Generated on {new Date().toLocaleDateString()}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                <p className="text-sm font-medium">Case No</p>
+                <p className="text-xl font-bold">#{caseNo}</p>
+              </div>
+            </div>
+          </div>
         </div>
+        {/* <p>{{name}}</p> */}
 
         <Section2 title="General Details" className="pt-8">
           <PrintField label="Firm Name" value={generalDetail?.firmName} />
@@ -598,7 +644,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           <PrintField label="RMA Vehicle No" value={vehicleDetail?.rmaVehicleNo} />
         </Section2>
 
-        <Section2 title="Expire Details">
+        <Section2 title="Expire Details" className="pt-8 break-before-page">
           <PrintField label="Insurance Expiry" value={formatDate(expireDetail?.insuranceExpiry)} />
           <PrintField label="PUC Expiry" value={formatDate(expireDetail?.pucExpiry)} />
           <PrintField label="Fitness Expiry" value={formatDate(expireDetail?.fitnessExpiry)} />
@@ -606,46 +652,95 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           <PrintField label="Permit Expiry" value={formatDate(expireDetail?.permitExpiry)} />
         </Section2>
 
-        <Section2 title="Transaction Details" className="break-before-page pt-20">
+        <Section2 title="Transaction Details" className="pt-20">
           <PrintField label="To RTO" value={transactionDetail?.to} />
           <PrintField label="HPT Firm" value={transactionDetail?.hptFirmName} />
           <PrintField label="HPA Firm" value={transactionDetail?.hpaFirmName} />
-          <PrintField label="Fitness" value={getBool(transactionDetail?.fitness)} />
-          <PrintField label="RRF" value={getBool(transactionDetail?.rrf)} />
-          <PrintField label="RMA" value={getBool(transactionDetail?.rma)} />
-          <PrintField label="Alteration" value={getBool(transactionDetail?.alteration)} />
-          <PrintField label="Conversion" value={getBool(transactionDetail?.conversion)} />
           <PrintField label="Number Plate" value={transactionDetail?.numberPlate} />
-          <PrintField label="Address Change" value={getBool(transactionDetail?.addressChange)} />
-          <PrintField label="DRC" value={getBool(transactionDetail?.drc)} />
           <PrintField label="Remarks" value={transactionDetail?.remarks} />
+          
+          <div className="col-span-full mt-4 pt-4 border-t border-gray-200">
+            <h4 className="font-semibold text-gray-700 mb-3">Transaction Services</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <PrintField label="Fitness" value={getBool(transactionDetail?.fitness)} />
+              <PrintField label="RRF" value={getBool(transactionDetail?.rrf)} />
+              <PrintField label="RMA" value={getBool(transactionDetail?.rma)} />
+              <PrintField label="Alteration" value={getBool(transactionDetail?.alteration)} />
+              <PrintField label="Conversion" value={getBool(transactionDetail?.conversion)} />
+              <PrintField label="Address Change" value={getBool(transactionDetail?.addressChange)} />
+              <PrintField label="DRC" value={getBool(transactionDetail?.drc)} />
+            </div>
+          </div>
         </Section2>
 
-{owd && (<>
-        <Section2 title="Seller Details" className="pt-8">
-          <PrintField label="Seller Name" value={ownerDetails?.sellerName} />
-          <PrintField label="Seller Aadhar" value={ownerDetails?.sellerAadharNo} />
-          <PrintField label="Seller Address" value={ownerDetails?.sellerAddress} />
-          <PrintField label="Seller State" value={ownerDetails?.sellerState} />
-          <PrintField label="Seller Phone" value={ownerDetails?.sellerPhoneNo} />
+{owd && (
+        <Section2 title="Ownership Transfer Details" className="pt-8 break-before-page">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
+                Seller Information
+              </h4>
+              <PrintField label="Seller Name" value={ownerDetails?.sellerName} />
+              <PrintField label="Seller Aadhar" value={ownerDetails?.sellerAadharNo} />
+              <PrintField label="Seller Address" value={ownerDetails?.sellerAddress} />
+              <PrintField label="Seller State" value={ownerDetails?.sellerState} />
+              <PrintField label="Seller Phone" value={ownerDetails?.sellerPhoneNo} />
+            </div>
+            
+            <div>
+              <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
+                Buyer Information
+              </h4>
+              <PrintField label="Buyer Name" value={ownerDetails?.buyerName} />
+              <PrintField label="Buyer Aadhar" value={ownerDetails?.buyerAadharNo} />
+              <PrintField label="Buyer Address" value={ownerDetails?.buyerAddress} />
+              <PrintField label="Buyer State" value={ownerDetails?.buyerState} />
+              <PrintField label="Buyer Phone" value={ownerDetails?.buyerPhoneNo} />
+            </div>
+          </div>
         </Section2>
-
-        <Section2 title="Buyer Details" className="pt-8">
-          <PrintField label="Buyer Name" value={ownerDetails?.buyerName} />
-          <PrintField label="Buyer Aadhar" value={ownerDetails?.buyerAadharNo} />
-          <PrintField label="Buyer Address" value={ownerDetails?.buyerAddress} />
-          <PrintField label="Buyer State" value={ownerDetails?.buyerState} />
-          <PrintField label="Buyer Phone" value={ownerDetails?.buyerPhoneNo} />
-        </Section2>
-</>
 )}
         <Section2 title="Expense Details" className="pt-8">
-          <PrintField label="PUC Charges" value={expenseDetail?.pucCharges} />
-          <PrintField label="Insurance Charges" value={expenseDetail?.insuranceCharges} />
-          <PrintField label="Reciept Amount" value={expenseDetail?.receiptAmount} />
-          {user?.role==='superadmin' && <PrintField label="Other Charges" value={expenseDetail?.otherCharges} />}
-         {user?.role === 'superadmin' && <PrintField label="Admin Charges" value={expenseDetail?.adminCharges} />}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <span className="font-semibold text-xl text-gray-700 mb-3">Service Charges</span>
+              <PrintField label="PUC Charges" value={expenseDetail?.pucCharges ? `₹${expenseDetail.pucCharges}` : "Not Alloted"} />
+              <PrintField label="Insurance Charges" value={expenseDetail?.insuranceCharges ?`₹${expenseDetail.insuranceCharges}` : "Not Alloted"} />
+              <PrintField label="Receipt Amount" value={expenseDetail?.receiptAmount ? `₹${expenseDetail.receiptAmount}` : "Not Alloted"} />
+            </div>
+            {user?.role === 'superadmin' && (
+              <div>
+                <span className="font-semibold text-xl text-gray-700 mb-3">Additional Charges</span>
+                <PrintField label="Other Charges" value={expenseDetail?.otherCharges ? `₹${expenseDetail.otherCharges}` : "Not Alloted"} />
+                <PrintField label="Admin Charges" value={expenseDetail?.adminCharges ? `₹${expenseDetail.adminCharges}` : "Not Alloted"} />
+              </div>
+            )}
+          </div>
         </Section2>
+        
+        {/* Summary Section */}
+        {/* <div className="bg-white rounded-lg shadow-lg p-6 mt-8 border border-gray-200 pt-8">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+            <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+            Case Summary
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <p className="font-medium text-blue-800">Vehicle Information</p>
+              <p className="text-blue-600 font-semibold">{vehicleDetail?.vehicleNo || 'N/A'}</p>
+            </div>
+            <div className="bg-green-50 p-3 rounded-lg">
+              <p className="font-medium text-green-800">Firm</p>
+              <p className="text-green-600 font-semibold">{generalDetail?.firmName || 'N/A'}</p>
+            </div>
+            <div className="bg-purple-50 p-3 rounded-lg">
+              <p className="font-medium text-purple-800">Total Charges</p>
+              <p className="text-purple-600 font-semibold">
+                ₹{(expenseDetail?.pucCharges || 0) + (expenseDetail?.insuranceCharges || 0) + (expenseDetail?.receiptAmount || 0)}
+              </p>
+            </div>
+          </div>
+        </div> */}
       </div>
     );
   };
@@ -808,12 +903,13 @@ const isDisabled = caseData? true : false;
           value={vd?.vehicleNo}
           name="vehicleDetail.vehicleNo"
         />
-        <RenderField
-          label="From RTO"
-          required
-          value={vd?.fromRTO}
-          name="vehicleDetail.fromRTO"
-        />
+
+<RenderField
+label="From RTO"
+required
+value={vd?.fromRTO}
+name="vehicleDetail.fromRTO"
+/>
         <RenderField
           label="To RTO"
           required
@@ -887,9 +983,9 @@ const isDisabled = caseData? true : false;
         <RenderField
           label="HPT ID"
           required
-          value={editMode ? td?.hptId?? "" : getFirmNameById(td?.hptId)}
+          value={editMode ? td?.hptId ?? "" : getFirmNameById(td?.hptId)}
           name="transactionDetail.hptId"
-          options={filteredfirms}
+          options={filteredHPTFirms}
           search={searchHPT}
           setSearch={setSearchHPT}
           getOptionValue={opt => opt.id}
@@ -898,9 +994,9 @@ const isDisabled = caseData? true : false;
         <RenderField
           label="HPA ID"
           required
-          value={editMode ? td?.hpaId?? "" : getFirmNameById(td?.hpaId)}
+          value={editMode ? td?.hpaId ?? "" : getFirmNameById(td?.hpaId)}
           name="transactionDetail.hpaId"
-          options={filteredfirms}
+          options={filteredHPAFirms}
           search={searchHPA}
           setSearch={setSearchHPA}
           getOptionValue={opt => opt.id}

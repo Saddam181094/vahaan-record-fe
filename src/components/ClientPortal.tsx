@@ -63,7 +63,7 @@ export default function ClientCaseList() {
         }
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
+        if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -124,7 +124,7 @@ export default function ClientCaseList() {
         });
       }, 1500);
     } catch (err: any) {
-      if(err?.status == '401' || err?.response?.status == '401')
+      if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();

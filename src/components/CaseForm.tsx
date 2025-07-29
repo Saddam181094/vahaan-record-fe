@@ -274,7 +274,7 @@ export default function CaseForm() {
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-        if (err?.status == '401' || err?.response?.status == '401') {
+        if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -295,7 +295,7 @@ export default function CaseForm() {
         setbranchEmp(resp?.data);
       })
       .catch((err: any) => {
-        if (err?.status == '401' || err?.response?.status == '401') {
+        if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -314,7 +314,7 @@ export default function CaseForm() {
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-        if (err?.status == '401' || err?.response?.status == '401') {
+        if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -333,7 +333,7 @@ export default function CaseForm() {
         setfirmsD(f);
       })
       .catch((err: any) => {
-        if (err?.status == '401' || err?.response?.status == '401') {
+        if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -375,7 +375,7 @@ export default function CaseForm() {
           navigate('/superadmin/cases/Mycases')
       })
       .catch((err: any) => {
-        if (err?.status == '401' || err?.response?.status == '401') {
+        if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }

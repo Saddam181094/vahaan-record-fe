@@ -112,7 +112,7 @@ export default function AdminBranchForm() {
         setBranches(resp?.data);
       })
       .catch((err: any) => {
-           if(err?.status == '401' || err?.response?.status == '401')
+           if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -136,7 +136,7 @@ export default function AdminBranchForm() {
       setRefreshFlag((prev) => !prev);
       reset();
     } catch (err: any) {
-         if(err?.status == '401' || err?.response?.status == '401')
+         if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -159,7 +159,7 @@ export default function AdminBranchForm() {
       await toggleBranch(branch);
       toast.showToast('Success','Branch Switched Succesfully', 'success');
     } catch (err: any) {
-         if(err?.status == '401' || err?.response?.status == '401')
+         if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();

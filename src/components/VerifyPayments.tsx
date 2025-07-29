@@ -83,8 +83,9 @@ const [actionConfirmOpen, setActionConfirmOpen] = useState(false);
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
+        } else {
+          toast.showToast('Error:', error?.message || 'Some error Occured during fetch', 'error');
         }
-        toast.showToast('Error:', error?.message || 'Error in fetching Unverified Payments', 'error')
       })
       .finally(() => setLoading(false));
   }, [flag]);
@@ -113,7 +114,7 @@ const handleConfirmAction = () => {
       );
     })
     .catch((err) => {
-              if(err?.status == '401' || err?.response?.status == '401')
+              if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();

@@ -260,7 +260,7 @@ const lastDateOfMonth = `${lastDate.getFullYear()}-${String(lastDate.getMonth() 
         setFilteredCases(resp?.data || []);
       })
       .catch((err) =>{
-        if(err?.status == '401' || err?.response?.status == '401')
+        if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -284,7 +284,7 @@ const applyFilter = async (data: FilterFormValues) => {
     }
     setFilteredCases(response?.data || []);
   } catch (err:any) {
-            if(err?.status == '401' || err?.response?.status == '401')
+            if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();

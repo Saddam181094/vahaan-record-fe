@@ -68,7 +68,7 @@ export default function CaseDescription() {
                 setCaseData(resp?.data);
             })
             .catch((err:any)=>{
-                if(err?.status == '401' || err?.response?.status == '401')
+                if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();

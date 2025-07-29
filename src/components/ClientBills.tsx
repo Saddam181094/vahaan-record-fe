@@ -65,7 +65,7 @@ const ClientBills = () => {
         toast.showToast('Success','All Bills Fetched','success');
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
+        if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -91,7 +91,7 @@ const ClientBills = () => {
     setBdata(bill?.payments || []);
       toast.showToast("Success", resp?.message, "success");
   } catch (err:any) {
-    if(err?.status == '401' || err?.response?.status == '401')
+    if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -171,7 +171,7 @@ const ClientBills = () => {
         getUpi().then((resp)=>{
           setUpiPerson(resp?.data?.upi);
         }).catch((err:any)=>{
-                    if(err?.status == '401' || err?.response?.status == '401')
+                    if(err?.status == 401 || err?.response?.status == 401)
           {
             toast.showToast('Error', 'Session Expired', 'error');
             logout();

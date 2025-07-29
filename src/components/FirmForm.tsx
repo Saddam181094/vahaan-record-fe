@@ -46,7 +46,7 @@ const {setLoading} = useLoading();
         setfirms(resp?.data);
       })
       .catch((err: any) => {
-                if(err?.status == '401' || err?.response?.status == '401')
+                if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -67,7 +67,7 @@ const {setLoading} = useLoading();
       toast.showToast('Success:','Successfully created a Firm','success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
-              if(err?.status == '401' || err?.response?.status == '401')
+              if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -85,7 +85,7 @@ const {setLoading} = useLoading();
       await toggleFirm(Firm);
       toast.showToast('Success:','Firm Switched Successfully','info');
     } catch (err: any) {
-              if(err?.status == '401' || err?.response?.status == '401')
+              if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();

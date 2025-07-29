@@ -93,8 +93,9 @@ const AdminDashboard = () => {
         if (err?.status === '401' || err?.response?.status === 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
+        } else {
+          toast.showToast('Error:', err?.message || 'Some error Occured during fetch', 'error');
         }
-        toast.showToast('Error', err?.message || 'Error Fetching the Tasks', 'error');
       })
       .finally(() => {
         setTasksLoading(false);
@@ -120,7 +121,7 @@ const AdminDashboard = () => {
         setRefreshFlag((prev) => !prev); // Trigger a refresh
         reset();
       } catch (err: any) {
-        if (err?.status == '401' || err?.response?.status == '401') {
+        if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -139,7 +140,7 @@ const AdminDashboard = () => {
         toast.showToast('Success', 'Created a New Task', 'success');
         reset(); // Reset the form after successful submission
       } catch (err: any) {
-        if (err?.status == '401' || err?.response?.status == '401') {
+        if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
@@ -155,7 +156,7 @@ const AdminDashboard = () => {
       toast.showToast('Success', 'Task Completed Successfully!', 'success');
       setLoading(false);
     }).catch((err: any) => {
-      if (err?.status == '401' || err?.response?.status == '401') {
+      if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
       }
@@ -213,8 +214,9 @@ const AdminDashboard = () => {
         if (err?.status === '401' || err?.response?.status === 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
+        } else {
+          toast.showToast('Error:', err?.message || 'Summary was not fetched due to some error', 'error');
         }
-        toast.showToast('Error', err?.message || 'Summary was not fetched due to some error', 'error');
       })
       .finally(() => {
         setSummaryLoading(false);

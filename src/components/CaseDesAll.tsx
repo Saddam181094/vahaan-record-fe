@@ -74,7 +74,7 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
                 // console.log(resp?.data);
                 toast.showToast('Success', 'Case Assigned Successfully.', 'success');
             }).catch((err: any) => {
-                 if(err?.status == '401' || err?.response?.status == '401')
+                 if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -206,7 +206,7 @@ export default function CaseDes() {
     getActiveClients()
       .then((resp) => setClients(resp?.data || []))
       .catch((err) => {
-           if(err?.status == '401' || err?.response?.status == '401')
+           if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -268,7 +268,7 @@ const lastDateOfMonth = `${lastDate.getFullYear()}-${String(lastDate.getMonth() 
         setFilteredCases(resp?.data || []);
       })
       .catch((err) => 
-     { if(err?.status == '401' || err?.response?.status == '401')
+     { if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -292,7 +292,7 @@ const applyFilter = async (data: FilterFormValues) => {
     }
     setFilteredCases(response?.data || []);
   } catch (err: any) {
-    if(err?.status == '401' || err?.response?.status == '401')
+    if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();

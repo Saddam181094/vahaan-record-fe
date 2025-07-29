@@ -81,7 +81,7 @@ export default function EmployeeForm() {
         setEmployee2(resp?.data);
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
+        if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -98,7 +98,7 @@ export default function EmployeeForm() {
         setBranch(resp?.data);
       })
       .catch((err: any) => {
-        if(err?.status == '401' || err?.response?.status == '401')
+        if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -118,7 +118,7 @@ export default function EmployeeForm() {
       toast.showToast('Success', 'Created a New Employee', 'success');
       reset(); // Reset the form after successful submission
     } catch (err: any) {
-      if(err?.status == '401' || err?.response?.status == '401')
+      if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();

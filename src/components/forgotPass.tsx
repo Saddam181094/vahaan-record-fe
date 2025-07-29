@@ -29,7 +29,7 @@ export function ForgotPasswordModal({open, onOpenChange}: ForgotPasswordModalPro
       setMessage(res)
           toast.showToast('Submitting forgot password for:',email,'info');
     } catch (err: any) {
-              if(err?.status == '401' || err?.response?.status == '401')
+              if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();

@@ -44,7 +44,7 @@ const Client = () => {
             setFilteredCases(response?.data || []);
             setisDisabled(response?.data?.transactions?.length > 0);
         } catch (err:any) {
-            if(err?.status == '401' || err?.response?.status == '401')
+            if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -83,7 +83,7 @@ const Client = () => {
             }
         }).
             catch((err: any) => {
-                if(err?.status == '401' || err?.response?.status == '401')
+                if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -106,9 +106,15 @@ const Client = () => {
         children: React.ReactNode;
         className?: string;
     }) => (
-        <div className={`mb-6 ${className}`}>
-            <h2 className="text-lg font-bold mb-2 border-b pb-1">{title}</h2>
-            <div className="grid grid-cols-2 gap-4">{children}</div>
+        <div className={`mb-8 ${className}`}>
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-t-lg shadow-sm">
+                <h3 className="text-lg font-bold">{title}</h3>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-b-lg shadow-sm p-6">
+                <div className="space-y-1">
+                    {children}
+                </div>
+            </div>
         </div>
     );
 
@@ -145,11 +151,25 @@ const handlePrint = () => {
 
 
 
-    const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => (
-        <div className="mb-2">
-            <span className="font-semibold">{label}:</span> {value || "-"}
-        </div>
-    );
+    const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => {
+        const isBoolean = typeof value === 'boolean' || value === 'Yes' || value === 'No';
+        const isYes = value === true || value === 'Yes';
+        
+        return (
+            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                <span className="font-medium text-gray-700 min-w-[140px]">{label}</span>
+                <span className={`font-semibold text-right flex-1 ${
+                    isBoolean 
+                        ? isYes 
+                            ? 'text-green-600 bg-green-50 px-2 py-1 rounded' 
+                            : 'text-red-600 bg-red-50 px-2 py-1 rounded'
+                        : 'text-gray-900'
+                }`}>
+                    {value || "-"}
+                </span>
+            </div>
+        );
+    };
 
     const PrintableCaseDetails = ({
         firstName,
@@ -160,50 +180,92 @@ const handlePrint = () => {
         transactions = [],
     }: any) => {
         return (
-            <div id="printable-content" className="p-12 text-sm leading-relaxed">
+            <div id="printable-content" className="p-8 text-sm leading-relaxed bg-gray-50 min-h-screen print-content">
                 {/* Letterhead */}
-                <div className="mb-6 border-b pb-4">
-                    <img src="/Group.svg" alt="Letterhead" className="mb-5 max-h-24" />
-                    <p className="text-gray-600"></p>
+                <div className="bg-white rounded-lg shadow-lg p-8 mb-8 border border-gray-200">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center space-x-4">
+                            <img
+                                src="/Group.svg"
+                                alt="Letterhead"
+                                className="h-16 w-auto pr-5"
+                            />
+                            <div>
+                                <h1 className="text-xl font-bold text-gray-800">Client Transaction Report</h1>
+                                <p className="text-gray-600 text-sm">Generated on {new Date().toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                                <p className="text-sm font-medium">Client ID</p>
+                                <p className="text-xl font-bold">#{firstName?.slice(0, 3).toUpperCase()}{lastName?.slice(0, 3).toUpperCase()}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Client Info Section */}
-                <Section2 title="Client Details">
+                {/* Client Information */}
+                <Section2 title="Client Information">
                     <PrintField label="First Name" value={firstName} />
                     <PrintField label="Last Name" value={lastName} />
                     <PrintField label="Email" value={email} />
                     <PrintField label="Phone No." value={phoneNo} />
-                    <PrintField label="Credit Limit" value={creditLimit} />
+                    <PrintField label="Credit Limit" value={creditLimit ? `₹${creditLimit}` : "Not Set"} />
                 </Section2>
 
-                {/* Transaction Table */}
+                {/* Transaction History */}
                 {transactions.length > 0 && (
-                    <div className="mt-8">
-                        <h2 className="text-lg font-semibold mb-2">Transaction History</h2>
-                        <table className="w-full text-left border border-collapse border-gray-300 text-xs">
-                            <thead className="bg-gray-100">
-                                <tr>
-                                    <th className="border px-3 py-2">Date</th>
-                                    <th className="border px-3 py-2">Remarks</th>
-                                    <th className="border px-3 py-2">Mode</th>
-                                    <th className="border px-3 py-2">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {transactions.map((txn: any) => (
-                                    <tr >
-                                        <td className="border px-3 py-2">
-                                            {new Date(txn.paymentDate).toLocaleDateString()}
-                                        </td>
-                                        <td className="border px-3 py-2 capitalize">{txn.remark}</td>
-                                        <td className="border px-3 py-2">{txn.mode}</td>
-                                        <td className="border px-3 py-2">₹{txn.Amount}</td>
+                    <Section2 title="Transaction History">
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse text-xs">
+                                <thead className="bg-gray-100 text-gray-800 uppercase tracking-wide">
+                                    <tr>
+                                        <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Date</th>
+                                        <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Remarks</th>
+                                        <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Mode</th>
+                                        <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Amount</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {transactions.map((txn: any, index: number) => (
+                                        <tr key={index} className="even:bg-gray-50 odd:bg-white">
+                                            <td className="border border-gray-300 px-4 py-2">
+                                                {new Date(txn.paymentDate).toLocaleDateString()}
+                                            </td>
+                                            <td className="border border-gray-300 px-4 py-2 capitalize">{txn.remark}</td>
+                                            <td className="border border-gray-300 px-4 py-2">{txn.mode}</td>
+                                            <td className="border border-gray-300 px-4 py-2 font-semibold">₹{txn.Amount}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </Section2>
                 )}
+
+                {/* Summary Section */}
+                <div className="bg-white rounded-lg shadow-lg p-6 mt-8 border border-gray-200">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                        Transaction Summary
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                            <p className="font-medium text-blue-800">Total Transactions</p>
+                            <p className="text-blue-600 font-semibold">{transactions.length}</p>
+                        </div>
+                        <div className="bg-green-50 p-3 rounded-lg">
+                            <p className="font-medium text-green-800">Total Amount</p>
+                            <p className="text-green-600 font-semibold">
+                                ₹{transactions.reduce((sum: number, txn: any) => sum + (parseFloat(txn.Amount) || 0), 0).toFixed(2)}
+                            </p>
+                        </div>
+                        <div className="bg-purple-50 p-3 rounded-lg">
+                            <p className="font-medium text-purple-800">Credit Limit</p>
+                            <p className="text-purple-600 font-semibold">{creditLimit ? `₹${creditLimit}` : 'Not Set'}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     };

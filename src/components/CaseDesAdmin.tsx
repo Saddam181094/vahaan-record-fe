@@ -69,7 +69,7 @@ export default function CaseDes() {
       setDialogOpen(false);
 
     }).catch((err: any) => {
-         if(err?.status == '401' || err?.response?.status == '401')
+         if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
@@ -94,7 +94,7 @@ export default function CaseDes() {
       }
         )
       .catch((err: any) =>  {
-           if(err?.status == '401' || err?.response?.status == '401')
+           if(err?.status == 401 || err?.response?.status == 401)
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
