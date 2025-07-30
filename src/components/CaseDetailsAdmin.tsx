@@ -1,325 +1,54 @@
-import { useLocation, useNavigate } from "react-router-dom";
+// Updated CaseDetailsAdmin.tsx
+// Removed edit mode logic and renderField. Only viewing is supported now. Added Edit and Back buttons.
+
 import { useEffect, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getCaseID } from "@/service/case.service";
 import { useReactToPrint } from "react-to-print";
-// import type { UseReactToPrintOptions } from "react-to-print";
-import type {
-  GeneralDetails,
-  TransactionDetail,
-  ExpenseDetail,
-  ExpireDetail,
-  VehicleDetail,
-  ownerDetails,
-  Case,
-} from "@/components/CaseForm";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
-import { getCaseID, updateCaseID } from "@/service/case.service";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useLoading } from "./LoadingContext";
-// import { Switch } from "@radix-ui/react-switch";
 import { useToast } from "@/context/ToastContext";
-import { DateInput } from "./ui/date-input";
-import { Switch } from "./ui/switch";
-// import { Input } from "./ui/input";
-import { indianStates } from "./Branchform";
+import { useAuth } from "@/context/AuthContext";
+
+import type { FinalDetails } from "./CaseForm";
 import { getActiveFirm } from "@/service/firm.service";
 import type { Firm } from "./FirmForm";
-import { NumberPlate } from "@/components/CaseForm";
-import { useAuth } from "@/context/AuthContext";
-// import { Button } from "./ui/button";
-import { getFirmsD } from "@/service/client.service";
-// import CaseDetails from "./CaseDetailsEmployee";
-import { TransactionTo } from "@/components/CaseForm";
-import { Input } from "./ui/input";
-import React from "react";
 
-export interface FinalDetails {
-  CaseNo: string;
-  generalDetail: GeneralDetails;
-  vehicleDetail: VehicleDetail;
-  expireDetail: ExpireDetail;
-  transactionDetail: TransactionDetail;
-  expenseDetail: ExpenseDetail;
-  ownerDetails?: ownerDetails;
-  logs: Logs;
-}
-
-export interface Logs {
-  user: user;
-  fromStatus: string;
-  toStatus: string;
-}
-
-export interface user {
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-}
-
-export default function CaseDescription() {
+export default function CaseDetailsAdmin() {
+  const { setLoading } = useLoading();
+  const toast = useToast();
+  const { logout,user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const id = location.state?.id;
-  const state = location.state?.status;
-  const { setLoading } = useLoading();
-  const [firms, setfirms] = useState<Firm[]>([]);
-  const [refreshFlag] = useState(false);
+ const [firms, setfirms] = useState<Firm[]>([]);
+  const caseId = location.state?.id;
   const [caseData, setCaseData] = useState<FinalDetails>();
-  const [editMode, setEditMode] = useState(false);
-  const [status, setStatus] = useState<string | undefined>();
-  const toast = useToast();
-  const { user } = useAuth();
-  const Numberplates = Object.values(NumberPlate);
-
-
-  const [searchSellerState, setSearchSellerState] = useState("");
-  const [searchBuyerState, setSearchBuyerState] = useState("");
-  const [searchFirm, setSearchFirm] = useState("");
-  const [firm,setFirm] = useState<[]>([]);
-
-  const ind2 = indianStates.filter((hostel) =>
-    hostel.toLowerCase().includes((searchSellerState).toLowerCase())
-  );
-  const ind3 = indianStates.filter((hostel) =>
-    hostel.toLowerCase().includes((searchBuyerState).toLowerCase())
-  );
-
-  const [searchHPT, setSearchHPT] = useState("");
-  const [searchHPA, setSearchHPA] = useState("");
-  // const [searchRTOfrom, setSearchRTOfrom] = useState("");
-  const {logout} = useAuth();
-
-
-  const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
-  // const filteredCode1 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOfrom).toLowerCase()));
-
-  const filteredHPTFirms = React.useMemo(() => (
-    (filteredfirms ?? []).filter(f => f.name.toLowerCase().includes(searchHPT.toLowerCase()))
-  ), [filteredfirms, searchHPT]);
-  const filteredHPAFirms = React.useMemo(() => (
-    (filteredfirms ?? []).filter(f => f.name.toLowerCase().includes(searchHPA.toLowerCase()))
-  ), [filteredfirms, searchHPA]);
-
-  const {
-    handleSubmit,
-    reset,
-    control,
-    formState: { isSubmitting },
-  } = useForm<FinalDetails>({
-    // defaultValues: caseData,
-  });
-
-  useEffect(() => {
-    setLoading(true);
-
-    getActiveFirm()
-      .then((resp) => {
-        setfirms(resp?.data);
-      })
-      .catch((err: any) => {
-        if(err?.status == 401 || err?.response?.status == 401)
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-      })
-      .finally(() => setLoading(false));
-  }, [refreshFlag]);
-
-//   useEffect(() => {
-//   setLoading(true);
-
-//   getActiveFirm()
-//     .then((resp) => {
-//       const activeFirms = resp?.data;
-//       setfirms(activeFirms);
-
-//       const isHPTValid = activeFirms.some((firm:any) => firm.id === td?.hptId);
-//       const isHPAValid = activeFirms.some((firm:any) => firm.id === td?.hpaId);
-
-//       if (!isHPTValid && td?.hptId) {
-//         toast.showToast("Warning", "Selected HPT firm is no longer active", "warning");
-//       }
-//       if (!isHPAValid && td?.hpaId) {
-//         toast.showToast("Warning", "Selected HPA firm is no longer active", "warning");
-//       }
-//     })
-//     .catch((err: any) => {
-//       if (err?.status == 401 || err?.response?.status == 401) {
-//         toast.showToast('Error', 'Session Expired', 'error');
-//         logout();
-//       }
-//       toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-//     })
-//     .finally(() => setLoading(false));
-// }, [refreshFlag]);
-
-
-  useEffect(() => {
-    setStatus(state);
-  }, [refreshFlag])
-
-   useEffect(() => {
+  
+    useEffect(() => {
       setLoading(true);
   
-      getFirmsD()
+      getActiveFirm()
         .then((resp) => {
-          const f = resp?.data.map((f:string) => f.toUpperCase());
-          setFirm(f);
+          setfirms(resp?.data);
         })
         .catch((err: any) => {
-          if(err?.status == 401 || err?.response?.status == 401)
-          {
+          if (err?.status == 401 || err?.response?.status == 401) {
             toast.showToast('Error', 'Session Expired', 'error');
             logout();
           }
           toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
         })
         .finally(() => setLoading(false));
-    }, [refreshFlag]);
-
-  useEffect(() => {
-    if (!id) {
-      toast.showToast('Error', 'Proper ID was not provided', 'error');
-      // alert("No ID provided");
-      return;
-    }
-
-    setLoading(true);
-    getCaseID(id)
-      .then((resp) => {
-        // console.log(resp?.data);
-        setCaseData(resp?.data);
-      }).catch((err: any) => {
-        if(err?.status == 401 || err?.response?.status == 401)
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-        toast.showToast('Error:', err?.message || 'Some error Occured during fetch', 'error');
-      })
-      .finally(() => setLoading(false));
-  }, [id, navigate]);
-
-  useEffect(() => {
-    if (caseData) {
-      reset(caseData);
-    }
-  }, [caseData, reset]);
-
-  const stripIds = <T extends object>(obj: T): Partial<T> => {
-    const { id, ...rest } = obj as any;
-    return rest;
-  };
-  const formatDate = (dateStr: string | undefined): string | undefined =>
-    dateStr?.split("T")[0] ?? undefined;
-
-
-  const onSubmit = async (data: FinalDetails) => {
-    try {
-      setLoading(true);
-      const casePayload: Case = {
-        generalDetails: stripIds(data.generalDetail) as GeneralDetails,
-        vehicleDetail: stripIds(data.vehicleDetail) as VehicleDetail,
-        expireDetail: {
-          ...stripIds(data.expireDetail),
-          insuranceExpiry: formatDate(data.expireDetail.insuranceExpiry),
-          pucExpiry: formatDate(data.expireDetail.pucExpiry),
-          fitnessExpiry: formatDate(data.expireDetail.fitnessExpiry),
-          taxExpiry: formatDate(data.expireDetail.taxExpiry),
-          permitExpiry: formatDate(data.expireDetail.permitExpiry),
-        } as ExpireDetail,
-        transactionDetail: stripIds(
-          data.transactionDetail
-        ) as TransactionDetail,
-        expenseDetail: stripIds(data.expenseDetail) as ExpenseDetail,
-        ownerDetails: stripIds(data.ownerDetails ?? {}) as ownerDetails,
-      };
-
-      await updateCaseID(id, casePayload);
-      toast.showToast('Success', 'Case Successfully Updated', 'success');
-      reset(casePayload);
-      navigate(-1);
-      setEditMode(false);
-    } catch (err: any) {
-      // console.error(err);
-      if(err?.status == 401 || err?.response?.status == 401)
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-      else if (err?.response?.status === 400) {
-        toast.showToast('Bad Request', 'Provide full owner details or none', 'error');
-      } else {
-        const errorMessage = err?.response?.data?.message || err?.message || 'Unknown error occurred.';
-        toast.showToast('Error in Updating', errorMessage, 'error');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getFormattedCaseData = (data: FinalDetails): FinalDetails => ({
-    ...data,
-    generalDetail:{
-      ...data.generalDetail,
-      appointmentDate:formatDate(data.generalDetail.appointmentDate)??""
-    },
-    expireDetail: {
-      ...data.expireDetail,
-      insuranceExpiry: formatDate(data.expireDetail.insuranceExpiry) ?? "",
-      pucExpiry: formatDate(data.expireDetail.pucExpiry) ?? "",
-      fitnessExpiry: formatDate(data.expireDetail.fitnessExpiry) ?? "",
-      taxExpiry: formatDate(data.expireDetail.taxExpiry) ?? "",
-      permitExpiry: formatDate(data.expireDetail.permitExpiry) ?? "",
-    }
-  });
-
-
-  const onCancel = () => {
-    if (caseData) {
-      reset(getFormattedCaseData(caseData));
-    }
-    setEditMode(false);
-  };
-
-
-  useEffect(() => {
-    if (caseData) {
-      reset(getFormattedCaseData(caseData));
-    }
-  }, [caseData, reset]);
-
-  const getFirmNameById = (id: string | undefined) => {
+    }, []);
+  
+      const getBoolStatus = (val?: boolean) => (val ? "Yes" : "No");
+  
+    const getFirmNameById = (id: string | undefined) => {
     if (!id) return "—";
     const firm = firms.find(f => f.id === id);
     return firm ? firm.name : id;
   };
-
-  const Section = ({
-    title,
-    children,
-  }: {
-    title: string;
-    children: React.ReactNode;
-  }) => (
-    <Card className="mb-6">
-      <CardHeader className="text-lg font-semibold">{title}</CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {children}
-      </CardContent>
-    </Card>
-  );
-
 const Section2 = ({
   title,
   children,
@@ -341,237 +70,24 @@ const Section2 = ({
   </div>
 );
 
+  const formatDate = (dateStr: string | undefined): string | undefined =>
+    dateStr?.split("T")[0] ?? undefined;
 
-  const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => {
-    const isBoolean = typeof value === 'boolean' || value === 'Yes' || value === 'No';
-    const isYes = value === true || value === 'Yes';
-    
-    return (
-      <div className="flex justify-between items-center py-2 border-b border-gray-100">
-        <span className="font-medium text-gray-700 min-w-[140px]">{label}</span>
-        <span className={`font-semibold text-right flex-1 ${
-          isBoolean 
-            ? isYes 
-              ? 'text-green-600 bg-green-50 px-2 py-1 rounded' 
-              : 'text-red-600 bg-red-50 px-2 py-1 rounded'
-            : 'text-gray-900'
-        }`}>
-          {value || "-"}
-        </span>
-      </div>
-    );
-  };
-
-  const RenderField = ({
-    label,
-    value,
-    name,
-    type = "text",
-    options,
-    search,
-    setSearch,
-    required,
-    getOptionValue = (opt) => opt,     // Default: return whole string
-    getOptionLabel = (opt) => opt,     // Default: return whole string
-  }: {
-    label: string;
-    value: any;
-    name: string;
-    type?: string;
-    options?: any[];
-    search?: string;
-    required?: boolean;
-    setSearch?: (value: string) => void;
-    getOptionValue?: (opt: any) => string;
-    getOptionLabel?: (opt: any) => string;
-  }) => (
-    <div>
-      <Label className="text-sm text-muted-foreground">{label}
-
-        {required && <span className="text-red-500">*</span>}
-      </Label>
-      {editMode ? (
-        type === "switch" ? (
-          <Controller
-            name={name as any}
-            control={control}
-            render={({ field }) => (
-              <Switch
-                checked={!!field.value}
-                onCheckedChange={field.onChange}
-              />
-            )}
-          />
-        ) : type === "date" ? (
-          <Controller
-            name={name as any}
-            control={control}
-            render={({ field, fieldState }) => (
-              <DateInput
-                id={name}
-                error={!!fieldState.error}
-                value={
-                  typeof field.value === "string"
-                    ? field.value
-                    : ""
-                }
-                onChange={(e) => field.onChange(e.target.value)}
-              />
-            )}
-          />
-        ) : options ? (
-          <Controller
-            name={name as any}
-            control={control}
-            render={({ field }) => (
-              <Select
-                onValueChange={field.onChange}
-                value={field.value || ""}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {setSearch && (
-                    <div className="px-2 py-1">
-                      <Input
-                        placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full px-2 py-1 text-sm border rounded"
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => e.stopPropagation()}
-                      />
-                    </div>
-                  )}
-                  {(options ?? [])
-                    .filter((opt) =>
-                      !search
-                        ? true
-                        : getOptionLabel(opt).toLowerCase().includes(search.toLowerCase())
-                    )
-                    .map((opt) => (
-                      <SelectItem key={getOptionValue(opt)} value={getOptionValue(opt)}>
-                        {getOptionLabel(opt)}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            )}
-          />
-
-        ) : type === "Mobile" ? (
-          <Controller
-            name={name as any}
-            control={control}
-            rules={{
-              pattern: {
-                value: /^[6-9]\d{9}$/,
-                message: "Enter a valid 10-digit Indian phone number",
-              },
-            }}
-            render={({ field, fieldState }) => (
-              <>
-                <input
-                  type={type}
-                  {...field}
-                  maxLength={10}
-                  onChange={e => {
-                    const val = e.target.value.replace(/\D/g, "");
-                    field.onChange(val);
-                  }}
-                  className="border p-2 rounded-md w-full"
-                />
-                {fieldState.error && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {fieldState.error.message}
-                  </p>
-                )}
-              </>
-            )}
-          />
-        ) : type === "Aadhar" ? (
-          <Controller
-            name={name as any}
-            control={control}
-            rules={{
-              pattern: {
-                value: /^\d{12}$/,
-                message: "Aadhaar No must be a 12-digit number",
-              },
-            }}
-            render={({ field, fieldState }) => (
-              <>
-                <input
-                  type={type}
-                  {...field}
-                  maxLength={12}
-                  onChange={e => {
-                    const val = e.target.value.replace(/\D/g, "");
-                    field.onChange(val);
-                  }}
-                  className="border p-2 rounded-md w-full"
-                />
-                {fieldState.error && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {fieldState.error.message}
-                  </p>
-                )}
-              </>
-            )}
-          />
-        ) : (
-          <Controller
-            name={name as any}
-            control={control}
-            rules={{ required }}
-            render={({ field, fieldState }) => (
-              <>
-                <input
-                  type={type}
-                  {...field}
-                   onChange={(e) => {
-          const value = e.target.value.toUpperCase();  // Convert to uppercase
-          field.onChange(value);
-        }}
-                  className="border p-2 rounded-md w-full"
-                />
-                {fieldState.error && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {fieldState.error.message}
-                  </p>
-                )}
-              </>
-            )}
-          />
-        )
-      ) : (
-        <div className="border p-2 rounded-md bg-muted">
-          {typeof value === "boolean"
-            ? value
-              ? "Yes"
-              : "No"
-            : value?.toString() || "—"}
-        </div>
-      )}
-    </div>
-  );
-
-
-  const getBoolStatus = (bool: boolean | undefined) => {
-    if (bool === true) return "Yes";
-    if (bool === false) return "No";
-    return "NA";
-  };
-
-  const caseNo = caseData?.CaseNo;
-  const gd = caseData?.generalDetail;
-  const vd = caseData?.vehicleDetail;
-  const ed = caseData?.expireDetail;
-  const td = caseData?.transactionDetail;
-  const exd = caseData?.expenseDetail;
-  const owd = caseData?.ownerDetails;
-
+//  const getFormattedCaseData = (caseData: FinalDetails): FinalDetails => ({
+//     ...caseData,
+//     generalDetail:{
+//       ...caseData.generalDetail,
+//       appointmentDate:formatDate(caseData.generalDetail.appointmentDate)??""
+//     },
+//     expireDetail: {
+//       ...caseData.expireDetail,
+//       insuranceExpiry: formatDate(caseData.expireDetail.insuranceExpiry) ?? "",
+//       pucExpiry: formatDate(caseData.expireDetail.pucExpiry) ?? "",
+//       fitnessExpiry: formatDate(caseData.expireDetail.fitnessExpiry) ?? "",
+//       taxExpiry: formatDate(caseData.expireDetail.taxExpiry) ?? "",
+//       permitExpiry: formatDate(caseData.expireDetail.permitExpiry) ?? "",
+//     }
+//   });
 const contentRef = useRef<HTMLDivElement>(null);
 const reactToPrintFn = useReactToPrint({ contentRef });
 
@@ -673,7 +189,7 @@ const reactToPrintFn = useReactToPrint({ contentRef });
           </div>
         </Section2>
 
-{owd && (
+{ownerDetails && (
         <Section2 title="Ownership Transfer Details" className="pt-8 break-before-page">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
@@ -745,447 +261,316 @@ const reactToPrintFn = useReactToPrint({ contentRef });
     );
   };
 
-  const [options,setOptions] = useState(false); 
+  useEffect(() => {
+    if (!caseId) {
+      toast.showToast("Error", "No Case ID provided", "error");
+      navigate(-1);
+      return;
+    }
 
-useEffect(() => {
-  if (!td) return;
-
-  setLoading(true);
-
-  getActiveFirm()
-    .then((resp) => {
-      const activeFirms = resp?.data || [];
-      setfirms(activeFirms);
-
-      const { hptId, hpaId } = td;
-
-      const isHPTValid = activeFirms.some((firm: any) => firm.id === hptId);
-      const isHPAValid = activeFirms.some((firm: any) => firm.id === hpaId);
-
-      // Update invalid IDs to empty, so the field shows placeholder
-      if (!isHPTValid && hptId) {
-        setOptions(true);
-        toast.showToast("Warning", "Selected HPT firm is no longer active", "warning");
-        setCaseData((prev: any) => ({
-          ...prev,
-          transactionDetail: {
-            ...prev.transactionDetail,
-            hptId: undefined,
-          }
-        }));
-      }
-
-      if (!isHPAValid && hpaId) {
-                setOptions(true);
-        toast.showToast("Warning", "Selected HPA firm is no longer active", "warning");
-        setCaseData((prev: any) => ({
-          ...prev,
-          transactionDetail: {
-            ...prev.transactionDetail,
-            hpaId: undefined,
-          }
-        }));
-      }
-    })
-    .catch((err: any) => {
-      if (err?.status === 401 || err?.response?.status === 401) {
-        toast.showToast("Error", "Session Expired", "error");
-        logout();
-      } else {
-        toast.showToast("Error", err?.message || "Error during fetch of Firms", "error");
-      }
-    })
-    .finally(() => setLoading(false));
-}, [td]);
+    setLoading(true);
+    getCaseID(caseId)
+      .then((resp) => {
+        setCaseData(resp?.data);
+      })
+      .catch((err) => {
+        if (err?.status === 401 || err?.response?.status === 401) {
+          toast.showToast("Error", "Session Expired", "error");
+          logout();
+        } else {
+          toast.showToast("Error", err?.message || "Failed to fetch case data", "error");
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [caseId, logout, navigate, setLoading, toast]);
 
 
-const isDisabled = caseData? true : false;
+
+  const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => {
+    const isBoolean = typeof value === 'boolean' || value === 'Yes' || value === 'No';
+    const isYes = value === true || value === 'Yes';
+    
+    return (
+      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+        <span className="font-medium text-gray-700 min-w-[140px]">{label}</span>
+        <span className={`font-semibold text-right flex-1 ${
+          isBoolean 
+            ? isYes 
+              ? 'text-green-600 bg-green-50 px-2 py-1 rounded' 
+              : 'text-red-600 bg-red-50 px-2 py-1 rounded'
+            : 'text-gray-900'
+        }`}>
+          {value || "-"}
+        </span>
+      </div>
+    );
+  };
+
+
+  if (!caseData) return null;
+
+  const { CaseNo, generalDetail, vehicleDetail, expireDetail, transactionDetail, expenseDetail, ownerDetails } = caseData;
+
   return (
     <>
-    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 no-print print:hidden">
-      {/* <div className="flex sm:flex-row justify-between items-center gap-4 mb-4"> */}
-<div className="flex flex-wrap gap-2 w-full sm:flex-nowrap justify-between">
-  {/* Back and Print */}
-  <div className="flex sm:flex-row gap-2 w-full sm:w-auto justify-between">
-    <button
-      style={{ cursor: "pointer" }}
-      className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90 sm:w-auto"
-      onClick={() => navigate(-1)}
+    <div className="p-6 space-y-6">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-start gap-4">
+        <Button variant="outline" className="cursor-pointer" onClick={() => navigate(-1)}>← Back</Button>
+      <Button
       type="button"
-    >
-      ← Back
-    </button>
-
-    <button
-      type="button"
-      disabled={!isDisabled}
       style={{ cursor: "pointer" }}
       onClick={reactToPrintFn}
       className="bg-primary text-white sm:w-auto rounded px-4 py-2"
     >
       🖨️ Print PDF
-    </button>
-  </div>
-
-  {/* Edit / Save + Cancel */}
-  {(status?.toLowerCase() === "assigned" || status?.toLowerCase() === "paid" || status?.toLowerCase() === "closed")? null : (
-    !editMode ? (
-      <button
-        style={{ cursor: "pointer" }}
-        className="px-4 py-2 rounded bg-secondary text-primary border border-primary hover:bg-secondary/80 w-full sm:w-auto"
-        onClick={() => setEditMode(true)}
-        type="button"
-      >
-        ✎ Edit
-      </button>
-    ) : (
-      <div className="flex sm:flex-row gap-2 w-full sm:w-auto">
-        <button
-          style={{ cursor: "pointer" }}
-          className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto"
-          type="submit"
-          disabled={isSubmitting}
-        >
-          Save
-        </button>
-        <button
-          style={{ cursor: "pointer" }}
-          className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600 w-full sm:w-auto"
-          onClick={onCancel}
-          type="button"
-        >
-          ✖ Cancel
-        </button>
+    </Button>
+        </div>
+        <Button className="cursor-pointer" onClick={() => navigate(`/${user?.role}/cases/${CaseNo}/edit`, { state: { caseData:caseData, id:caseId } })}>
+          ✎ Edit
+        </Button>
       </div>
-    )
-  )}
-</div>
+
+      <h1 className="text-2xl font-bold mb-4">Case #{CaseNo}</h1>
+
+<Card className="mb-6">
+  <CardHeader className="text-lg font-semibold">General Details</CardHeader>
+  <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div>
+      <p className="text-sm text-muted-foreground">Firm Name</p>
+      <p className="font-medium">{generalDetail?.firmName || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Appointment Date</p>
+      <p className="font-medium">{formatDate(generalDetail?.appointmentDate) || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Application No.</p>
+      <p className="font-medium">{generalDetail?.applicationNo || "—"}</p>
+    </div>
+{user?.role === "superadmin" &&   
+<div>
+      <p className="text-sm text-muted-foreground">Incentive Amount</p>
+      <p className="font-medium">{generalDetail?.incentiveAmount || "—"}</p>
+    </div>}
+  </CardContent>
+</Card>
+
+<Card className="mb-6">
+  <CardHeader className="text-lg font-semibold">Vehicle Details</CardHeader>
+  <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div>
+      <p className="text-sm text-muted-foreground">Vehicle No</p>
+      <p className="font-medium">{vehicleDetail?.vehicleNo || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">From RTO</p>
+      <p className="font-medium">{vehicleDetail?.fromRTO || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">To RTO</p>
+      <p className="font-medium">{vehicleDetail?.toRTO || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Chassis No</p>
+      <p className="font-medium">{vehicleDetail?.chassisNo || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Engine No</p>
+      <p className="font-medium">{vehicleDetail?.engineNo || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">RMA Vehicle No</p>
+      <p className="font-medium">{vehicleDetail?.rmaVehicleNo || "—"}</p>
+    </div>
+  </CardContent>
+</Card>
+
+<Card className="mb-6">
+  <CardHeader className="text-lg font-semibold">Expire Details</CardHeader>
+  <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div>
+      <p className="text-sm text-muted-foreground">Insurance Expiry</p>
+      <p className="font-medium">{formatDate(expireDetail?.insuranceExpiry) || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">PUC Expiry</p>
+      <p className="font-medium">{formatDate(expireDetail?.pucExpiry) || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Fitness Expiry</p>
+      <p className="font-medium">{formatDate(expireDetail?.fitnessExpiry) || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Tax Expiry</p>
+      <p className="font-medium">{formatDate(expireDetail?.taxExpiry) || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Permit Expiry</p>
+      <p className="font-medium">{formatDate(expireDetail?.permitExpiry) || "—"}</p>
+    </div>
+  </CardContent>
+</Card>
+
+<Card className="mb-6">
+  <CardHeader className="text-lg font-semibold">Transaction Details</CardHeader>
+  <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div>
+      <p className="text-sm text-muted-foreground">To RTO</p>
+      <p className="font-medium">{transactionDetail?.to || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">HPT ID</p>
+      <p className="font-medium">{getFirmNameById(transactionDetail?.hptId) || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">HPA ID</p>
+      <p className="font-medium">{getFirmNameById(transactionDetail?.hpaId) || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Fitness</p>
+      <p className="font-medium">{getBoolStatus(transactionDetail?.fitness)}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">RRF</p>
+      <p className="font-medium">{getBoolStatus(transactionDetail?.rrf)}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">RMA</p>
+      <p className="font-medium">{getBoolStatus(transactionDetail?.rma)}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Alteration</p>
+      <p className="font-medium">{getBoolStatus(transactionDetail?.alteration)}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Conversion</p>
+      <p className="font-medium">{getBoolStatus(transactionDetail?.conversion)}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Number Plate Type</p>
+      <p className="font-medium">{transactionDetail?.numberPlate || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Address Change</p>
+      <p className="font-medium">{getBoolStatus(transactionDetail?.addressChange)}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">DRC</p>
+      <p className="font-medium">{getBoolStatus(transactionDetail?.drc)}</p>
+    </div>
+    <div className="md:col-span-2 lg:col-span-3">
+      <p className="text-sm text-muted-foreground">Remarks</p>
+      <p className="font-medium">{transactionDetail?.remarks || "—"}</p>
+    </div>
+  </CardContent>
+</Card>
 
 
 
-{options && <span className="text-red-500">Either HPA/HPT ID are from inactive field.</span>}
+{ownerDetails && (
+  <>
+<Card className="mb-6">
+  <CardHeader className="text-lg font-semibold">Seller Details</CardHeader>
+  <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div>
+      <p className="text-sm text-muted-foreground">Seller Name</p>
+      <p className="font-medium">{ownerDetails?.sellerName || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Seller Aadhar Number</p>
+      <p className="font-medium">{ownerDetails?.sellerAadharNo || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Seller Address</p>
+      <p className="font-medium">{ownerDetails?.sellerAddress || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Seller State</p>
+      <p className="font-medium">{ownerDetails?.sellerState || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Seller Mobile Number</p>
+      <p className="font-medium">{ownerDetails?.sellerPhoneNo || "—"}</p>
+    </div>
+  </CardContent>
+</Card>
 
-      <h1 className="text-2xl font-bold mb-4">Case Details: #{caseNo}</h1>
-
-      <Section title="General Details">
-        <RenderField
-          label="Firm Name"
-          required
-          value={gd?.firmName}
-          name="generalDetail.firmName"
-          options={firm}
-          search={searchFirm}
-          setSearch={setSearchFirm}
-        />
-        {user?.role === "superadmin" &&
-          <RenderField
-            label="Incentive Amount"
-            value={gd?.incentiveAmount}
-            name="generalDetail.incentiveAmount"
-          />}
-        <RenderField
-          label="Appointment Date"
-          value={formatDate(gd?.appointmentDate)}
-          name="generalDetail.appointmentDate"
-          type="date"
-        />
-        <RenderField
-          label="Application No."
-          value={gd?.applicationNo}
-          name="generalDetail.applicationNo"
-        />
-      </Section>
-
-      <Section title="Vehicle Details">
-        <RenderField
-          label="Vehicle No"
-          required
-          value={vd?.vehicleNo}
-          name="vehicleDetail.vehicleNo"
-        />
-
-<RenderField
-label="From RTO"
-required
-value={vd?.fromRTO}
-name="vehicleDetail.fromRTO"
-/>
-        <RenderField
-          label="To RTO"
-          required
-          value={vd?.toRTO}
-          name="vehicleDetail.toRTO"
-        />
-        <RenderField
-          label="Chassis No"
-          required
-          value={vd?.chassisNo}
-          name="vehicleDetail.chassisNo"
-        />
-        <RenderField
-          label="Engine No"
-          required
-          value={vd?.engineNo}
-          name="vehicleDetail.engineNo"
-        />
-        <RenderField
-          label="RMA Vehicle No"
-          value={vd?.rmaVehicleNo}
-          name="vehicleDetail.rmaVehicleNo"
-        />
-      </Section>
-
-      <Section title="Expire Details">
-        <RenderField
-          label="Insurance Expiry"
-          required
-          value={formatDate(ed?.insuranceExpiry)}
-          name="expireDetail.insuranceExpiry"
-          type="date"
-        />
-        <RenderField
-          label="PUC Expiry"
-          required
-          value={formatDate(ed?.pucExpiry)}
-          name="expireDetail.pucExpiry"
-          type="date"
-        />
-        <RenderField
-          label="Fitness Expiry"
-          required
-          value={formatDate(ed?.fitnessExpiry)}
-          name="expireDetail.fitnessExpiry"
-          type="date"
-        />
-        <RenderField
-          label="Tax Expiry"
-          required
-          value={formatDate(ed?.taxExpiry)}
-          name="expireDetail.taxExpiry"
-          type="date"
-        />
-        <RenderField
-          label="Permit Expiry"
-          value={formatDate(ed?.permitExpiry)}
-          name="expireDetail.permitExpiry"
-          type="date"
-        />
-      </Section>
-
-      <Section title="Transaction Details">
-        <RenderField
-          label="To RTO"
-          required
-          value={td?.to}
-          options={Object.values(TransactionTo)}
-          name="transactionDetail.to"
-        />
-        <RenderField
-          label="HPT ID"
-          required
-          value={editMode ? td?.hptId ?? "" : getFirmNameById(td?.hptId)}
-          name="transactionDetail.hptId"
-          options={filteredHPTFirms}
-          search={searchHPT}
-          setSearch={setSearchHPT}
-          getOptionValue={opt => opt.id}
-          getOptionLabel={opt => opt.name}
-        />
-        <RenderField
-          label="HPA ID"
-          required
-          value={editMode ? td?.hpaId ?? "" : getFirmNameById(td?.hpaId)}
-          name="transactionDetail.hpaId"
-          options={filteredHPAFirms}
-          search={searchHPA}
-          setSearch={setSearchHPA}
-          getOptionValue={opt => opt.id}
-          getOptionLabel={opt => opt.name}
-        />
-        <RenderField
-          label="Fitness"
-          value={getBoolStatus(td?.fitness)}
-          name="transactionDetail.fitness"
-          type="switch"
-        />
-        <RenderField
-          label="RRF"
-          value={getBoolStatus(td?.rrf)}
-          name="transactionDetail.rrf"
-          type="switch"
-        />
-        <RenderField
-          label="RMA"
-          value={getBoolStatus(td?.rma)}
-          name="transactionDetail.rma"
-          type="switch"
-        />
-        <RenderField
-          label="Alteration"
-          value={getBoolStatus(td?.alteration)}
-          name="transactionDetail.alteration"
-          type="switch"
-        />
-        <RenderField
-          label="Conversion"
-          value={getBoolStatus(td?.conversion)}
-          name="transactionDetail.conversion"
-          type="switch"
-        />
-        <RenderField
-          label="Number Plate Type"
-          required
-          value={td?.numberPlate}
-          name="transactionDetail.numberPlate"
-          options={Numberplates}
-        />
-        <RenderField
-          label="Address Change"
-          value={getBoolStatus(td?.addressChange)}
-          name="transactionDetail.addressChange"
-          type="switch"
-        />
-        <RenderField
-          label="DRC"
-          value={getBoolStatus(td?.drc)}
-          name="transactionDetail.drc"
-          type="switch"
-        />
-        <RenderField
-          label="Remarks"
-          value={td?.remarks}
-          name="transactionDetail.remarks"
-        />
-      </Section>
-
-
-
-      {owd && (
-        <>     
-        <Section title="Seller Details">
-        <RenderField
-          label="Seller Name"
-          value={owd?.sellerName}
-          name="ownerDetails.sellerName"
-        />
-        <RenderField
-          label="Seller Aadhar Number"
-          value={owd?.sellerAadharNo}
-          name="ownerDetails.sellerAadharNo"
-          type="Aadhar"
-        />
-        <RenderField
-          label="Seller Address"
-          value={owd?.sellerAddress}
-          name="ownerDetails.sellerAddress"
-        />
-        <RenderField
-          label="Seller State"
-          value={owd?.sellerState}
-          name="ownerDetails.sellerState"
-          options={ind2}
-          search={searchSellerState}
-          setSearch={setSearchSellerState}
-        />
-        <RenderField
-          label="Seller Mobile Number"
-          value={owd?.sellerPhoneNo}
-          name="ownerDetails.sellerPhoneNo"
-          type="Mobile"
-        />
-      </Section>
-
-      <Section title="Buyer Details">
-        <RenderField
-          label="Buyer Name"
-          required
-          value={owd?.buyerName}
-          name="ownerDetails.buyerName"
-        />
-        <RenderField
-          label="Buyer Aadhar Number"
-          required
-          value={owd?.buyerAadharNo}
-          name="ownerDetails.buyerAadharNo"
-          type="Aadhar"
-        />
-        <RenderField
-          label="Buyer Address"
-          required
-          value={owd?.buyerAddress}
-          name="ownerDetails.buyerAddress"
-        />
-        <RenderField
-          label="Buyer State"
-          required
-          value={owd?.buyerState}
-          name="ownerDetails.buyerState"
-          options={ind3}
-          search={searchBuyerState}
-          setSearch={setSearchBuyerState}
-        />
-        <RenderField
-          label="Buyer Mobile Number"
-          required
-          value={owd?.buyerPhoneNo}
-          name="ownerDetails.buyerPhoneNo"
-          type="Mobile"
-        />
-      </Section>
-      </>
-      )}
-
-
-      <Section title="Expense Details">
-        <RenderField
-          label="PUC Charges"
-          required
-          value={exd?.pucCharges}
-          name="expenseDetail.pucCharges"
-        />
-        <RenderField
-          label="Insurance Charges"
-          required
-          value={exd?.insuranceCharges}
-          name="expenseDetail.insuranceCharges"
-        />
-        <RenderField
-          label="Reciept Amount"
-          required
-          value={exd?.receiptAmount}
-          name="expenseDetail.receiptAmount"
-        />
-        {user?.role === "superadmin" &&(
-          <>
-          <RenderField
-            label="Admin Charges"
-            value={exd?.adminCharges}
-            name="expenseDetail.adminCharges"
-          />
-          
-        <RenderField
-          label="Other Charges"
-          value={exd?.otherCharges}
-          name="expenseDetail.otherCharges"
-        />
-        </>)}
-      </Section>
-    </form>
-  <div ref={contentRef} className="print:block hidden text-sm leading-relaxed printable-section">
- <PrintableCaseDetails
-    caseNo={caseNo}
-    generalDetail={gd}
-    vehicleDetail={vd}
-    expireDetail={ed}
-    transactionDetail={{
-      ...td,
-      hptFirmName: getFirmNameById(td?.hptId),
-      hpaFirmName: getFirmNameById(td?.hpaId),
-    }}
-    ownerDetails={owd}
-    expenseDetail={exd}
-  />
-</div>
+<Card className="mb-6">
+  <CardHeader className="text-lg font-semibold">Buyer Details</CardHeader>
+  <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div>
+      <p className="text-sm text-muted-foreground">Buyer Name</p>
+      <p className="font-medium">{ownerDetails?.buyerName || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Buyer Aadhar Number</p>
+      <p className="font-medium">{ownerDetails?.buyerAadharNo || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Buyer Address</p>
+      <p className="font-medium">{ownerDetails?.buyerAddress || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Buyer State</p>
+      <p className="font-medium">{ownerDetails?.buyerState || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Buyer Mobile Number</p>
+      <p className="font-medium">{ownerDetails?.buyerPhoneNo || "—"}</p>
+    </div>
+  </CardContent>
+</Card>
+<Card className="mb-6">
+  <CardHeader className="text-lg font-semibold">Expense Details</CardHeader>
+  <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div>
+      <p className="text-sm text-muted-foreground">PUC Charges</p>
+      <p className="font-medium">{expenseDetail?.pucCharges || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Insurance Charges</p>
+      <p className="font-medium">{expenseDetail?.insuranceCharges || "—"}</p>
+    </div>
+{ user?.role === 'superadmin'
+&&
+<>
+   <div>
+      <p className="text-sm text-muted-foreground">Other Charges</p>
+      <p className="font-medium">{expenseDetail?.otherCharges || "—"}</p>
+    </div>
+    <div>
+      <p className="text-sm text-muted-foreground">Admin Charges</p>
+      <p className="font-medium">{expenseDetail?.adminCharges || "—"}</p>
+    </div>
     </>
+    }
+    <div>
+      <p className="text-sm text-muted-foreground">Receipt Amount</p>
+      <p className="font-medium">{expenseDetail?.receiptAmount || "—"}</p>
+    </div>
+  </CardContent>
+</Card>
+</>
+)}
+
+    </div>
+
+  <div ref={contentRef} className="print:block hidden text-sm leading-relaxed printable-section">
+     <PrintableCaseDetails
+    caseNo={CaseNo}
+    generalDetail={generalDetail}
+    vehicleDetail={vehicleDetail}
+    expireDetail={expireDetail}
+    transactionDetail={{
+      ...transactionDetail,
+      hptFirmName: getFirmNameById(transactionDetail?.hptId),
+      hpaFirmName: getFirmNameById(transactionDetail?.hpaId),
+    }}
+    ownerDetails={ownerDetails}
+    expenseDetail={expenseDetail}
+  />
+  </div>
+  </>
   );
 }

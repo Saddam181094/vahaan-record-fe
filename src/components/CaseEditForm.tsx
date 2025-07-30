@@ -1,416 +1,132 @@
+// src/pages/EditCaseForm.tsx
 import { useEffect, useMemo, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
-import { indianStates } from "@/components/Branchform";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import type { Branch } from "@/components/Branchform";
-import { getActiveBranch } from "@/service/branch.service";
-// import type { Employee } from "@/components/EmployeeForm";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/ui/date-input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/context/ToastContext";
+import { updateCaseID } from "@/service/case.service";
+import type { Case, ExpenseDetail, ExpireDetail, FinalDetails, GeneralDetails, ownerDetails, VehicleDetail } from "./CaseForm";
+import { NumberPlate, RTOOptions, TransactionTo, type TransactionDetail } from "@/components/CaseForm";
+import { useAuth } from "@/context/AuthContext";
+import { indianStates, type Branch } from "./Branchform";
 import { useLoading } from "./LoadingContext";
-import type { Firm } from "@/components/FirmForm";
+import type { Firm } from "./FirmForm";
+import { getActiveBranch } from "@/service/branch.service";
 import { getbranchEmployee } from "@/service/emp.service";
 import { getActiveFirm } from "@/service/firm.service";
-import { createCase } from "@/service/case.service";
-import { useToast } from "@/context/ToastContext";
-import { useNavigate } from "react-router-dom";
-import { DateInput } from "@/components/ui/date-input";
 import { getFirmsD } from "@/service/client.service";
-import type { Employee } from "./EmployeeForm";
+import { Switch } from "./ui/switch";
+import { Textarea } from "./ui/textarea";
 
-// Interfaces
-export interface FinalDetails {
-  CaseNo: string;
-  generalDetail: GeneralDetails;
-  vehicleDetail: VehicleDetail;
-  expireDetail: ExpireDetail;
-  transactionDetail: TransactionDetail;
-  expenseDetail: ExpenseDetail;
-  ownerDetails?: ownerDetails;
-  logs: Logs;
-}
-export interface Logs {
-  user: user;
-  fromStatus: string;
-  toStatus: string;
-}
+export default function EditCaseForm() {
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const toast = useToast();
 
-export interface user {
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-}
+  const defaultValues = state?.caseData as FinalDetails;
+  const id = state?.id as string;
 
-export interface Case {
-  generalDetails: GeneralDetails;
-  vehicleDetail: VehicleDetail;
-  expireDetail: ExpireDetail;
-  transactionDetail: TransactionDetail;
-  ownerDetails: ownerDetails;
-  expenseDetail: ExpenseDetail;
-}
-
-export interface GeneralDetails {
-  firmName: string;
-  branchCodeId: string;
-  employeeCodeId: string;
-  incentiveAmount?: string;
-  appointmentDate?: string;
-  applicationNo?: string;
-}
-
-export interface VehicleDetail {
-  vehicleNo: string;
-  fromRTO: string;
-  toRTO: string;
-  chassisNo: string;
-  engineNo: string;
-  rmaVehicleNo?: string;
-}
-
-export interface ExpireDetail {
-  insuranceExpiry: string;
-  pucExpiry: string;
-  fitnessExpiry: string;
-  taxExpiry: string;
-  permitExpiry: string;
-}
-
-export interface TransactionDetail {
-  to: TransactionTo;
-  hptId: string;
-  hpaId: string;
-  fitness: boolean;
-  rrf: boolean;
-  rma: boolean;
-  alteration: boolean;
-  conversion: boolean;
-  numberPlate: NumberPlate;
-  addressChange: boolean;
-  drc: boolean;
-  remarks: string;
-}
-
-export interface ownerDetails {
-  sellerName: string;
-  sellerAadharNo: string;
-  sellerAddress: string;
-  sellerState: string;
-  sellerPhoneNo: string;
-  buyerName: string;
-  buyerAadharNo: string;
-  buyerAddress: string;
-  buyerState: string;
-  buyerPhoneNo: string;
-}
-
-export interface ExpenseDetail {
-  pucCharges: number | string;
-  insuranceCharges: number | string;
-  otherCharges: number | string;
-  adminCharges: number | string;
-  receiptAmount: number | string;
-}
-
-export const TransactionTo = {
-  LOCAL: "LOCAL",
-  OTHER: "OTHER",
-  NA: "NA",
-} as const;
-export type TransactionTo = (typeof TransactionTo)[keyof typeof TransactionTo];
-
-export const NumberPlate = {
-  HSRP: "HSRP",
-  NON_HSRP: "NON HSRP",
-  NA: "NA",
-} as const;
-export type NumberPlate = (typeof NumberPlate)[keyof typeof NumberPlate];
-export const RTOOptions = [
-  { value: "GJ01 (AHMEDABAD)", label: "GJ01 (AHMEDABAD)" },
-  { value: "GJ02 (MEHSANA)", label: "GJ02 (MEHSANA)" },
-  { value: "GJ03 (RAJKOT)", label: "GJ03 (RAJKOT)" },
-  { value: "GJ04 (BHAVNAGAR)", label: "GJ04 (BHAVNAGAR)" },
-  { value: "GJ05 (SURAT)", label: "GJ05 (SURAT)" },
-  { value: "GJ06 (VADODARA)", label: "GJ06 (VADODARA)" },
-  { value: "GJ07 (KHEDA)", label: "GJ07 (KHEDA)" },
-  { value: "GJ08 (BANASKANTHA)", label: "GJ08 (BANASKANTHA)" },
-  { value: "GJ09 (SABARKANTHA)", label: "GJ09 (SABARKANTHA)" },
-  { value: "GJ10 (JAMNAGAR)", label: "GJ10 (JAMNAGAR)" },
-  { value: "GJ11 (JUNAGADH)", label: "GJ11 (JUNAGADH)" },
-  { value: "GJ12 (KACHCHH)", label: "GJ12 (KACHCHH)" },
-  { value: "GJ13 (SURENDRANAGAR)", label: "GJ13 (SURENDRANAGAR)" },
-  { value: "GJ14 (AMRELI)", label: "GJ14 (AMRELI)" },
-  { value: "GJ15 (VALSAD)", label: "GJ15 (VALSAD)" },
-  { value: "GJ16 (BHARUCH)", label: "GJ16 (BHARUCH)" },
-  { value: "GJ17 (PANCHMAHAL)", label: "GJ17 (PANCHMAHAL)" },
-  { value: "GJ18 (GANDHINAGAR)", label: "GJ18 (GANDHINAGAR)" },
-  { value: "GJ19 (BARDOLI)", label: "GJ19 (BARDOLI)" },
-  { value: "GJ20 (DAHOD)", label: "GJ20 (DAHOD)" },
-  { value: "GJ21 (NAVSARI)", label: "GJ21 (NAVSARI)" },
-  { value: "GJ22 (NARMADA)", label: "GJ22 (NARMADA)" },
-  { value: "GJ23 (ANAND)", label: "GJ23 (ANAND)" },
-  { value: "GJ24 (PATAN)", label: "GJ24 (PATAN)" },
-  { value: "GJ25 (PORBANDAR)", label: "GJ25 (PORBANDAR)" },
-  { value: "GJ26 (TAPI)", label: "GJ26 (TAPI)" },
-  { value: "GJ27 (AHMEDABAD EAST)", label: "GJ27 (AHMEDABAD EAST)" },
-  { value: "GJ30 (AAHWA)", label: "GJ30 (AAHWA)" },
-  { value: "GJ31 (MODASA)", label: "GJ31 (MODASA)" },
-  { value: "GJ32 (VERAVAL)", label: "GJ32 (VERAVAL)" },
-  { value: "GJ33 (BOTAD)", label: "GJ33 (BOTAD)" },
-  { value: "GJ34 (CHHOTAUDAIPUR)", label: "GJ34 (CHHOTAUDAIPUR)" },
-  { value: "GJ35 (LUNAVADA)", label: "GJ35 (LUNAVADA)" },
-  { value: "GJ36 (MORBI)", label: "GJ36 (MORBI)" },
-  { value: "GJ37 (KHAMBHALIYA)", label: "GJ37 (KHAMBHALIYA)" },
-  { value: "GJ38 (AHMEDABAD  BAWLA ARTO)", label: "GJ38 (AHMEDABAD  BAWLA ARTO)" },
-  { value: "GJ39 (KACHCHH EAST)", label: "GJ39 (KACHCHH EAST)" },
-  { value: "GJ40 (THARAD-VAV)", label: "GJ40 (THARAD-VAV)" },
-] as const;
-
-
-
-export default function CaseForm() {
-
-  const defaultFormValues = useMemo(() => ({
-    generalDetails: {
-      firmName: "",
-      branchCodeId: "",
-      employeeCodeId: "",
-      incentiveAmount: "",
-      appointmentDate: "",
-      applicationNo: undefined,
-    },
-    vehicleDetail: {
-      vehicleNo: "",
-      rmaVehicleNo: "",
-      fromRTO: "",
-      toRTO: "",
-      chassisNo: "",
-      engineNo: "",
-    },
-    expireDetail: {
-      insuranceExpiry: "",
-      pucExpiry: "",
-      fitnessExpiry: "",
-      taxExpiry: "",
-      permitExpiry: "",
-    },
-    transactionDetail: {
-      to: "" as unknown as TransactionTo,
-      hptId: "",
-      hpaId: "",
-      fitness: false,
-      rrf: false,
-      rma: false,
-      alteration: false,
-      conversion: false,
-      numberPlate: "" as unknown as NumberPlate,
-      addressChange: false,
-      drc: false,
-      remarks: "",
-    },
-    ownerDetails: {
-      sellerName: "",
-      sellerAadharNo: "",
-      sellerAddress: "",
-      sellerState: "",
-      sellerPhoneNo: "",
-      buyerName: "",
-      buyerAadharNo: "",
-      buyerAddress: "",
-      buyerState: "",
-      buyerPhoneNo: "",
-    },
-    expenseDetail: {
-      pucCharges: "",
-      insuranceCharges: "",
-      otherCharges: "",
-      adminCharges: "",
-    },
-  }), []); // dependency array empty → stable reference
-
-
-
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<Case>({
-    defaultValues: defaultFormValues,
+  const { control, handleSubmit,setValue, watch,reset,getValues } = useForm<FinalDetails>({
+    defaultValues,
   });
 
-  // type BranchEmployee = {
-  //   id: string;
-  //   name: string;
-  //   employeeCode: string;
-  // };
-
-
-
-  const { user, logout } = useAuth();
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [b, setB] = useState<string>("");
-  const { setLoading } = useLoading();
-  const [branchEmp, setbranchEmp] = useState<Employee[]>([]);
-  const [firms, setfirms] = useState<Firm[]>([]);
-  const [firmsD, setfirmsD] = useState<string[]>([]);
-  const [searchfirm, setSearchfirm] = useState("");
-  const [search, setSearch] = useState("");
-  // const [done,setDone] = useState("");
-  const toast = useToast();
-  const navigate = useNavigate();
-
-  const [refreshFlag] = useState(false);
-
-  const [searchSellerState, setSearchSellerState] = useState("");
-  const [searchBuyerState, setSearchBuyerState] = useState("");
-
-
-
-  const ind2 = indianStates.filter((hostel) =>
-    hostel.toLowerCase().includes((searchSellerState).toLowerCase())
-  );
-  const ind3 = indianStates.filter((hostel) =>
-    hostel.toLowerCase().includes((searchBuyerState).toLowerCase())
-  );
-
-
-
-  useEffect(() => {
-    setLoading(true);
-    // console.log(user);
-    getActiveBranch()
-      .then((resp) => {
-        setBranches(resp?.data);
-      })
-      .catch((err: any) => {
-        if (err?.status == 401 || err?.response?.status == 401) {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
-        // console.error("Error fetching branches:", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [refreshFlag]);
-
-  useEffect(() => {
-    if (!b) return; // guard clause
-
-    setLoading(true);
-    getbranchEmployee(b)
-      .then((resp) => {
-        setbranchEmp(resp?.data);
-      })
-      .catch((err: any) => {
-        if (err?.status == 401 || err?.response?.status == 401) {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [b]);
-
-  useEffect(() => {
-    setLoading(true);
-
-    getActiveFirm()
-      .then((resp) => {
-        setfirms(resp?.data);
-      })
-      .catch((err: any) => {
-        if (err?.status == 401 || err?.response?.status == 401) {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-      })
-      .finally(() => setLoading(false));
-  }, [refreshFlag]);
-
-
-  useEffect(() => {
-    setLoading(true);
-
-    getFirmsD()
-      .then((resp) => {
-        const f = resp?.data.map((f: string) => f.toUpperCase());
-        setfirmsD(f);
-      })
-      .catch((err: any) => {
-        if (err?.status == 401 || err?.response?.status == 401) {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-      })
-      .finally(() => setLoading(false));
-  }, [refreshFlag]);
-
-  useEffect(() => {
-    if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
-      setValue("generalDetails.branchCodeId", user.branchCode);
-      setValue("generalDetails.employeeCodeId", user.id);
-      setB(user.branchCode); // ✅ only this triggers the next effect
-    }
-  }, [user, setValue]);
-
-  const [searchHPT, setSearchHPT] = useState("");
-  const [searchHPA, setSearchHPA] = useState("");
-  const [searchRTOto, setSearchRTOto] = useState("");
-  const [searchRTOfrom, setSearchRTOfrom] = useState("");
-  const mainFirms = firmsD.filter(f => f.toLowerCase().includes(searchfirm.toLowerCase()));
-
-  const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
-
-  const filteredCode1 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOfrom).toLowerCase()));
-  const filteredCode2 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOto).toLowerCase()));
-  // Add a submit handler function
-  const onSubmit = (data: any) => {
-    setLoading(true);
-    createCase(data)
-      .then((resp) => {
-        toast.showToast('Success', resp?.message, 'success');
-        reset();
-
-        if (user?.role === "employee")
-          navigate('/employee/cases');
-
-        else if (user?.role === "superadmin")
-          navigate('/superadmin/cases/Mycases')
-      })
-      .catch((err: any) => {
-        if (err?.status == 401 || err?.response?.status == 401) {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    type BranchEmployee = {
+    id: string;
+    name: string;
+    employeeCode: string;
   };
 
 
+   const { user, logout } = useAuth();
+    const [branches, setBranches] = useState<Branch[]>([]);
+    const [b, setB] = useState<string>("");
+    const { setLoading } = useLoading();
+    const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
+    const [firms, setfirms] = useState<Firm[]>([]);
+    const [firmsD, setfirmsD] = useState<string[]>([]);
+    const [searchfirm, setSearchfirm] = useState("");
+    const [search, setSearch] = useState("");
+    // const [done,setDone] = useState("");
+  
+    const [refreshFlag] = useState(false);
+  
+    const [searchSellerState, setSearchSellerState] = useState("");
+    const [searchBuyerState, setSearchBuyerState] = useState("");
+  
+  
+  
+    const ind2 = indianStates.filter((hostel) =>
+      hostel.toLowerCase().includes((searchSellerState).toLowerCase())
+    );
+    const ind3 = indianStates.filter((hostel) =>
+      hostel.toLowerCase().includes((searchBuyerState).toLowerCase())
+    );
+  
+  
+  
+    useEffect(() => {
+      setLoading(true);
+      console.log(defaultValues);
+      getActiveBranch()
+        .then((resp) => {
+          setBranches(resp?.data);
+        })
+        .catch((err: any) => {
+          if (err?.status == 401 || err?.response?.status == 401) {
+            toast.showToast('Error', 'Session Expired', 'error');
+            logout();
+          }
+          toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
+          // console.error("Error fetching branches:", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }, [refreshFlag]);
+  
+    useEffect(() => {
+      if (!b) return; // guard clause
+  
+      setLoading(true);
+      getbranchEmployee(b)
+        .then((resp) => {
+          setbranchEmp(resp?.data);
+        })
+        .catch((err: any) => {
+          if (err?.status == 401 || err?.response?.status == 401) {
+            toast.showToast('Error', 'Session Expired', 'error');
+            logout();
+          }
+          toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }, [b]);
+  
+    useEffect(() => {
+      setLoading(true);
+  
+      getActiveFirm()
+        .then((resp) => {
+          setfirms(resp?.data);
+        })
+        .catch((err: any) => {
+          if (err?.status == 401 || err?.response?.status == 401) {
+            toast.showToast('Error', 'Session Expired', 'error');
+            logout();
+          }
+          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+        })
+        .finally(() => setLoading(false));
+    }, [refreshFlag]);
+  
+  
   function parseCamelCase(str: string) {
     return str
       // Insert space before uppercase letters that follow lowercase letters
@@ -418,19 +134,208 @@ export default function CaseForm() {
       // Convert entire string to uppercase
       .toUpperCase();
   }
+    useEffect(() => {
+      setLoading(true);
+  
+      getFirmsD()
+        .then((resp) => {
+          const f = resp?.data.map((f: string) => f.toUpperCase());
+          setfirmsD(f);
+        })
+        .catch((err: any) => {
+          if (err?.status == 401 || err?.response?.status == 401) {
+            toast.showToast('Error', 'Session Expired', 'error');
+            logout();
+          }
+          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+        })
+        .finally(() => setLoading(false));
+    }, [refreshFlag]);
+  
+    useEffect(() => {
+      if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
+        setValue("generalDetail.branchCodeId", user.branchCode);
+        setValue("generalDetail.employeeCodeId", user.id);
+        setB(user.branchCode); // ✅ only this triggers the next effect
+      }
+    }, [user, setValue]);
+  
+    const [searchHPT, setSearchHPT] = useState("");
+    const [searchHPA, setSearchHPA] = useState("");
+    const [searchRTOto, setSearchRTOto] = useState("");
+    const [searchRTOfrom, setSearchRTOfrom] = useState("");
+    const mainFirms = firmsD.filter(f => f.toLowerCase().includes(searchfirm.toLowerCase()));
+  
+    const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
+  
 
-  //   useEffect(() => {
-  //   // Listen to all input events, force uppercase
-  //   const handler = (e:any) => {
-  //     if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
-  //       e.target.value = e.target.value.toUpperCase();
-  //     }
-  //   };
-  //   document.addEventListener('input', handler, true);
-  //   return () => document.removeEventListener('input', handler, true);
-  // }, []);
+    const filteredCode2 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOto).toLowerCase()));
+
+// const filteredCode1WithSelected = useMemo(() => {
+//   const currentValue = getValues("vehicleDetail.fromRTO");
+//   const normalizedMatch = RTOOptions.find(
+//     (opt) => opt.value.replace(/\s/g, "") === currentValue?.replace(/\s/g, "")
+//   );
+
+//   const filtered = RTOOptions.filter((opt) =>
+//     opt.label.toLowerCase().includes(searchRTOfrom.toLowerCase())
+//   );
+
+//   return normalizedMatch && !filtered.some(opt => opt.value === normalizedMatch.value)
+//     ? [normalizedMatch, ...filtered]
+//     : filtered;
+// }, [searchRTOfrom, getValues]);
+
+
+// useEffect(() => {
+//   const raw = getValues("vehicleDetail.fromRTO");
+//   const match = RTOOptions.find(
+//     opt => opt.value.replace(/\s/g, "") === raw?.replace(/\s/g, "")
+//   );
+//   if (match) {
+//     setValue("vehicleDetail.fromRTO", match.value);
+//     console.log("Normalized fromRTO:", match.value);
+//   }
+// }, [getValues, setValue]);
+
+    const filteredCode1 = useMemo(() => {
+  return RTOOptions.filter((opt) =>
+    opt.label.toLowerCase().includes(searchRTOfrom.toLowerCase())
+  );
+}, [searchRTOfrom]);
+
+  useEffect(() => {
+    if (!defaultValues) {
+      toast.showToast("Error", "No case data provided", "error");
+      navigate(-1);
+    }
+  }, [defaultValues, navigate, toast]);
+
+  const formatDate = (dateStr: string | undefined): string | undefined =>
+    dateStr?.split("T")[0] ?? undefined;
+
+
+   const getFormattedCaseData = (data: FinalDetails): FinalDetails => ({
+    ...data,
+    generalDetail:{
+      ...data.generalDetail,
+      appointmentDate:formatDate(data.generalDetail.appointmentDate)??""
+    },
+    expireDetail: {
+      ...data.expireDetail,
+      insuranceExpiry: formatDate(data.expireDetail.insuranceExpiry) ?? "",
+      pucExpiry: formatDate(data.expireDetail.pucExpiry) ?? "",
+      fitnessExpiry: formatDate(data.expireDetail.fitnessExpiry) ?? "",
+      taxExpiry: formatDate(data.expireDetail.taxExpiry) ?? "",
+      permitExpiry: formatDate(data.expireDetail.permitExpiry) ?? "",
+    }
+  });
+
+  //   const getFirmNameById = (id: string | undefined) => {
+  //   if (!id) return "—";
+  //   const firm = firms.find(f => f.id === id);
+  //   return firm ? firm.name : id;
+  // };
+
+  const onCancel = () => {
+    if (defaultValues) {
+      reset(getFormattedCaseData(defaultValues));
+    }
+    setLoading(true);
+    toast.showToast("Info", "Changes have been discarded", "info");
+    navigate(-1);
+  };
+
+useEffect(() => {
+  const val = getValues("generalDetail.incentiveAmount");
+
+  if (typeof val === "string" && val.includes(".")) {
+    const sanitized = val.replace(/\D/g, "");
+    setValue("generalDetail.incentiveAmount", sanitized);
+  }
+}, [getValues, setValue]);
+
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset(getFormattedCaseData(defaultValues));
+    }
+  }, [defaultValues, reset]);
+
+    const stripIds = <T extends object>(obj: T): Partial<T> => {
+    const { id, ...rest } = obj as any;
+    return rest;
+  };
+
+ const onSubmit = async (data: FinalDetails) => {
+    try {
+      setLoading(true);
+      const casePayload: Case = {
+        generalDetails: stripIds(data.generalDetail) as GeneralDetails,
+        vehicleDetail: stripIds(data.vehicleDetail) as VehicleDetail,
+        expireDetail: {
+          ...stripIds(data.expireDetail),
+          insuranceExpiry: formatDate(data.expireDetail.insuranceExpiry),
+          pucExpiry: formatDate(data.expireDetail.pucExpiry),
+          fitnessExpiry: formatDate(data.expireDetail.fitnessExpiry),
+          taxExpiry: formatDate(data.expireDetail.taxExpiry),
+          permitExpiry: formatDate(data.expireDetail.permitExpiry),
+        } as ExpireDetail,
+        transactionDetail: stripIds(
+          data.transactionDetail
+        ) as TransactionDetail,
+        expenseDetail: stripIds(data.expenseDetail) as ExpenseDetail,
+        ownerDetails: stripIds(data.ownerDetails ?? {}) as ownerDetails,
+      };
+
+      await updateCaseID(id, casePayload);
+      toast.showToast('Success', 'Case Successfully Updated', 'success');
+      reset(casePayload);
+      navigate(-1);
+    } catch (err: any) {
+      // console.error(err);
+      if(err?.status == 401 || err?.response?.status == 401)
+        {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        }
+      else if (err?.response?.status === 400) {
+        toast.showToast('Bad Request', 'Provide full owner details or none', 'error');
+      } else {
+        const errorMessage = err?.response?.data?.message || err?.message || 'Unknown error occurred.';
+        toast.showToast('Error in Updating', errorMessage, 'error');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fromRTOValue = watch("vehicleDetail.fromRTO");
+  const toRtoValue = watch("vehicleDetail.toRTO");
+
+  const fromRTOOption = useMemo(() => {
+  return RTOOptions.find(
+    (opt) =>
+      opt.value.replace(/\s/g, "") === fromRTOValue?.replace(/\s/g, "")
+  );
+}, [fromRTOValue]);
+
+  const toRTOOption = useMemo(() => {
+    return RTOOptions.find(
+      (opt) =>
+        opt.value.replace(/\s/g, "") === toRtoValue?.replace(/\s/g, "")
+    );
+  }, [toRtoValue]);
+
 
   return (
+    <div className="p-6 space-y-6">
+    <div className="flex justify-start gap-4">
+        <Button variant="outline" className="cursor-pointer" onClick={() => navigate(-1)}>← Back</Button>
+        <Button className="cursor-pointer" variant="destructive" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8 p-6">
       {/* General Details */}
       <Card>
@@ -439,7 +344,7 @@ export default function CaseForm() {
           <hr />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Controller
-              name="generalDetails.firmName"
+              name="generalDetail.firmName"
               control={control}
               rules={{ required: "Firm Name is required" }}
               render={({ field, fieldState }) => (
@@ -484,7 +389,7 @@ export default function CaseForm() {
             />
             {user?.role !== "superadmin" && (
               <Controller
-                name="generalDetails.branchCodeId"
+                name="generalDetail.branchCodeId"
                 control={control}
                 rules={{ required: "Branch is required" }}
                 render={({ field, fieldState }) => (
@@ -549,7 +454,7 @@ export default function CaseForm() {
               />)}
             {user?.role !== "superadmin" && (
               <Controller
-                name="generalDetails.employeeCodeId"
+                name="generalDetail.employeeCodeId"
                 control={control}
                 rules={{ required: "Employee is required" }}
                 render={({ field, fieldState }) => (
@@ -559,17 +464,15 @@ export default function CaseForm() {
                     </Label>
                     {user?.role === "employee" ? (
                       <>
-<Input
-  readOnly
-  value={
-    branchEmp
-      .filter((emp) => emp.employeeCode === user.employeeCode)
-      .map((emp) => `${emp.firstName?.trim() ?? ""} ${emp.lastName?.trim() ?? ""}`)
-      .join("") // in case filter returns 1 or 0 items
-  }
-  className="bg-gray-100 cursor-not-allowed"
-/>
-
+                        <Input
+                          readOnly
+                          value={
+                            branchEmp.find((emp) => emp.employeeCode === user.employeeCode)?.name
+                          }
+                          className="bg-gray-100 cursor-not-allowed"
+                        />
+                        {/* Hidden input to preserve value for submission */}
+                        <input type="hidden" name={field.name} value={user.employeeCode} />
                       </>
                     ) : (
                       <>
@@ -592,7 +495,7 @@ export default function CaseForm() {
                             </div>
                             {branchEmp.map((emp) => (
                               <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
-                                {emp?.firstName}
+                                {emp?.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -613,11 +516,11 @@ export default function CaseForm() {
             {/* Incentive Type - Only show for superadmin */}
             {user?.role === "superadmin" && (
               <Controller
-                name="generalDetails.incentiveAmount"
+                name="generalDetail.incentiveAmount"
                 control={control}
                 rules={{
                   pattern: {
-                    value: /^\d*$/,
+                    value: /^\d+(\.\d{1,2})?$/, // ✅ allow decimal with up to 2 places
                     message: "Only numeric values are allowed",
                   },
                 }}
@@ -635,7 +538,7 @@ export default function CaseForm() {
                       pattern="[0-9]*"
                       onChange={(e) => {
                         // Only allow digits
-                        const value = e.target.value.replace(/\D/g, "");
+                        const value = e.target.value.replace(/[^0-9.]/g, "");
                         field.onChange(value);
                       }}
                       value={field.value ?? ""}
@@ -645,7 +548,7 @@ export default function CaseForm() {
               />
             )}
             <Controller
-              name="generalDetails.appointmentDate"
+              name="generalDetail.appointmentDate"
               control={control}
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1">
@@ -661,7 +564,7 @@ export default function CaseForm() {
               )}
             />
             <Controller
-              name="generalDetails.applicationNo"
+              name="generalDetail.applicationNo"
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col w-full">
@@ -703,11 +606,6 @@ export default function CaseForm() {
                     value={field.value?.toUpperCase() ?? ""}
                     onChange={e => field.onChange(e.target.value.toUpperCase())}
                   />
-                  {errors.vehicleDetail?.vehicleNo && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.vehicleDetail.vehicleNo?.message}
-                    </p>
-                  )}
                 </div>
               )}
             />
@@ -741,10 +639,10 @@ export default function CaseForm() {
                     From RTO<span className="text-red-500">*</span>
                   </Label>
                   <Select
-                    value={field.value || ""}
+                    value={fromRTOOption?.label}
                     onValueChange={field.onChange}
                   >
-                    <SelectTrigger id="fromRTO" className="w-full">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select From RTO..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -784,7 +682,7 @@ export default function CaseForm() {
                     To RTO<span className="text-red-500">*</span>
                   </Label>
                   <Select
-                    value={field.value || ""}
+                    value={toRTOOption?.label}
                     onValueChange={field.onChange}
                   >
                     <SelectTrigger id="toRTO" className="w-full">
@@ -1590,5 +1488,6 @@ export default function CaseForm() {
       </Card>
       <Button style={{ cursor: "pointer" }} type="submit">Submit Case</Button>
     </form>
+    </div>
   );
 }

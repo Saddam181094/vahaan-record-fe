@@ -29,6 +29,7 @@ import ClientTransactions from "@/components/ClientTransactions"
 import Bills from "@/components/ClientBills"
 import ClientDash from "@/pages/ClientDash"
 import Documents from "@/pages/documents"
+import CaseEditForm from "@/components/CaseEditForm";
 // import { Loader } from "lucide-react";
 export default function App() {
   const { isAuthenticated, user, isHydrated } = useAuth();
@@ -104,6 +105,12 @@ export default function App() {
       <Route path="/superadmin/cases/:CaseNo" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <CaseDetails />
+        </ProtectedRoute>
+      } />
+
+            <Route path="/superadmin/cases/:CaseNo/edit" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <CaseEditForm />
         </ProtectedRoute>
       } />
 
@@ -212,6 +219,11 @@ export default function App() {
       <Route path="/employee/cases/:CaseNo" element={
         <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
           <CaseDetails />
+        </ProtectedRoute>
+      } />
+            <Route path="/employee/cases/:CaseNo/edit" element={
+        <ProtectedRoute allowedRoles={[UserRole.EMPLOYEE]}>
+          <CaseEditForm/>
         </ProtectedRoute>
       } />
 
