@@ -442,7 +442,7 @@ export default function ClientDetails() {
                 </DialogContent>
             </Dialog>
 
-            <div className="print:block hidden text-sm leading-relaxed">
+            <div className="hidden print:block text-sm leading-relaxed printable-section">
                 <PrintableIncentiveDetails cases={cases} />
             </div>
         </SidebarProvider>

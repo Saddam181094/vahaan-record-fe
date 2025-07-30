@@ -23,7 +23,7 @@ const Client = () => {
     const toast = useToast();
     const [filteredCases, setFilteredCases] = useState<any>();
     const { setLoading } = useLoading();
-    const { user,logout } = useAuth();
+    const { user, logout } = useAuth();
     const [isDisabled, setisDisabled] = useState(true);
     const { handleSubmit, control, setValue } = useForm<FilterFormValues>({
         defaultValues: {
@@ -43,12 +43,11 @@ const Client = () => {
             const response = await clientTransaction(fromDate, toDate, user?.id ?? "");
             setFilteredCases(response?.data || []);
             setisDisabled(response?.data?.transactions?.length > 0);
-        } catch (err:any) {
-            if(err?.status == 401 || err?.response?.status == 401)
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
+        } catch (err: any) {
+            if (err?.status == 401 || err?.response?.status == 401) {
+                toast.showToast('Error', 'Session Expired', 'error');
+                logout();
+            }
             //   console.error("Error fetching filtered cases:", err);
             toast.showToast("Error", "Failed to apply filter", "error");
         } finally {
@@ -83,11 +82,10 @@ const Client = () => {
             }
         }).
             catch((err: any) => {
-                if(err?.status == 401 || err?.response?.status == 401)
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
+                if (err?.status == 401 || err?.response?.status == 401) {
+                    toast.showToast('Error', 'Session Expired', 'error');
+                    logout();
+                }
                 //   console.error("Error fetching filtered cases:", err);
                 toast.showToast("Error", err?.message, "error");
             }).finally(() => {
@@ -119,52 +117,51 @@ const Client = () => {
     );
 
 
-const handlePrint = () => {
-  printJS({
-    printable: 'printable-content',
-    type: 'html',
-    targetStyles: ['*'], // apply all styles
-  });
-};
+    const handlePrint = () => {
+        printJS({
+            printable: 'printable-content',
+            type: 'html',
+            targetStyles: ['*'], // apply all styles
+        });
+    };
 
-//     const contentRef = useRef<HTMLDivElement>(null);
-//    const reactToPrintFn = useReactToPrint({
-//   contentRef,
-//   documentTitle: "Client Report",
-//   pageStyle: `
-//     @media print {
-//       body * {
-//         visibility: hidden;
-//       }
-//       #printable-content, #printable-content * {
-//         visibility: visible;
-//       }
-//       #printable-content {
-//         position: absolute;
-//         left: 0;
-//         top: 0;
-//         width: 100%;
-//       }
-//     }
-//   `
-// });
+    //     const contentRef = useRef<HTMLDivElement>(null);
+    //    const reactToPrintFn = useReactToPrint({
+    //   contentRef,
+    //   documentTitle: "Client Report",
+    //   pageStyle: `
+    //     @media print {
+    //       body * {
+    //         visibility: hidden;
+    //       }
+    //       #printable-content, #printable-content * {
+    //         visibility: visible;
+    //       }
+    //       #printable-content {
+    //         position: absolute;
+    //         left: 0;
+    //         top: 0;
+    //         width: 100%;
+    //       }
+    //     }
+    //   `
+    // });
 
 
 
     const PrintField = ({ label, value }: { label: string; value?: string | number | boolean }) => {
         const isBoolean = typeof value === 'boolean' || value === 'Yes' || value === 'No';
         const isYes = value === true || value === 'Yes';
-        
+
         return (
             <div className="flex justify-between items-center py-2 border-b border-gray-100">
                 <span className="font-medium text-gray-700 min-w-[140px]">{label}</span>
-                <span className={`font-semibold text-right flex-1 ${
-                    isBoolean 
-                        ? isYes 
-                            ? 'text-green-600 bg-green-50 px-2 py-1 rounded' 
+                <span className={`font-semibold text-right flex-1 ${isBoolean
+                        ? isYes
+                            ? 'text-green-600 bg-green-50 px-2 py-1 rounded'
                             : 'text-red-600 bg-red-50 px-2 py-1 rounded'
                         : 'text-gray-900'
-                }`}>
+                    }`}>
                     {value || "-"}
                 </span>
             </div>
@@ -180,7 +177,7 @@ const handlePrint = () => {
         transactions = [],
     }: any) => {
         return (
-            <div id="printable-content" className="p-8 text-sm leading-relaxed bg-gray-50 min-h-screen print-content">
+            <div id="printable-content" className="p-8 text-sm leading-relaxed bg-gray-50 print-content">
                 {/* Letterhead */}
                 <div className="bg-white rounded-lg shadow-lg p-8 mb-8 border border-gray-200">
                     <div className="flex items-center justify-between mb-6">
@@ -280,134 +277,134 @@ const handlePrint = () => {
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarTrigger />
-            <div className="flex flex-col w-full print:hidden">
-                <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:pt-20 h-full min-h-[100vh] print:hidden">
+                <div className="flex flex-col w-full print:hidden">
+                    <div className="flex flex-col w-full bg-white lg:pr-6 px-2 lg:pt-20 h-full min-h-[100vh] print:hidden">
 
-                    {/* Extract clientDetails from the first transaction if available */}
-                    <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={handlePrint} className="w-fit bg-primary text-white mb-5">
-                        🖨️ Print PDF
-                    </Button>
-                    <form
-                        onSubmit={handleSubmit(applyFilter)}
-                        className="flex flex-wrap gap-4 items-end md:flex-nowrap"
-                    >
-                        {/* From Date */}
-                        <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
-                            <Label htmlFor="fromDate" className="text-sm font-medium capitalize">
-                                From Date<span className="text-red-500">*</span>
-                            </Label>
-                            <Controller
-                                name="fromDate"
-                                control={control}
-                                rules={{ required: true }}
-                                render={({ field }) => (
-                                    <DateInput
-                                        id="fromDate"
-                                        value={field.value}
-                                        onChange={(e: any) => field.onChange(e.target.value)}
-                                    />
-                                )}
-                            />
-                        </div>
-
-                        {/* To Date */}
-                        <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
-                            <Label htmlFor="toDate" className="text-sm font-medium capitalize">
-                                To Date<span className="text-red-500">*</span>
-                            </Label>
-                            <Controller
-                                name="toDate"
-                                control={control}
-                                rules={{ required: true }}
-                                render={({ field }) => (
-                                    <DateInput
-                                        id="toDate"
-                                        value={field.value}
-                                        onChange={(e: any) => field.onChange(e.target.value)}
-                                    />
-                                )}
-                            />
-                        </div>
-
-                        <Button type="submit" style={{ cursor: "pointer" }} className="mt-2 w-full md:w-auto">
-                            Filter
+                        {/* Extract clientDetails from the first transaction if available */}
+                        <Button type="button" disabled={!isDisabled} style={{ cursor: isDisabled ? "pointer" : "not-allowed" }} onClick={handlePrint} className="w-fit bg-primary text-white mb-5">
+                            🖨️ Print PDF
                         </Button>
-                    </form>
-                    <DataTable
-                        data={filteredCases?.transactions ?? []}
-                        columns={[...clientTransactioncolumns,
-                        {
-                            header: "Actions",
-                            id: "actions",
-                            cell: ({ row }) => (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="cursor-pointer"
-                                    onClick={() => {
-                                        setSelectedTransaction(row.original); // Set modal data
-                                        setShowModal(true); // Open modal
-                                    }}
-                                >
-                                    View Details
-                                </Button>
-                            ),
-                        }
-
-
-                        ]
-                        }
-                    />
-                </div>
-                {showModal && selectedTransaction && (
-                    <Dialog open={showModal} onOpenChange={setShowModal}>
-                        <DialogContent >
-                            <DialogHeader>
-                                <DialogTitle>Transaction Details</DialogTitle>
-                                <DialogDescription>
-                                    Below are the linked case details for this transaction.
-                                </DialogDescription>
-                            </DialogHeader>
-
-                            <div className="mt-4 space-y-2">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Case No</TableHead>
-                                            <TableHead>Vehicle No</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {selectedTransaction.cases?.map((c: any) => (
-                                            <TableRow key={c.id}>
-                                                <TableCell>{c.caseNo}</TableCell>
-                                                <TableCell>{c.vehicleNo}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                        <form
+                            onSubmit={handleSubmit(applyFilter)}
+                            className="flex flex-wrap gap-4 items-end md:flex-nowrap"
+                        >
+                            {/* From Date */}
+                            <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
+                                <Label htmlFor="fromDate" className="text-sm font-medium capitalize">
+                                    From Date<span className="text-red-500">*</span>
+                                </Label>
+                                <Controller
+                                    name="fromDate"
+                                    control={control}
+                                    rules={{ required: true }}
+                                    render={({ field }) => (
+                                        <DateInput
+                                            id="fromDate"
+                                            value={field.value}
+                                            onChange={(e: any) => field.onChange(e.target.value)}
+                                        />
+                                    )}
+                                />
                             </div>
-                        </DialogContent>
-                    </Dialog>
-                )}
+
+                            {/* To Date */}
+                            <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
+                                <Label htmlFor="toDate" className="text-sm font-medium capitalize">
+                                    To Date<span className="text-red-500">*</span>
+                                </Label>
+                                <Controller
+                                    name="toDate"
+                                    control={control}
+                                    rules={{ required: true }}
+                                    render={({ field }) => (
+                                        <DateInput
+                                            id="toDate"
+                                            value={field.value}
+                                            onChange={(e: any) => field.onChange(e.target.value)}
+                                        />
+                                    )}
+                                />
+                            </div>
+
+                            <Button type="submit" style={{ cursor: "pointer" }} className="mt-2 w-full md:w-auto">
+                                Filter
+                            </Button>
+                        </form>
+                        <DataTable
+                            data={filteredCases?.transactions ?? []}
+                            columns={[...clientTransactioncolumns,
+                            {
+                                header: "Actions",
+                                id: "actions",
+                                cell: ({ row }) => (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                            setSelectedTransaction(row.original); // Set modal data
+                                            setShowModal(true); // Open modal
+                                        }}
+                                    >
+                                        View Details
+                                    </Button>
+                                ),
+                            }
 
 
-                         <footer className="w-full mt-70 py-4 bg-gray-100 border-t text-center text-xs md:text-sm flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
-                <span>
-                  <strong>Customer Care:</strong> 7801878800
-                </span>
-                <span className="hidden md:inline mx-2">|</span>
-                <span>
-                  <strong>Mail:</strong> info@vahaanrecord.com
-                </span>
-                <span className="hidden md:inline mx-2">|</span>
-                <span>
-                  Contact us For any Query or help
-                </span>
-                        </footer>
+                            ]
+                            }
+                        />
+                    </div>
+                    {showModal && selectedTransaction && (
+                        <Dialog open={showModal} onOpenChange={setShowModal}>
+                            <DialogContent >
+                                <DialogHeader>
+                                    <DialogTitle>Transaction Details</DialogTitle>
+                                    <DialogDescription>
+                                        Below are the linked case details for this transaction.
+                                    </DialogDescription>
+                                </DialogHeader>
 
-            </div>
-                <div className="print:block hidden text-sm leading-relaxed">
+                                <div className="mt-4 space-y-2">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Case No</TableHead>
+                                                <TableHead>Vehicle No</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {selectedTransaction.cases?.map((c: any) => (
+                                                <TableRow key={c.id}>
+                                                    <TableCell>{c.caseNo}</TableCell>
+                                                    <TableCell>{c.vehicleNo}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    )}
+
+
+                    <footer className="w-full mt-70 py-4 bg-gray-100 border-t text-center text-xs md:text-sm flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+                        <span>
+                            <strong>Customer Care:</strong> 7801878800
+                        </span>
+                        <span className="hidden md:inline mx-2">|</span>
+                        <span>
+                            <strong>Mail:</strong> info@vahaanrecord.com
+                        </span>
+                        <span className="hidden md:inline mx-2">|</span>
+                        <span>
+                            Contact us For any Query or help
+                        </span>
+                    </footer>
+
+                </div>
+                <div className="hidden print:block text-sm leading-relaxed printable-section">
                     <PrintableCaseDetails
                         firstName={filteredCases?.clientDetails?.firstName}
                         lastName={filteredCases?.clientDetails?.lastName}
