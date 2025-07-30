@@ -73,8 +73,10 @@ export default function CaseDescription() {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-                toast.showToast('Error:',err?.message || 'Error during fetch','error');
-            })
+        else
+{        
+    toast.showToast('Error:',err?.message || 'Error during fetch','error');
+}            })
             .finally(() => setLoading(false));
     }, [id, navigate]);
 

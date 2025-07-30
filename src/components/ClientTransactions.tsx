@@ -47,10 +47,10 @@ const Client = () => {
             if (err?.status == 401 || err?.response?.status == 401) {
                 toast.showToast('Error', 'Session Expired', 'error');
                 logout();
-            }
+            }else
             //   console.error("Error fetching filtered cases:", err);
-            toast.showToast("Error", "Failed to apply filter", "error");
-        } finally {
+{            toast.showToast("Error", "Failed to apply filter", "error");
+}        } finally {
             setLoading(false);
         }
     };
@@ -85,10 +85,10 @@ const Client = () => {
                 if (err?.status == 401 || err?.response?.status == 401) {
                     toast.showToast('Error', 'Session Expired', 'error');
                     logout();
-                }
+                }else
                 //   console.error("Error fetching filtered cases:", err);
-                toast.showToast("Error", err?.message, "error");
-            }).finally(() => {
+{                toast.showToast("Error", err?.message, "error");
+}            }).finally(() => {
                 setLoading(false);
             })
 
@@ -210,6 +210,30 @@ const Client = () => {
                     <PrintField label="Credit Limit" value={creditLimit ? `₹${creditLimit}` : "Not Set"} />
                 </Section2>
 
+                                {/* Summary Section */}
+                <div className="bg-white rounded-lg shadow-lg p-6 mt-8 border border-gray-200">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                        Transaction Summary
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                            <p className="font-medium text-blue-800">Total Transactions</p>
+                            <p className="text-blue-600 font-semibold">{transactions.length}</p>
+                        </div>
+                        <div className="bg-green-50 p-3 rounded-lg">
+                            <p className="font-medium text-green-800">Total Amount</p>
+                            <p className="text-green-600 font-semibold">
+                                ₹{transactions.reduce((sum: number, txn: any) => sum + (parseFloat(txn.Amount) || 0), 0).toFixed(2)}
+                            </p>
+                        </div>
+                        <div className="bg-purple-50 p-3 rounded-lg">
+                            <p className="font-medium text-purple-800">Credit Limit</p>
+                            <p className="text-purple-600 font-semibold">{creditLimit ? `₹${creditLimit}` : 'Not Set'}</p>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Transaction History */}
                 {transactions.length > 0 && (
                     <Section2 title="Transaction History">
@@ -240,29 +264,7 @@ const Client = () => {
                     </Section2>
                 )}
 
-                {/* Summary Section */}
-                <div className="bg-white rounded-lg shadow-lg p-6 mt-8 border border-gray-200">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                        <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                        Transaction Summary
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div className="bg-blue-50 p-3 rounded-lg">
-                            <p className="font-medium text-blue-800">Total Transactions</p>
-                            <p className="text-blue-600 font-semibold">{transactions.length}</p>
-                        </div>
-                        <div className="bg-green-50 p-3 rounded-lg">
-                            <p className="font-medium text-green-800">Total Amount</p>
-                            <p className="text-green-600 font-semibold">
-                                ₹{transactions.reduce((sum: number, txn: any) => sum + (parseFloat(txn.Amount) || 0), 0).toFixed(2)}
-                            </p>
-                        </div>
-                        <div className="bg-purple-50 p-3 rounded-lg">
-                            <p className="font-medium text-purple-800">Credit Limit</p>
-                            <p className="text-purple-600 font-semibold">{creditLimit ? `₹${creditLimit}` : 'Not Set'}</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         );
     };

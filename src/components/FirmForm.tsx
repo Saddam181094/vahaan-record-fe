@@ -50,9 +50,9 @@ const {setLoading} = useLoading();
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:',err?.message || 'Error during fetch of Firms','error');
-
+        }else
+{        toast.showToast('Error:',err?.message || 'Error during fetch of Firms','error');
+}
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
@@ -71,9 +71,9 @@ const {setLoading} = useLoading();
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:',err?.message || 'Error during Creation of Firm','error');
-
+        }else
+{        toast.showToast('Error:',err?.message || 'Error during Creation of Firm','error');
+}
     } finally {
       setLoading(false);
     }
@@ -89,9 +89,9 @@ const {setLoading} = useLoading();
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-      toast.showToast('Error:',err || 'Error occured in Flipping','error');
-    } finally {
+        }else
+{      toast.showToast('Error:',err || 'Error occured in Flipping','error');
+}    } finally {
       setRefreshFlag((prev) => !prev); // Trigger a refresh
       setLoading(false);
     }

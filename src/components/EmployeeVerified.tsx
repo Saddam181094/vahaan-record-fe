@@ -264,9 +264,9 @@ const lastDateOfMonth = `${lastDate.getFullYear()}-${String(lastDate.getMonth() 
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error', err?.message || 'Error listing the cases.', 'error');
-      })
+        }else
+{        toast.showToast('Error', err?.message || 'Error listing the cases.', 'error');
+}      })
       .finally(() => 
       setLoading(false));
   }, [flag]);
@@ -288,9 +288,9 @@ const applyFilter = async (data: FilterFormValues) => {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-    toast.showToast("Error", "Failed to apply filter", "error");
-  } finally {
+        }else
+{    toast.showToast("Error", "Failed to apply filter", "error");
+}  } finally {
     setLoading(false);
   }
 };

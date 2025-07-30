@@ -284,6 +284,6 @@ input[type="number"] {
   }
 
   .printable-section * {
-    background-color: white !important;
+    /* background-color: white !important; */
   }
 }

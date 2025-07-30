@@ -85,9 +85,9 @@ export default function EmployeeForm() {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-       toast.showToast('Error:',err?.message || 'Error during fetch of Employees','error');
-      }).finally(() => setLoading(false));
+        }else
+{       toast.showToast('Error:',err?.message || 'Error during fetch of Employees','error');
+}      }).finally(() => setLoading(false));
 
   }, [refreshFlag]);
 
@@ -102,9 +102,9 @@ export default function EmployeeForm() {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:',err?.message || 'Error during fetch of Branch','error');
-      })
+        }else
+{        toast.showToast('Error:',err?.message || 'Error during fetch of Branch','error');
+}      })
       .finally(() => setLoading(false));
   }, [refreshFlag])
 
@@ -122,9 +122,9 @@ export default function EmployeeForm() {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:',err?.message || 'Error occured while making a new Employee','error');
-    } finally {
+        }else
+{        toast.showToast('Error:',err?.message || 'Error occured while making a new Employee','error');
+}    } finally {
       setLoading(false);
     }
   };

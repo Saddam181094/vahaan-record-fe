@@ -301,9 +301,9 @@ export default function CaseForm() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
-        // console.error("Error fetching branches:", err);
+        }else
+{        toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
+}        // console.error("Error fetching branches:", err);
       })
       .finally(() => {
         setLoading(false);
@@ -323,8 +323,9 @@ export default function CaseForm() {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-        toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
-      })
+        else
+{        toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
+}      })
       .finally(() => {
         setLoading(false);
       });
@@ -341,9 +342,9 @@ export default function CaseForm() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-      })
+        }else
+{        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+}      })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
@@ -360,9 +361,9 @@ export default function CaseForm() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-      })
+        }else
+{        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+}      })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
@@ -402,9 +403,9 @@ export default function CaseForm() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');
-      })
+        }else
+{        toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');
+}      })
       .finally(() => {
         setLoading(false);
       });

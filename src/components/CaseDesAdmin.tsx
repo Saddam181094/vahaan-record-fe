@@ -74,8 +74,9 @@ export default function CaseDes() {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-      toast.showToast("Error", err?.message || 'Verification error Occured', 'error');
-    }).finally(() => {
+        else
+{      toast.showToast("Error", err?.message || 'Verification error Occured', 'error');
+}    }).finally(() => {
         setflag(f => !f);
       setLoading(false);
     })
@@ -98,8 +99,10 @@ export default function CaseDes() {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
+        }else
+{        toast.showToast("Error", err?.message || 'Error fetching Branches', 'error')}
         }
-        toast.showToast("Error", err?.message || 'Error fetching Branches', 'error')})
+        )
       .finally(() => {
         setLoading(false)});
   }, [flag]);

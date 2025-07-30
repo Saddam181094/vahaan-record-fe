@@ -137,10 +137,10 @@ export default function ClientDetails() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
+        }else
         //   console.error("Error fetching filtered cases:", err);
-        toast.showToast("Error", err?.message, "error");
-      }).finally(() => {
+{        toast.showToast("Error", err?.message, "error");
+}      }).finally(() => {
         setLoading(false);
       })
 
@@ -163,9 +163,9 @@ export default function ClientDetails() {
       if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
-      }
-      toast.showToast("Error", err?.message || "Failed to apply filter", "error");
-    } finally {
+      }else
+{      toast.showToast("Error", err?.message || "Failed to apply filter", "error");
+}    } finally {
       setLoading(false);
     }
   };
@@ -184,10 +184,10 @@ export default function ClientDetails() {
       if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
-      }
+      }else
       //   console.error("Error fetching filtered cases:", err);
-      toast.showToast("Error", "Failed to apply filter", "error");
-    } finally {
+{      toast.showToast("Error", "Failed to apply filter", "error");
+}    } finally {
       setLoading(false);
     }
   };
@@ -219,9 +219,9 @@ export default function ClientDetails() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Warning:', err?.message || 'No Cases assigned Yet', 'warning');
-      })
+        }else
+{        toast.showToast('Warning:', err?.message || 'No Cases assigned Yet', 'warning');
+}      })
       .finally(() => setLoading(false));
   }, [client?.id]);
 

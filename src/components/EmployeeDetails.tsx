@@ -80,10 +80,10 @@ export default function ClientDetails() {
             if (err?.status == 401 || err?.response?.status == 401) {
                 toast.showToast('Error', 'Session Expired', 'error');
                 logout();
-            }
-            console.error("Error fetching filtered cases:", err);
-            toast.showToast("Error", "Failed to apply filter", "error");
-        } finally {
+            }else
+            // console.error("Error fetching filtered cases:", err);
+{            toast.showToast("Error", "Failed to apply filter", "error");
+}        } finally {
             setLoading(false);
         }
     };
@@ -110,9 +110,9 @@ export default function ClientDetails() {
                     if (err?.status == 401 || err?.response?.status == 401) {
                         toast.showToast('Error', 'Session Expired', 'error');
                         logout();
-                    }
-                    toast.showToast("Error", "Failed to fetch cases", "error");
-                })
+                    }else
+{                    toast.showToast("Error", "Failed to fetch cases", "error");
+}                })
                 .finally(() => {
                     setLoading(false);
                 });

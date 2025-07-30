@@ -124,9 +124,9 @@ const AdminDashboard = () => {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error updating the Task', 'error');
-      } finally {
+        }else
+{        toast.showToast('Error:', err?.message || 'Error updating the Task', 'error');
+}      } finally {
         setEditTask(null);
         setLoading(false);
       }
@@ -143,9 +143,9 @@ const AdminDashboard = () => {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:', err?.message || 'Error occured while making a new Task', 'error');
-      } finally {
+        }else
+{        toast.showToast('Error:', err?.message || 'Error occured while making a new Task', 'error');
+}      } finally {
         setLoading(false);
       }
     }
@@ -159,9 +159,9 @@ const AdminDashboard = () => {
       if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
-      }
-      toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
-    }).finally(() => {
+      }else
+{      toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
+}    }).finally(() => {
       setLoading(false);
     })
   };

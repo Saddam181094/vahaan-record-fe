@@ -79,7 +79,8 @@ function AssignDialog({ caseNo, caseId, disabled, clients, setFlag }: { caseNo: 
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-                toast.showToast('Error:', err?.response?.data?.errors[0] || 'Error Assigning Case', 'error');
+        else
+ {               toast.showToast('Error:', err?.response?.data?.errors[0] || 'Error Assigning Case', 'error');}
             })
             .finally(() => {
                 setLoading(false);
@@ -211,7 +212,9 @@ export default function CaseDes() {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-        toast.showToast("Error:", err?.message || "Error fetching clients", "error");
+        else
+{
+        toast.showToast("Error:", err?.message || "Error fetching clients", "error"); }
         setClients([]);
       })
       .finally(() => setLoading(false));
@@ -273,8 +276,10 @@ const lastDateOfMonth = `${lastDate.getFullYear()}-${String(lastDate.getMonth() 
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-      toast.showToast('Error', err?.message || 'Error fetching Cases', 'error');
-      })
+        else
+{      
+  toast.showToast('Error', err?.message || 'Error fetching Cases', 'error');
+}      })
       .finally(() => 
       setLoading(false));
   }, [flag]);
@@ -297,8 +302,9 @@ const applyFilter = async (data: FilterFormValues) => {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-    toast.showToast("Error", err?.message || "Failed to apply filter", "error");
-  } finally {
+        else
+{    toast.showToast("Error", err?.message || "Failed to apply filter", "error");
+}  } finally {
     setLoading(false);
   }
 };

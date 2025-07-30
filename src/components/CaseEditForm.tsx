@@ -81,8 +81,9 @@ export default function EditCaseForm() {
             toast.showToast('Error', 'Session Expired', 'error');
             logout();
           }
-          toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
-          // console.error("Error fetching branches:", err);
+          else
+{          toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
+}          // console.error("Error fetching branches:", err);
         })
         .finally(() => {
           setLoading(false);
@@ -102,8 +103,9 @@ export default function EditCaseForm() {
             toast.showToast('Error', 'Session Expired', 'error');
             logout();
           }
-          toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
-        })
+          else
+{          toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
+}        })
         .finally(() => {
           setLoading(false);
         });
@@ -120,9 +122,9 @@ export default function EditCaseForm() {
           if (err?.status == 401 || err?.response?.status == 401) {
             toast.showToast('Error', 'Session Expired', 'error');
             logout();
-          }
-          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-        })
+          }else
+{          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+}        })
         .finally(() => setLoading(false));
     }, [refreshFlag]);
   
@@ -146,9 +148,9 @@ export default function EditCaseForm() {
           if (err?.status == 401 || err?.response?.status == 401) {
             toast.showToast('Error', 'Session Expired', 'error');
             logout();
-          }
-          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-        })
+          }else
+{          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+}        })
         .finally(() => setLoading(false));
     }, [refreshFlag]);
   

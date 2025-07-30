@@ -33,9 +33,9 @@ export function ForgotPasswordModal({open, onOpenChange}: ForgotPasswordModalPro
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast('Error:',err?.message || 'Error during process Occured','error');
-      // setError(err.message)
+        }else
+{        toast.showToast('Error:',err?.message || 'Error during process Occured','error');
+}      // setError(err.message)
     } finally {
     // console.log("Submitting forgot password for", email);
       setLoading(false);

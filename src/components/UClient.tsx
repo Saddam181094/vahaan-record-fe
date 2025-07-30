@@ -76,9 +76,9 @@ export default function UClient() {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast("Error:", err?.message || 'Rejection was not done due to errors', "error");
-      })
+        }else
+{        toast.showToast("Error:", err?.message || 'Rejection was not done due to errors', "error");
+}      })
       .finally(() => {
         setLoading(false);
         setSelectedClient(null);

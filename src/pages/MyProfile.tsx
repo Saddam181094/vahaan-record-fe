@@ -146,9 +146,9 @@ const MyProfile: React.FC = () => {
       if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
-      }
-      toast.showToast('Success', err?.message ?? 'Something went wrong', 'success')
-    })
+      }else
+{      toast.showToast('Success', err?.message ?? 'Something went wrong', 'success')
+}    })
       .finally(() => {
         resetPassword();
         setLoading(false);
@@ -301,8 +301,7 @@ const MyProfile: React.FC = () => {
                   {documents.map((doc: DocumentFormInputs, idx: number) => (
                     <Button
                       key={idx}
-                      variant="outline"
-                      className="min-w-[120px] whitespace-nowrap shadow-sm cursor-pointer"
+                      className="min-w-[120px] whitespace-nowrap shadow-sm cursor-pointer bg-gray-500 border border-black-200 hover:bg-gray-800 text-white"
                       onClick={() => window.open(doc.url, "_blank")}
                     >
                       {doc.name}

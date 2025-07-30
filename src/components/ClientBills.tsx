@@ -69,9 +69,9 @@ const ClientBills = () => {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast("Error", err?.message || "Fetching error", "error");
-      })
+        }else
+{        toast.showToast("Error", err?.message || "Fetching error", "error");
+}      })
       .finally(() => {
         setLoading(false);
       });
@@ -95,9 +95,9 @@ const ClientBills = () => {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-    toast.showToast("Error", "Failed to apply filter", "error");
-  } finally {
+        }else
+{    toast.showToast("Error", "Failed to apply filter", "error");
+}  } finally {
     setLoading(false);
   }
 };
@@ -127,9 +127,9 @@ const ClientBills = () => {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-      toast.showToast("Upload failed", error.message || "File upload failed", "error");
-    } finally {
+        }else
+{      toast.showToast("Upload failed", error.message || "File upload failed", "error");
+}    } finally {
       setUploading(false);
     }
   };
@@ -153,9 +153,9 @@ const ClientBills = () => {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-      toast.showToast("Payment failed", error.message || "Something went wrong", "error");
-    } finally {
+        }else
+{      toast.showToast("Payment failed", error.message || "Something went wrong", "error");
+}    } finally {
       setFlag(f =>!f);
       setBdata([]);
       setBill(null);
@@ -175,9 +175,9 @@ const ClientBills = () => {
           {
             toast.showToast('Error', 'Session Expired', 'error');
             logout();
-          }
-            toast.showToast('Error',err?.message || 'Error fetching UPI Id','error')
-          }).finally(()=>{
+          }else
+{            toast.showToast('Error',err?.message || 'Error fetching UPI Id','error')
+}          }).finally(()=>{
             setLoading(false);
           })
   

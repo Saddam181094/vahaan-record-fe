@@ -37,8 +37,9 @@ export default function CaseDetailsAdmin() {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-      })
+        else
+{        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+}      })
       .finally(() => setLoading(false));
   }, []);
 

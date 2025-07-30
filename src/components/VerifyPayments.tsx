@@ -118,9 +118,9 @@ const handleConfirmAction = () => {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-      toast.showToast("Error", err?.message || 'Unable to proceed with the Process due to error', "error");
-    })
+        }else
+{      toast.showToast("Error", err?.message || 'Unable to proceed with the Process due to error', "error");
+}    })
     .finally(() => {
       setLoading(false);
       setflag(f=>!f);

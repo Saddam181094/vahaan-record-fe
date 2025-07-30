@@ -86,9 +86,9 @@ const Payment = () => {
           {
             toast.showToast('Error', 'Session Expired', 'error');
             logout();
-          }
-            toast.showToast('Error',err?.message || 'Error fetching personal Data','error')
-          }).finally(()=>{
+          }else
+{            toast.showToast('Error',err?.message || 'Error fetching personal Data','error')
+}          }).finally(()=>{
             setTimeout(()=> setLoading(false),3000)
             setLoading(false);
           })
@@ -124,9 +124,9 @@ const Payment = () => {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-      toast.showToast("Upload failed", error.message || "File upload failed.", "error");
-    } finally {
+        }else
+{      toast.showToast("Upload failed", error.message || "File upload failed.", "error");
+}    } finally {
       setUploading(false);
     }
   };
@@ -159,9 +159,9 @@ const Payment = () => {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast("Payment failed", error.message || "Something went wrong", "error");
-      })
+        }else
+{        toast.showToast("Payment failed", error.message || "Something went wrong", "error");
+}      })
       .finally(() => {
         navigate(-1);
         setLoading(false);
@@ -179,9 +179,9 @@ const Payment = () => {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-          toast.showToast('Error',err?.message || 'Error fetching UPI Id','error')
-        }).finally(()=>{
+        }else
+{          toast.showToast('Error',err?.message || 'Error fetching UPI Id','error')
+}        }).finally(()=>{
           setLoading(false);
         })
 

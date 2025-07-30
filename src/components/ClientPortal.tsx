@@ -67,9 +67,9 @@ export default function ClientCaseList() {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-        toast.showToast("Error:", err?.message || 'Error fetching your Cases', "error");
-      })
+        }else
+{        toast.showToast("Error:", err?.message || 'Error fetching your Cases', "error");
+}      })
       .finally(() => {
         setLoading(false)
       });
@@ -128,9 +128,9 @@ export default function ClientCaseList() {
         {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }
-      toast.showToast("Error:", err?.message || 'Payment failed due to an error', "error");
-    } finally {
+        }else
+{      toast.showToast("Error:", err?.message || 'Payment failed due to an error', "error");
+}    } finally {
       setLoading(false);
     }
   };

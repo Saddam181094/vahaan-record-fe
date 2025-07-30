@@ -118,7 +118,7 @@ export default function AdminBranchForm() {
           logout();
         }
 
-        toast.showToast('Error:', err?.message || 'Some Error in Fetching Branches', 'error');
+       else { toast.showToast('Error:', err?.message || 'Some Error in Fetching Branches', 'error');}
         // console.error("Error fetching branches:", err);
       })
       .finally(() => {
@@ -141,7 +141,8 @@ export default function AdminBranchForm() {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-      toast.showToast('Some Error in Fetching Branches', err, 'error');
+        else
+      {toast.showToast('Some Error in Fetching Branches', err, 'error');}
       // console.error(err);
     } finally {
       setFormLoading(false);
@@ -164,8 +165,10 @@ export default function AdminBranchForm() {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-      toast.showToast('Error:', err?.message || 'Some Error in switching Branches', 'error');
-      // console.error(err);
+        else
+{      
+  toast.showToast('Error:', err?.message || 'Some Error in switching Branches', 'error');
+}      // console.error(err);
     } finally {
       setRefreshFlag((prev) => !prev);
       setLoading(false);
