@@ -134,48 +134,92 @@ export default function ClientDetails() {
         );
 
         return (
-            <div id="printable-content" className="p-12 text-sm leading-relaxed font-sans text-gray-800">
-                {/* === Letterhead === */}
-                <div className="mb-6 border-b border-gray-300 pb-4 flex items-center justify-between">
-                    <img src="/Group.svg" alt="Letterhead Logo" className="h-16" />
-                </div>
+<div id="printable-content" className="p-12 text-sm leading-relaxed font-sans text-gray-800 bg-white">
+  {/* === Letterhead Logo === */}
+  <div className="flex justify-start mb-4 border-b border-gray-300 pb-3">
+    <img src="/Group.svg" alt="Letterhead Logo" className="h-16" />
+  </div>
 
-                {/* === Incentive Header === */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-semibold mb-4 border-b pb-1 border-gray-200">Incentive Details</h1>
-                    <p className="text-gray-600 mb-2">Summary of incentives for the selected period.</p>
-                </div>
+  {/* === Report Info Section (starts content visually) === */}
+  <div className="mb-10">
+    <h1 className="text-2xl font-bold text-gray-800 mb-2">Incentive Report</h1>
+    <p className="text-gray-600 mb-4 text-sm">Generated on {new Date().toLocaleDateString()}</p>
+{employee && (
+  <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 w-full max-w-xl space-y-2">
+    <div className="flex flex-col sm:flex-row sm:items-center">
+      <span className="font-medium text-gray-600 w-40">Name:</span>
+      <span className="text-gray-900 font-semibold">
+        {employee.firstName.toUpperCase()} {employee.lastName.toUpperCase()}
+      </span>
+    </div>
 
-                {/* === Incentive Table === */}
-                {cases.length > 0 ? (
-                    <div>
-                        <table className="w-full border-collapse text-xs shadow-sm rounded-md overflow-hidden">
-                            <thead className="bg-gray-200 text-gray-800 uppercase tracking-wide">
-                                <tr>
-                                    <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Case No</th>
-                                    <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Vehicle No</th>
-                                    <th className="border-l-4 border-blue-500 px-4 py-2 text-left">Incentive Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {cases.map((c, idx) => (
-                                    <tr key={idx} className="even:bg-gray-100 odd:bg-white">
-                                        <td className="border border-gray-300 px-4 py-2">{c.CaseNo}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{c.vehicleDetail?.vehicleNo || "-"}</td>
-                                        <td className="border border-gray-300 px-4 py-2">₹{Number(c.generalDetail?.incentiveAmount || 0).toFixed(2)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+    <div className="flex flex-col sm:flex-row sm:items-center">
+      <span className="font-medium text-gray-600 w-40">Email:</span>
+      <span className="text-gray-900">{employee.email}</span>
+    </div>
 
-                        <div className="text-right font-semibold text-base mt-6">
-                            Total Incentive: ₹{totalIncentive.toFixed(2)}
-                        </div>
-                    </div>
-                ) : (
-                    <div className="text-center text-gray-500 mt-6">No incentive records available.</div>
-                )}
-            </div>
+    <div className="flex flex-col sm:flex-row sm:items-center">
+        <span className="font-medium text-gray-600 w-40">Branch Code:</span> 
+        <span className="font-semibold">{employee.branchCode}</span>
+        
+    </div>
+        <div className="flex flex-col sm:flex-row sm:items-center">
+      <span className="font-medium text-gray-600 w-40">Employee Code:</span> 
+        
+        <span className="font-semibold">{employee.employeeCode}</span>
+    </div>
+  </div>
+)}
+
+  </div>
+
+  {/* === Table Title === */}
+  <div className="mb-6">
+    <h2 className="text-lg font-semibold text-blue-700 border-b border-gray-200 pb-2">
+      Summary of Incentives
+    </h2>
+    <p className="text-gray-500 text-sm mt-1">
+      Overview of processed incentive cases for the selected period.
+    </p>
+  </div>
+
+  {/* === Incentive Table === */}
+  {cases.length > 0 ? (
+    <div>
+      <table className="w-full border-collapse text-sm shadow rounded overflow-hidden">
+        <thead className="bg-blue-100 text-blue-900 uppercase tracking-wide text-xs">
+          <tr>
+            <th className="px-4 py-3 text-left border-b border-blue-200">Case No</th>
+            <th className="px-4 py-3 text-left border-b border-blue-200">Vehicle No</th>
+            <th className="px-4 py-3 text-left border-b border-blue-200">Incentive Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cases.map((c, idx) => (
+            <tr key={idx} className="even:bg-gray-50 odd:bg-white">
+              <td className="px-4 py-2 border-t border-gray-200">{c.CaseNo}</td>
+              <td className="px-4 py-2 border-t border-gray-200">
+                {c.vehicleDetail?.vehicleNo || <span className="text-red-500">N/A</span>}
+              </td>
+              <td className="px-4 py-2 border-t border-gray-200 font-medium text-green-700">
+                ₹{Number(c.generalDetail?.incentiveAmount || 0).toFixed(2)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="text-right font-semibold text-base mt-6 text-blue-800">
+        Total Incentive: ₹{totalIncentive.toFixed(2)}
+      </div>
+    </div>
+  ) : (
+    <div className="text-center text-gray-500 mt-8">
+      No incentive records available for the selected period.
+    </div>
+  )}
+</div>
+
         );
     };
 

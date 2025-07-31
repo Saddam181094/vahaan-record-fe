@@ -63,6 +63,10 @@ const ClientBills = () => {
       .then((resp) => {
         setBills(resp?.data ?? []);
         toast.showToast('Success','All Bills Fetched','success');
+
+        if (resp?.data?.length === 0) {
+          toast.showToast('Info', 'No bills found for this user for any month', 'info');
+        }
       })
       .catch((err: any) => {
         if(err?.status == 401 || err?.response?.status == 401)
@@ -238,82 +242,91 @@ const ClientBills = () => {
           </div>
         </form>
 
-        {bdata.length > 0 && (
-          <div className="p-4 space-y-6">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Case Date</TableHead>
-                  <TableHead>Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {bdata.map((item, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>{new Date(item.paymentDate).toLocaleString()}</TableCell>
-                    <TableCell>₹{item.amount}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-
-            <div className="font-semibold text-right text-lg text-gray-800">
-              Total Amount: ₹{bdata.reduce((acc, item) => acc + Number(item.amount), 0).toFixed(2)}
-            </div>
-
-
-{bill && bill?.status === "success" && <p className=" text-green-500 font-semibold">Payment already done and verified</p>}
-{bill && bill?.status === "paid" && <p className=" text-yellow-500 font-semibold">Payment under verification</p>}
-{bill && bill?.status === "failed" && <p className=" text-red-500 font-semibold">Your last payment has failed. You can try again</p>}
       
-{bill && (bill?.status === "failed" || bill?.status === "generated") && 
 
-(<>
-<div className="space-y-3">
-              <Label className="font-semibold text-gray-800 text-lg">
-                Choose Payment Method
-              </Label>
-              <Controller
-                name="paymentMethod"
-                control={control}
-                render={({ field }) => (
-                  <RadioGroup
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    className="flex space-x-6"
-                  >
-                    {paymentOptions.map(({ value, label }) => (
-                      <div key={value} className="flex items-center space-x-2">
-                        <RadioGroupItem value={value} id={value} />
-                        <Label htmlFor={value}>{label}</Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                )}
-              />
+{bdata.length > 0 ? (
+  <div className="p-4 space-y-6">
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Case Date</TableHead>
+          <TableHead>Amount</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {bdata.map((item, idx) => (
+          <TableRow key={idx}>
+            <TableCell>{new Date(item.paymentDate).toLocaleString()}</TableCell>
+            <TableCell>₹{item.amount}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
 
-              
-{paymentMethod === "UPI" && (
-  <div className="flex flex-col items-start gap-4">
-    {/* <Button
-      onClick={() => makeUpiPayment()}
-      className="cursor-pointer w-fit"
-    >
-      Pay With UPI
-    </Button> */}
-
-    <div className="flex flex-col justify-center items-center w-full">
-      <p className="text-gray-700 font-medium mb-2 text-center">Scan this QR code:</p>
-      <div className="flex justify-center items-center w-full">
-      <QRCodeSVG value={upiUrl} size={180} />
-      </div>
+    <div className="font-semibold text-right text-lg text-gray-800">
+      Total Amount: ₹
+      {bdata.reduce((acc, item) => acc + Number(item.amount), 0).toFixed(2)}
     </div>
-  </div>
-)}
 
+    {bill?.status === "success" && (
+      <p className="text-green-600 font-semibold">
+        Payment already done and verified
+      </p>
+    )}
+    {bill?.status === "paid" && (
+      <p className="text-yellow-500 font-semibold">
+        Payment under verification
+      </p>
+    )}
+    {bill?.status === "failed" && (
+      <p className="text-red-500 font-semibold">
+        Your last payment has failed. You can try again
+      </p>
+    )}
+
+    {(bill?.status === "failed" || bill?.status === "generated") && (
+      <>
+        <div className="space-y-3">
+          <Label className="font-semibold text-gray-800 text-lg">
+            Choose Payment Method
+          </Label>
+          <Controller
+            name="paymentMethod"
+            control={control}
+            render={({ field }) => (
+              <RadioGroup
+                value={field.value}
+                onValueChange={field.onChange}
+                className="flex space-x-6"
+              >
+                {paymentOptions.map(({ value, label }) => (
+                  <div key={value} className="flex items-center space-x-2">
+                    <RadioGroupItem value={value} id={value} />
+                    <Label htmlFor={value}>{label}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            )}
+          />
+
+          {paymentMethod === "UPI" && (
+            <div className="flex flex-col items-start gap-4">
+              <div className="flex flex-col justify-center items-center w-full">
+                <p className="text-gray-700 font-medium mb-2 text-center">
+                  Scan this QR code:
+                </p>
+                <div className="flex justify-center items-center w-full">
+                  <QRCodeSVG value={upiUrl} size={180} />
+                </div>
+              </div>
             </div>
-            <div className="space-y-3">
-              {watch('paymentMethod').length>0 && <><Label className="font-semibold text-gray-800 text-lg block">
+          )}
+        </div>
+
+        <div className="space-y-3">
+          {watch("paymentMethod").length > 0 && (
+            <>
+              <Label className="font-semibold text-gray-800 text-lg block">
                 Upload Payment Proof
               </Label>
               <input
@@ -321,41 +334,48 @@ const ClientBills = () => {
                 accept="image/*"
                 onChange={(e) => onFileChange(e.target.files)}
                 className="block w-full text-gray-700 border border-gray-300 rounded-md p-2 cursor-pointer"
-              /></>}
-                {uploading && (
-                <div className="flex items-center space-x-2">
-                  <span className="loader mr-2" />
-                  <span className="text-blue-600">Uploading image...</span>
-                </div>
-                )}
-                {uploadedFileUrl && (
-                <div className="flex items-center space-x-4">
-                  <Button
-                  type="button"
-                  variant="secondary"
-                  className="cursor-pointer"
-                  onClick={() => setViewImageOpen(true)}
-                  >
-                  View Uploaded Image
-                  </Button>
-                </div>
-                )}
+              />
+            </>
+          )}
+          {uploading && (
+            <div className="flex items-center space-x-2">
+              <span className="loader mr-2" />
+              <span className="text-blue-600">Uploading image...</span>
             </div>
-
-            <div className="flex justify-end">
+          )}
+          {uploadedFileUrl && (
+            <div className="flex items-center space-x-4">
               <Button
                 type="button"
-                disabled={isSubmitting || !canPay}
-                onClick={handlePayment}
-                className="px-8 cursor-pointer"
+                variant="secondary"
+                className="cursor-pointer"
+                onClick={() => setViewImageOpen(true)}
               >
-                {isSubmitting ? "Processing..." : "Pay Now"}
+                View Uploaded Image
               </Button>
             </div>
-            </>
-            )}
-          </div>
-        )}
+          )}
+        </div>
+
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            disabled={isSubmitting || !canPay}
+            onClick={handlePayment}
+            className="px-8 cursor-pointer"
+          >
+            {isSubmitting ? "Processing..." : "Pay Now"}
+          </Button>
+        </div>
+      </>
+    )}
+  </div>
+) : (
+  <div className="p-4 text-center text-gray-500 font-medium text-base">
+    No Bill Data found
+  </div>
+)}
+
       </div>
 <Dialog open={viewImageOpen} onOpenChange={setViewImageOpen}>
   <DialogContent className="max-w-md sm:max-w-lg">
