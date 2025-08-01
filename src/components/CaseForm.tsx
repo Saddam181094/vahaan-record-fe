@@ -138,6 +138,7 @@ export const NumberPlate = {
 } as const;
 export type NumberPlate = (typeof NumberPlate)[keyof typeof NumberPlate];
 export const RTOOptions = [
+  { value:"N/A", label: "N/A" },
   { value: "GJ01 (AHMEDABAD)", label: "GJ01 (AHMEDABAD)" },
   { value: "GJ02 (MEHSANA)", label: "GJ02 (MEHSANA)" },
   { value: "GJ03 (RAJKOT)", label: "GJ03 (RAJKOT)" },
@@ -968,7 +969,7 @@ export default function CaseForm() {
             <Controller
               name="expireDetail.permitExpiry"
               control={control}
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <div className="flex flex-col gap-1">
                   <Label
                     htmlFor="permitExpiry"
@@ -978,7 +979,6 @@ export default function CaseForm() {
                   </Label>
                   <DateInput
                     id="permitExpiry"
-                    error={!!fieldState.error}
                     {...field}
                   />
                 </div>
@@ -1343,10 +1343,9 @@ export default function CaseForm() {
                 <Controller
                   name="ownerDetails.buyerName"
                   control={control}
-                  rules={{ required: "Parameter is required." }}
-                  render={({ field, fieldState }) => (
+                  render={({ field,fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerName">Buyer Name<span className="text-red-500">*</span></Label>
+                      <Label htmlFor="buyerName">Buyer Name</Label>
                       <Input id="buyerName" placeholder="Buyer Name"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
@@ -1363,7 +1362,7 @@ export default function CaseForm() {
                   control={control}
                   rules={
                     {
-                      required: "Parmater is required",
+                     
                       pattern: {
                         value: /^\d{12}$/,
                         message: "Aadhaar No must be a 12-digit number",
@@ -1371,7 +1370,7 @@ export default function CaseForm() {
                     }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerAadharNo">Buyer Aadhaar No<span className="text-red-500">*</span></Label>
+                      <Label htmlFor="buyerAadharNo">Buyer Aadhaar No</Label>
                       <Input
                         id="buyerAadharNo"
                         placeholder="Buyer Aadhaar No"
@@ -1393,10 +1392,9 @@ export default function CaseForm() {
                 <Controller
                   name="ownerDetails.buyerAddress"
                   control={control}
-                  rules={{ required: "Parameter is required." }}
-                  render={({ field, fieldState }) => (
+                  render={({ field,fieldState }) => (
                     <div className="flex flex-col gap-1 md:col-span-2">
-                      <Label htmlFor="buyerAddress">Buyer Address<span className="text-red-500">*</span></Label>
+                      <Label htmlFor="buyerAddress">Buyer Address</Label>
                       <Textarea id="buyerAddress" placeholder="Buyer Address"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
@@ -1411,10 +1409,9 @@ export default function CaseForm() {
                 <Controller
                   name="ownerDetails.buyerState"
                   control={control}
-                  rules={{ required: "Parameter is required." }}
-                  render={({ field, fieldState }) => (
+                  render={({ field,fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerState">Buyer State<span className="text-red-500">*</span></Label>
+                      <Label htmlFor="buyerState">Buyer State</Label>
                       <Select
                         {...field}
                         value={field.value}
@@ -1457,7 +1454,7 @@ export default function CaseForm() {
                   name="ownerDetails.buyerPhoneNo"
                   control={control}
                   rules={{
-                    required: "Paramter is required.",
+                    
                     pattern: {
                       value: /^[6-9]\d{9}$/,
                       message: "Phone No must be a valid 10-digit",
@@ -1465,7 +1462,7 @@ export default function CaseForm() {
                   }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerPhoneNo">Buyer Phone No<span className="text-red-500">*</span></Label>
+                      <Label htmlFor="buyerPhoneNo">Buyer Phone No</Label>
                       <Input
                         id="buyerPhoneNo"
                         placeholder="Buyer Phone No"

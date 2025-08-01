@@ -867,7 +867,7 @@ useEffect(() => {
             <Controller
               name="expireDetail.permitExpiry"
               control={control}
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <div className="flex flex-col gap-1">
                   <Label
                     htmlFor="permitExpiry"
@@ -877,7 +877,6 @@ useEffect(() => {
                   </Label>
                   <DateInput
                     id="permitExpiry"
-                    error={!!fieldState.error}
                     {...field}
                   />
                 </div>
@@ -1242,18 +1241,12 @@ useEffect(() => {
                 <Controller
                   name="ownerDetails.buyerName"
                   control={control}
-                  rules={{ required: "Parameter is required." }}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <div className="flex flex-col gap-1">
                       <Label htmlFor="buyerName">Buyer Name<span className="text-red-500">*</span></Label>
                       <Input id="buyerName" placeholder="Buyer Name"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
-                      {fieldState.error && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {fieldState.error.message}
-                        </p>
-                      )}
                     </div>
                   )}
                 />
@@ -1262,13 +1255,12 @@ useEffect(() => {
                   control={control}
                   rules={
                     {
-                      required: "Parmater is required",
                       pattern: {
                         value: /^\d{12}$/,
                         message: "Aadhaar No must be a 12-digit number",
                       },
                     }}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <div className="flex flex-col gap-1">
                       <Label htmlFor="buyerAadharNo">Buyer Aadhaar No<span className="text-red-500">*</span></Label>
                       <Input
@@ -1281,37 +1273,25 @@ useEffect(() => {
                           field.onChange(val);
                         }}
                       />
-                      {fieldState.error && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {fieldState.error.message}
-                        </p>
-                      )}
                     </div>
                   )}
                 />
                 <Controller
                   name="ownerDetails.buyerAddress"
                   control={control}
-                  rules={{ required: "Parameter is required." }}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <div className="flex flex-col gap-1 md:col-span-2">
                       <Label htmlFor="buyerAddress">Buyer Address<span className="text-red-500">*</span></Label>
                       <Textarea id="buyerAddress" placeholder="Buyer Address"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
-                      {fieldState.error && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {fieldState.error.message}
-                        </p>
-                      )}
                     </div>
                   )}
                 />
                 <Controller
                   name="ownerDetails.buyerState"
                   control={control}
-                  rules={{ required: "Parameter is required." }}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <div className="flex flex-col gap-1">
                       <Label htmlFor="buyerState">Buyer State<span className="text-red-500">*</span></Label>
                       <Select
@@ -1344,11 +1324,6 @@ useEffect(() => {
                           ))}
                         </SelectContent>
                       </Select>
-                      {fieldState.error && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {fieldState.error.message}
-                        </p>
-                      )}
                     </div>
                   )}
                 />
@@ -1356,13 +1331,13 @@ useEffect(() => {
                   name="ownerDetails.buyerPhoneNo"
                   control={control}
                   rules={{
-                    required: "Paramter is required.",
+                   
                     pattern: {
                       value: /^[6-9]\d{9}$/,
                       message: "Phone No must be a valid 10-digit",
                     },
                   }}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <div className="flex flex-col gap-1">
                       <Label htmlFor="buyerPhoneNo">Buyer Phone No<span className="text-red-500">*</span></Label>
                       <Input
@@ -1375,11 +1350,6 @@ useEffect(() => {
                           field.onChange(val);
                         }}
                       />
-                      {fieldState.error && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {fieldState.error.message}
-                        </p>
-                      )}
                     </div>
                   )}
                 />
