@@ -1213,7 +1213,7 @@ export default function CaseForm() {
           <hr />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <div className="font-semibold mb-1">New Owner Details</div>
+              <div className="font-semibold mb-1">Registered Owner Details</div>
               <hr />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                 <Controller
@@ -1221,8 +1221,8 @@ export default function CaseForm() {
                   control={control}
                   render={({ field }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="sellerName">New Owner Name</Label>
-                      <Input id="sellerName" placeholder="New Owner Name"                     {...field}
+                      <Label htmlFor="sellerName">Registered Owner Name</Label>
+                      <Input id="sellerName" placeholder="Registered Owner Name"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
                     </div>
@@ -1239,10 +1239,10 @@ export default function CaseForm() {
                   }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="sellerAadharNo">New Owner Aadhaar No</Label>
+                      <Label htmlFor="sellerAadharNo">Registered Owner Aadhaar No</Label>
                       <Input
                         id="sellerAadharNo"
-                        placeholder="New Owner Aadhaar No"
+                        placeholder="Registered Owner Aadhaar No"
                         maxLength={12}
                         {...field}
                         onChange={e => {
@@ -1263,8 +1263,8 @@ export default function CaseForm() {
                   control={control}
                   render={({ field }) => (
                     <div className="flex flex-col gap-1 md:col-span-2">
-                      <Label htmlFor="sellerAddress">New Owner Address</Label>
-                      <Textarea id="sellerAddress" placeholder="New Owner Address"                     {...field}
+                      <Label htmlFor="sellerAddress">Registered Owner Address</Label>
+                      <Textarea id="sellerAddress" placeholder="Registered Owner Address"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
                     </div>
@@ -1275,7 +1275,7 @@ export default function CaseForm() {
                   control={control}
                   render={({ field }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="sellerState">New Owner State</Label>
+                      <Label htmlFor="sellerState">Registered Owner State</Label>
                       <Select
                         {...field}
                         value={field.value}
@@ -1319,10 +1319,10 @@ export default function CaseForm() {
                   }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="sellerPhoneNo">New Owner Phone No</Label>
+                      <Label htmlFor="sellerPhoneNo">Registered Owner Phone No</Label>
                       <Input
                         id="sellerPhoneNo"
-                        placeholder="New Owner Phone No"
+                        placeholder="Registered Owner Phone No"
                         maxLength={10}
                         {...field}
                         onChange={e => {
@@ -1341,7 +1341,7 @@ export default function CaseForm() {
               </div>
             </div>
             <div>
-              <div className="font-semibold mb-1">Registered Owner Details</div>
+              <div className="font-semibold mb-1">New Owner Details</div>
               <hr />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                 <Controller
@@ -1349,8 +1349,8 @@ export default function CaseForm() {
                   control={control}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerName">Registered Owner Name</Label>
-                      <Input id="buyerName" placeholder="Registered Owner Name"                     {...field}
+                      <Label htmlFor="buyerName">New Owner Name</Label>
+                      <Input id="buyerName" placeholder="New Owner Name"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
                       {fieldState.error && (
@@ -1374,10 +1374,10 @@ export default function CaseForm() {
                     }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerAadharNo">Registered Owner Aadhaar No</Label>
+                      <Label htmlFor="buyerAadharNo">New Owner Aadhaar No</Label>
                       <Input
                         id="buyerAadharNo"
-                        placeholder="Registered Owner Aadhaar No"
+                        placeholder="New Owner Aadhaar No"
                         maxLength={12}
                         {...field}
                         onChange={e => {
@@ -1398,8 +1398,8 @@ export default function CaseForm() {
                   control={control}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1 md:col-span-2">
-                      <Label htmlFor="buyerAddress">Registered Owner Address</Label>
-                      <Textarea id="buyerAddress" placeholder="Registered Owner Address"                     {...field}
+                      <Label htmlFor="buyerAddress">New Owner Address</Label>
+                      <Textarea id="buyerAddress" placeholder="New Owner Address"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
                       {fieldState.error && (
@@ -1415,7 +1415,7 @@ export default function CaseForm() {
                   control={control}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerState">Registered Owner State</Label>
+                      <Label htmlFor="buyerState">New Owner State</Label>
                       <Select
                         {...field}
                         value={field.value}
@@ -1466,10 +1466,10 @@ export default function CaseForm() {
                   }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerPhoneNo">Registered Owner Phone No</Label>
+                      <Label htmlFor="buyerPhoneNo">New Owner Phone No</Label>
                       <Input
                         id="buyerPhoneNo"
-                        placeholder="Registered Owner Phone No"
+                        placeholder="New Owner Phone No"
                         maxLength={10}
                         {...field}
                         onChange={e => {

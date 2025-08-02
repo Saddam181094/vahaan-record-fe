@@ -245,50 +245,50 @@ export default function CaseDescription() {
 
             {owd && (
                 <>
-                    <Section title="New Owner Details">
+                    <Section title="Registered Owner Details">
                         <RenderField
-                            label="New Owner Name"
+                            label="Registered Owner Name"
                             value={owd?.sellerName}
                         />
                         <RenderField
-                            label="New Owner Aadhar Number"
+                            label="Registered Owner Aadhar Number"
                             value={owd?.sellerAadharNo}
                         />
                         <RenderField
-                            label="New Owner Address"
+                            label="Registered Owner Address"
                             value={owd?.sellerAddress}
                         />
                         <RenderField
-                            label="New Owner State"
+                            label="Registered Owner State"
                             value={owd?.sellerState}
                         />
                         <RenderField
-                            label="New Owner Mobile Number"
+                            label="Registered Owner Mobile Number"
                             value={owd?.sellerPhoneNo}
                         />
                     </Section>
 
-                    <Section title="Registered Owner Details">
+                    <Section title="New Owner Details">
                         <RenderField
-                            label="Registered Owner Name"
+                            label="New Owner Name"
                             value={owd?.buyerName}
                         />
                         <RenderField
-                            label="Registered Owner Aadhar Number"
+                            label="New Owner Aadhar Number"
                             value={owd?.buyerAadharNo}
                         />
                         <RenderField
-                            label="Registered Owner Address"
+                            label="New Owner Address"
                             value={owd?.buyerAddress}
 
                         />
                         <RenderField
-                            label="Registered Owner State"
+                            label="New Owner State"
                             value={owd?.buyerState}
 
                         />
                         <RenderField
-                            label="Registered Owner Mobile Number"
+                            label="New Owner Mobile Number"
                             value={owd?.buyerPhoneNo}
                         />
                     </Section>

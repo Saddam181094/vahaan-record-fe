@@ -196,24 +196,24 @@ export default function CaseDetailsAdmin() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
                 <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
-                  New Owner Information
+                  Registered Owner Information
                 </h4>
-                <PrintField label="New Owner Name" value={ownerDetails?.sellerName} />
-                <PrintField label="New Owner Aadhar" value={ownerDetails?.sellerAadharNo} />
-                <PrintField label="New Owner Address" value={ownerDetails?.sellerAddress} />
-                <PrintField label="New Owner State" value={ownerDetails?.sellerState} />
-                <PrintField label="New Owner Phone" value={ownerDetails?.sellerPhoneNo} />
+                <PrintField label="Registered Owner Name" value={ownerDetails?.sellerName} />
+                <PrintField label="Registered Owner Aadhar" value={ownerDetails?.sellerAadharNo} />
+                <PrintField label="Registered Owner Address" value={ownerDetails?.sellerAddress} />
+                <PrintField label="Registered Owner State" value={ownerDetails?.sellerState} />
+                <PrintField label="Registered Owner Phone" value={ownerDetails?.sellerPhoneNo} />
               </div>
 
               <div>
                 <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
-                  Registered Owner Information
+                  New Owner Information
                 </h4>
-                <PrintField label="Registered Owner Name" value={ownerDetails?.buyerName} />
-                <PrintField label="Registered Owner Aadhar" value={ownerDetails?.buyerAadharNo} />
-                <PrintField label="Registered Owner Address" value={ownerDetails?.buyerAddress} />
-                <PrintField label="Registered Owner State" value={ownerDetails?.buyerState} />
-                <PrintField label="Registered Owner Phone" value={ownerDetails?.buyerPhoneNo} />
+                <PrintField label="New Owner Name" value={ownerDetails?.buyerName} />
+                <PrintField label="New Owner Aadhar" value={ownerDetails?.buyerAadharNo} />
+                <PrintField label="New Owner Address" value={ownerDetails?.buyerAddress} />
+                <PrintField label="New Owner State" value={ownerDetails?.buyerState} />
+                <PrintField label="New Owner Phone" value={ownerDetails?.buyerPhoneNo} />
               </div>
             </div>
           </Section2>
@@ -472,52 +472,52 @@ export default function CaseDetailsAdmin() {
         {ownerDetails && (
           <>
             <Card className="mb-6">
-              <CardHeader className="text-lg font-semibold">New Owner Details</CardHeader>
+              <CardHeader className="text-lg font-semibold">Registered Owner Details</CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">New Owner Name</p>
+                  <p className="text-sm text-muted-foreground">Registered Owner Name</p>
                   <p className="font-medium">{ownerDetails?.sellerName || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">New Owner Aadhar Number</p>
+                  <p className="text-sm text-muted-foreground">Registered Owner Aadhar Number</p>
                   <p className="font-medium">{ownerDetails?.sellerAadharNo || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">New Owner Address</p>
+                  <p className="text-sm text-muted-foreground">Registered Owner Address</p>
                   <p className="font-medium">{ownerDetails?.sellerAddress || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">New Owner State</p>
+                  <p className="text-sm text-muted-foreground">Registered Owner State</p>
                   <p className="font-medium">{ownerDetails?.sellerState || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">New Owner Mobile Number</p>
+                  <p className="text-sm text-muted-foreground">Registered Owner Mobile Number</p>
                   <p className="font-medium">{ownerDetails?.sellerPhoneNo || "—"}</p>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="mb-6">
-              <CardHeader className="text-lg font-semibold">Registered Owner Details</CardHeader>
+              <CardHeader className="text-lg font-semibold">New Owner Details</CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Registered Owner Name</p>
+                  <p className="text-sm text-muted-foreground">New Owner Name</p>
                   <p className="font-medium">{ownerDetails?.buyerName || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Registered Owner Aadhar Number</p>
+                  <p className="text-sm text-muted-foreground">New Owner Aadhar Number</p>
                   <p className="font-medium">{ownerDetails?.buyerAadharNo || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Registered Owner Address</p>
+                  <p className="text-sm text-muted-foreground">New Owner Address</p>
                   <p className="font-medium">{ownerDetails?.buyerAddress || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Registered Owner State</p>
+                  <p className="text-sm text-muted-foreground">New Owner State</p>
                   <p className="font-medium">{ownerDetails?.buyerState || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Registered Owner Mobile Number</p>
+                  <p className="text-sm text-muted-foreground">New Owner Mobile Number</p>
                   <p className="font-medium">{ownerDetails?.buyerPhoneNo || "—"}</p>
                 </div>
               </CardContent>
