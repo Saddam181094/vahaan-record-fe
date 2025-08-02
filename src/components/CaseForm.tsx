@@ -138,7 +138,7 @@ export const NumberPlate = {
 } as const;
 export type NumberPlate = (typeof NumberPlate)[keyof typeof NumberPlate];
 export const RTOOptions = [
-  { value:"N/A", label: "N/A" },
+  { value: "N/A", label: "N/A" },
   { value: "GJ01 (AHMEDABAD)", label: "GJ01 (AHMEDABAD)" },
   { value: "GJ02 (MEHSANA)", label: "GJ02 (MEHSANA)" },
   { value: "GJ03 (RAJKOT)", label: "GJ03 (RAJKOT)" },
@@ -302,9 +302,9 @@ export default function CaseForm() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }else
-{        toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
-}        // console.error("Error fetching branches:", err);
+        } else {
+          toast.showToast('Error:', err?.message || 'Error during fetch of Branches', 'error');
+        }        // console.error("Error fetching branches:", err);
       })
       .finally(() => {
         setLoading(false);
@@ -324,9 +324,10 @@ export default function CaseForm() {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
         }
-        else
-{        toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
-}      })
+        else {
+          toast.showToast('Error:', err?.message || 'Error during fetch of employee.', 'error');
+        }
+      })
       .finally(() => {
         setLoading(false);
       });
@@ -343,9 +344,10 @@ export default function CaseForm() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }else
-{        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-}      })
+        } else {
+          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+        }
+      })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
@@ -362,9 +364,10 @@ export default function CaseForm() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }else
-{        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-}      })
+        } else {
+          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+        }
+      })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
@@ -404,9 +407,10 @@ export default function CaseForm() {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }else
-{        toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');
-}      })
+        } else {
+          toast.showToast('Error:', err?.message || 'Error in while Creating a Case', 'error');
+        }
+      })
       .finally(() => {
         setLoading(false);
       });
@@ -561,16 +565,16 @@ export default function CaseForm() {
                     </Label>
                     {user?.role === "employee" ? (
                       <>
-<Input
-  readOnly
-  value={
-    branchEmp
-      .filter((emp) => emp.employeeCode === user.employeeCode)
-      .map((emp) => `${emp.firstName?.trim() ?? ""} ${emp.lastName?.trim() ?? ""}`)
-      .join("") // in case filter returns 1 or 0 items
-  }
-  className="bg-gray-100 cursor-not-allowed"
-/>
+                        <Input
+                          readOnly
+                          value={
+                            branchEmp
+                              .filter((emp) => emp.employeeCode === user.employeeCode)
+                              .map((emp) => `${emp.firstName?.trim() ?? ""} ${emp.lastName?.trim() ?? ""}`)
+                              .join("") // in case filter returns 1 or 0 items
+                          }
+                          className="bg-gray-100 cursor-not-allowed"
+                        />
 
                       </>
                     ) : (
@@ -1209,7 +1213,7 @@ export default function CaseForm() {
           <hr />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <div className="font-semibold mb-1">Seller Details</div>
+              <div className="font-semibold mb-1">New Owner Details</div>
               <hr />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                 <Controller
@@ -1217,8 +1221,8 @@ export default function CaseForm() {
                   control={control}
                   render={({ field }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="sellerName">Seller Name</Label>
-                      <Input id="sellerName" placeholder="Seller Name"                     {...field}
+                      <Label htmlFor="sellerName">New Owner Name</Label>
+                      <Input id="sellerName" placeholder="New Owner Name"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
                     </div>
@@ -1235,10 +1239,10 @@ export default function CaseForm() {
                   }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="sellerAadharNo">Seller Aadhaar No</Label>
+                      <Label htmlFor="sellerAadharNo">New Owner Aadhaar No</Label>
                       <Input
                         id="sellerAadharNo"
-                        placeholder="Seller Aadhaar No"
+                        placeholder="New Owner Aadhaar No"
                         maxLength={12}
                         {...field}
                         onChange={e => {
@@ -1259,8 +1263,8 @@ export default function CaseForm() {
                   control={control}
                   render={({ field }) => (
                     <div className="flex flex-col gap-1 md:col-span-2">
-                      <Label htmlFor="sellerAddress">Seller Address</Label>
-                      <Textarea id="sellerAddress" placeholder="Seller Address"                     {...field}
+                      <Label htmlFor="sellerAddress">New Owner Address</Label>
+                      <Textarea id="sellerAddress" placeholder="New Owner Address"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
                     </div>
@@ -1271,7 +1275,7 @@ export default function CaseForm() {
                   control={control}
                   render={({ field }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="sellerState">Seller State</Label>
+                      <Label htmlFor="sellerState">New Owner State</Label>
                       <Select
                         {...field}
                         value={field.value}
@@ -1315,10 +1319,10 @@ export default function CaseForm() {
                   }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="sellerPhoneNo">Seller Phone No</Label>
+                      <Label htmlFor="sellerPhoneNo">New Owner Phone No</Label>
                       <Input
                         id="sellerPhoneNo"
-                        placeholder="Seller Phone No"
+                        placeholder="New Owner Phone No"
                         maxLength={10}
                         {...field}
                         onChange={e => {
@@ -1337,16 +1341,16 @@ export default function CaseForm() {
               </div>
             </div>
             <div>
-              <div className="font-semibold mb-1">Buyer Details</div>
+              <div className="font-semibold mb-1">Registered Owner Details</div>
               <hr />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                 <Controller
                   name="ownerDetails.buyerName"
                   control={control}
-                  render={({ field,fieldState }) => (
+                  render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerName">Buyer Name</Label>
-                      <Input id="buyerName" placeholder="Buyer Name"                     {...field}
+                      <Label htmlFor="buyerName">Registered Owner Name</Label>
+                      <Input id="buyerName" placeholder="Registered Owner Name"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
                       {fieldState.error && (
@@ -1362,7 +1366,7 @@ export default function CaseForm() {
                   control={control}
                   rules={
                     {
-                     
+
                       pattern: {
                         value: /^\d{12}$/,
                         message: "Aadhaar No must be a 12-digit number",
@@ -1370,10 +1374,10 @@ export default function CaseForm() {
                     }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerAadharNo">Buyer Aadhaar No</Label>
+                      <Label htmlFor="buyerAadharNo">Registered Owner Aadhaar No</Label>
                       <Input
                         id="buyerAadharNo"
-                        placeholder="Buyer Aadhaar No"
+                        placeholder="Registered Owner Aadhaar No"
                         maxLength={12}
                         {...field}
                         onChange={e => {
@@ -1392,10 +1396,10 @@ export default function CaseForm() {
                 <Controller
                   name="ownerDetails.buyerAddress"
                   control={control}
-                  render={({ field,fieldState }) => (
+                  render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1 md:col-span-2">
-                      <Label htmlFor="buyerAddress">Buyer Address</Label>
-                      <Textarea id="buyerAddress" placeholder="Buyer Address"                     {...field}
+                      <Label htmlFor="buyerAddress">Registered Owner Address</Label>
+                      <Textarea id="buyerAddress" placeholder="Registered Owner Address"                     {...field}
                         value={field.value?.toUpperCase() ?? ""}
                         onChange={e => field.onChange(e.target.value.toUpperCase())} />
                       {fieldState.error && (
@@ -1409,9 +1413,9 @@ export default function CaseForm() {
                 <Controller
                   name="ownerDetails.buyerState"
                   control={control}
-                  render={({ field,fieldState }) => (
+                  render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerState">Buyer State</Label>
+                      <Label htmlFor="buyerState">Registered Owner State</Label>
                       <Select
                         {...field}
                         value={field.value}
@@ -1454,7 +1458,7 @@ export default function CaseForm() {
                   name="ownerDetails.buyerPhoneNo"
                   control={control}
                   rules={{
-                    
+
                     pattern: {
                       value: /^[6-9]\d{9}$/,
                       message: "Phone No must be a valid 10-digit",
@@ -1462,10 +1466,10 @@ export default function CaseForm() {
                   }}
                   render={({ field, fieldState }) => (
                     <div className="flex flex-col gap-1">
-                      <Label htmlFor="buyerPhoneNo">Buyer Phone No</Label>
+                      <Label htmlFor="buyerPhoneNo">Registered Owner Phone No</Label>
                       <Input
                         id="buyerPhoneNo"
-                        placeholder="Buyer Phone No"
+                        placeholder="Registered Owner Phone No"
                         maxLength={10}
                         {...field}
                         onChange={e => {

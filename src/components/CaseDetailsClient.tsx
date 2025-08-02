@@ -6,45 +6,45 @@ import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { useAuth } from "@/context/AuthContext";
-import {type ownerDetails } from "./CaseForm";
+import { type ownerDetails } from "./CaseForm";
 
 interface DetailedCase {
-  id: string;
-  CaseNo: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  ownerDetails:ownerDetails;
-  vehicleDetail: {
-    vehicleNo: string;
-    fromRTO: string;
-    toRTO: string;
-    chassisNo: string;
-    engineNo: string;
-  };
-  expireDetail: {
-    insuranceExpiry: string;
-    pucExpiry: string;
-    fitnessExpiry: string;
-    taxExpiry: string;
-    permitExpiry: string;
-  };
-  transactionDetail: {
-    to: string;
-    fitness: boolean;
-    rrf: boolean;
-    rma: boolean;
-    alteration: boolean;
-    conversion: boolean;
-    numberPlate: string;
-    addressChange: boolean;
-    drc: boolean;
-    remarks: string;
-  };
-  generalDetail: {
-    firmName: string;
-    applicationDate: string | null;
-  };
+    id: string;
+    CaseNo: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    ownerDetails: ownerDetails;
+    vehicleDetail: {
+        vehicleNo: string;
+        fromRTO: string;
+        toRTO: string;
+        chassisNo: string;
+        engineNo: string;
+    };
+    expireDetail: {
+        insuranceExpiry: string;
+        pucExpiry: string;
+        fitnessExpiry: string;
+        taxExpiry: string;
+        permitExpiry: string;
+    };
+    transactionDetail: {
+        to: string;
+        fitness: boolean;
+        rrf: boolean;
+        rma: boolean;
+        alteration: boolean;
+        conversion: boolean;
+        numberPlate: string;
+        addressChange: boolean;
+        drc: boolean;
+        remarks: string;
+    };
+    generalDetail: {
+        firmName: string;
+        applicationDate: string | null;
+    };
 }
 
 export default function CaseDescription() {
@@ -54,11 +54,11 @@ export default function CaseDescription() {
     const { setLoading } = useLoading();
     const [caseData, setCaseData] = useState<DetailedCase>();
     const toast = useToast();
-    const {logout} = useAuth();
+    const { logout } = useAuth();
 
     useEffect(() => {
         if (!id) {
-            toast.showToast('Error','Proper ID was not provided','error');
+            toast.showToast('Error', 'Proper ID was not provided', 'error');
             return;
         }
 
@@ -67,16 +67,15 @@ export default function CaseDescription() {
             .then((resp) => {
                 setCaseData(resp?.data);
             })
-            .catch((err:any)=>{
-                if(err?.status == 401 || err?.response?.status == 401)
-        {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        }
-        else
-{        
-    toast.showToast('Error:',err?.message || 'Error during fetch','error');
-}            })
+            .catch((err: any) => {
+                if (err?.status == 401 || err?.response?.status == 401) {
+                    toast.showToast('Error', 'Session Expired', 'error');
+                    logout();
+                }
+                else {
+                    toast.showToast('Error:', err?.message || 'Error during fetch', 'error');
+                }
+            })
             .finally(() => setLoading(false));
     }, [id, navigate]);
 
@@ -133,7 +132,7 @@ export default function CaseDescription() {
         <div className="p-6 space-y-6">
             <div className="flex justify-between items-center">
                 <button
-                style={{cursor:"pointer"}}
+                    style={{ cursor: "pointer" }}
                     className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90"
                     onClick={() => navigate(-1)}
                     type="button"
@@ -177,7 +176,7 @@ export default function CaseDescription() {
                     value={vd?.engineNo}
                 />
             </Section>
-{/* 
+            {/* 
             <Section title="Expire Details">
                 <RenderField
                     label="Insurance Expiry"
@@ -244,57 +243,57 @@ export default function CaseDescription() {
                 />
             </Section>
 
-    {owd && (
-        <>     
-        <Section title="Seller Details">
-        <RenderField
-          label="Seller Name"
-          value={owd?.sellerName}
-        />
-        <RenderField
-          label="Seller Aadhar Number"
-          value={owd?.sellerAadharNo}
-        />
-        <RenderField
-          label="Seller Address"
-          value={owd?.sellerAddress}
-        />
-        <RenderField
-          label="Seller State"
-          value={owd?.sellerState}
-        />
-        <RenderField
-          label="Seller Mobile Number"
-          value={owd?.sellerPhoneNo}
-        />
-      </Section>
+            {owd && (
+                <>
+                    <Section title="New Owner Details">
+                        <RenderField
+                            label="New Owner Name"
+                            value={owd?.sellerName}
+                        />
+                        <RenderField
+                            label="New Owner Aadhar Number"
+                            value={owd?.sellerAadharNo}
+                        />
+                        <RenderField
+                            label="New Owner Address"
+                            value={owd?.sellerAddress}
+                        />
+                        <RenderField
+                            label="New Owner State"
+                            value={owd?.sellerState}
+                        />
+                        <RenderField
+                            label="New Owner Mobile Number"
+                            value={owd?.sellerPhoneNo}
+                        />
+                    </Section>
 
-      <Section title="Buyer Details">
-        <RenderField
-          label="Buyer Name"
-          value={owd?.buyerName}
-        />
-        <RenderField
-          label="Buyer Aadhar Number"
-          value={owd?.buyerAadharNo}
-        />
-        <RenderField
-          label="Buyer Address"          
-          value={owd?.buyerAddress}
+                    <Section title="Registered Owner Details">
+                        <RenderField
+                            label="Registered Owner Name"
+                            value={owd?.buyerName}
+                        />
+                        <RenderField
+                            label="Registered Owner Aadhar Number"
+                            value={owd?.buyerAadharNo}
+                        />
+                        <RenderField
+                            label="Registered Owner Address"
+                            value={owd?.buyerAddress}
 
-        />
-        <RenderField
-          label="Buyer State"          
-          value={owd?.buyerState}
+                        />
+                        <RenderField
+                            label="Registered Owner State"
+                            value={owd?.buyerState}
 
-        />
-        <RenderField
-          label="Buyer Mobile Number"
-          value={owd?.buyerPhoneNo}
-        />
-      </Section>
-      </>
-      )}
+                        />
+                        <RenderField
+                            label="Registered Owner Mobile Number"
+                            value={owd?.buyerPhoneNo}
+                        />
+                    </Section>
+                </>
+            )}
         </div>
     );
 }
