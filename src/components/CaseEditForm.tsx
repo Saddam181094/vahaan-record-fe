@@ -291,6 +291,10 @@ export default function EditCaseForm() {
         ) as TransactionDetail,
         expenseDetail: stripIds(data.expenseDetail) as ExpenseDetail,
         ownerDetails: stripIds(data.ownerDetails ?? {}) as ownerDetails,
+        referenceDetail: stripIds(data.referenceDetail ?? {}) as {
+          name: string;
+          contactNo: string;
+        },
       };
 
       await updateCaseID(id, casePayload);
@@ -1405,6 +1409,29 @@ export default function EditCaseForm() {
                   />
                 )
               )}
+                <Controller
+                    name="expenseDetail.otherCharges"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="flex flex-col gap-1">
+                        <Label className="py-3" htmlFor="adminCharges">
+                          Other Charges
+                        </Label>
+                        <Input
+                          required
+                          id="otherCharges"
+                          type="number"
+                          placeholder="Enter a value"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            field.onChange(val === "" ? "" : Number(val));
+                          }}
+                        />
+                      </div>
+                    )}
+                  />
               {/* Show adminCharges only for superadmin */}
               {user?.role === "superadmin" && (
                 <>
@@ -1431,35 +1458,78 @@ export default function EditCaseForm() {
                       </div>
                     )}
                   />
-
-                  <Controller
-                    name="expenseDetail.otherCharges"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="flex flex-col gap-1">
-                        <Label className="py-3" htmlFor="adminCharges">
-                          Other Charges
-                        </Label>
-                        <Input
-                          required
-                          id="otherCharges"
-                          type="number"
-                          placeholder="Enter a value"
-                          {...field}
-                          value={field.value ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            field.onChange(val === "" ? "" : Number(val));
-                          }}
-                        />
-                      </div>
-                    )}
-                  />
                 </>
               )}
+
+                          <Controller
+                            name="expenseDetail.expenseRemarks"
+                            control={control}
+                            render={({ field }) => (
+                              <div className="col-span-1 md:col-span-4 flex flex-col">
+                                <Label className="py-3" htmlFor="expenseRemarks">
+                                Expense Remarks
+                                </Label>
+                                <Textarea
+                                  className=""
+                                  placeholder="Remarks"
+                                  {...field}
+                                  value={field.value?.toUpperCase() ?? ""}
+                                  onChange={e => field.onChange(e.target.value.toUpperCase())}
+                                />
+                              </div>
+                            )}
+                          />
             </div>
           </CardContent>
         </Card>
+
+              <Card>
+                <CardContent className="grid gap-4 p-6">
+                  <div className="text-xl font-semibold border-b-2">Reference Details</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                    <Controller
+                      name="referenceDetail.name"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="flex flex-col">
+                          <Label htmlFor="applicationNo" className="pb-2">
+                            Reference Name
+                          </Label>
+                          <Input
+                            placeholder="No."
+                            {...field}
+                          />
+                        </div>
+                      )}
+                    />
+                        <Controller
+                          name="referenceDetail.contactNo"
+                          control={control}
+rules={{
+  validate: value => {
+    if (!value) return true;
+    return /^[6-9]\d{9}$/.test(value) || "Phone No must be a valid 10-digit";
+  }
+}}
+                          render={({ field }) => (
+                            <div className="flex flex-col gap-2">
+                              <Label htmlFor="buyerPhoneNo">Reference Contact No</Label>
+                              <Input
+                                id="contactNo"
+                                placeholder="Reference Phone No"
+                                maxLength={10}
+                                {...field}
+                                onChange={e => {
+                                  const val = e.target.value.replace(/\D/g, "");
+                                  field.onChange(val);
+                                }}
+                              />
+                            </div>
+                          )}
+                        />
+                        </div>
+                </CardContent>
+              </Card>
         <Button style={{ cursor: "pointer" }} type="submit">Submit Case</Button>
       </form>
     </div>

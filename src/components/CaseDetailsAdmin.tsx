@@ -310,7 +310,7 @@ export default function CaseDetailsAdmin() {
 
   if (!caseData) return null;
 
-  const { CaseNo, generalDetail, vehicleDetail, expireDetail, transactionDetail, expenseDetail, ownerDetails } = caseData;
+  const { CaseNo, generalDetail, vehicleDetail, expireDetail, transactionDetail, expenseDetail, ownerDetails,referenceDetail } = caseData;
 
   return (
     <>
@@ -327,9 +327,12 @@ export default function CaseDetailsAdmin() {
               🖨️ Print PDF
             </Button>
           </div>
+          {(caseData.status.toLowerCase() !== "assigned" && caseData.status.toLowerCase() !== "paid") 
+          &&
+          (
           <Button className="cursor-pointer" onClick={() => navigate(`/${user?.role}/cases/${CaseNo}/edit`, { state: { caseData: caseData, id: caseId } })}>
             ✎ Edit
-          </Button>
+          </Button>)}
         </div>
 
         <h1 className="text-2xl font-bold mb-4">Case #{CaseNo}</h1>
@@ -522,7 +525,9 @@ export default function CaseDetailsAdmin() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="mb-6">
+          </>
+        )}
+                    <Card className="mb-6">
               <CardHeader className="text-lg font-semibold">Expense Details</CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
@@ -550,11 +555,25 @@ export default function CaseDetailsAdmin() {
                   <p className="text-sm text-muted-foreground">Receipt Amount</p>
                   <p className="font-medium">{expenseDetail?.receiptAmount || "—"}</p>
                 </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Expense Remarks</p>
+                  <p className="font-medium">{expenseDetail?.expenseRemarks || "—"}</p>
+                </div>
               </CardContent>
             </Card>
-          </>
-        )}
-
+            <Card className="mb-6">
+              <CardHeader className="text-lg font-semibold">Reference Details</CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Reference Name</p>
+                  <p className="font-medium">{referenceDetail?.name || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Insurance Charges</p>
+                  <p className="font-medium">{referenceDetail?.contactNo || "—"}</p>
+                </div>
+              </CardContent>
+            </Card>
       </div>
 
       <div ref={contentRef} className="hidden print:block text-sm leading-relaxed printable-section">

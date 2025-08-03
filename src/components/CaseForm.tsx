@@ -32,18 +32,25 @@ import type { Employee } from "./EmployeeForm";
 // Interfaces
 export interface FinalDetails {
   CaseNo: string;
+  status: string;
   generalDetail: GeneralDetails;
   vehicleDetail: VehicleDetail;
   expireDetail: ExpireDetail;
   transactionDetail: TransactionDetail;
   expenseDetail: ExpenseDetail;
   ownerDetails?: ownerDetails;
+  referenceDetail?: referenceDetail;
   logs: Logs;
 }
 export interface Logs {
   user: user;
   fromStatus: string;
   toStatus: string;
+}
+
+export interface referenceDetail {
+  name: string,
+  contactNo: string,
 }
 
 export interface user {
@@ -60,6 +67,7 @@ export interface Case {
   transactionDetail: TransactionDetail;
   ownerDetails: ownerDetails;
   expenseDetail: ExpenseDetail;
+  referenceDetail: referenceDetail;
 }
 
 export interface GeneralDetails {
@@ -122,6 +130,7 @@ export interface ExpenseDetail {
   otherCharges: number | string;
   adminCharges: number | string;
   receiptAmount: number | string;
+  expenseRemarks: string;
 }
 
 export const TransactionTo = {
@@ -238,6 +247,10 @@ export default function CaseForm() {
       insuranceCharges: "",
       otherCharges: "",
       adminCharges: "",
+    },
+    referenceDetail: {
+      name: "",
+      contactNo: "",
     },
   }), []); // dependency array empty → stable reference
 
@@ -1535,7 +1548,29 @@ export default function CaseForm() {
                 />
               )
             )}
-            {/* Show adminCharges only for superadmin */}
+            <Controller
+              name="expenseDetail.otherCharges"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1">
+                  <Label className="py-3" htmlFor="adminCharges">
+                    Other Charges
+                  </Label>
+                  <Input
+                    required
+                    id="otherCharges"
+                    type="number"
+                    placeholder="Enter a value"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      field.onChange(val === "" ? "" : Number(val));
+                    }}
+                  />
+                </div>
+              )}
+            />
             {user?.role === "superadmin" && (
               <>
                 <Controller
@@ -1561,33 +1596,76 @@ export default function CaseForm() {
                     </div>
                   )}
                 />
-
+              </>
+            )}
+            {/* Show adminCharges only for superadmin */}
+            <Controller
+              name="expenseDetail.expenseRemarks"
+              control={control}
+              render={({ field }) => (
+                <div className="col-span-1 md:col-span-4 flex flex-col">
+                  <Label className="py-3" htmlFor="expenseRemarks">
+                    Expense Remarks
+                  </Label>
+                  <Textarea
+                    className=""
+                    placeholder="Remarks"
+                    {...field}
+                    value={field.value?.toUpperCase() ?? ""}
+                    onChange={e => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+              )}
+            />
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className="grid gap-4 p-6">
+          <div className="text-xl font-semibold border-b-2">Reference Details</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+            <Controller
+              name="referenceDetail.name"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col">
+                  <Label htmlFor="applicationNo" className="pb-2">
+                    Reference Name
+                  </Label>
+                  <Input
+                    placeholder="No."
+                    {...field}
+                  />
+                </div>
+              )}
+            />
                 <Controller
-                  name="expenseDetail.otherCharges"
+                  name="referenceDetail.contactNo"
                   control={control}
+rules={{
+  validate: value => {
+    if (!value) return true;
+    return /^[6-9]\d{9}$/.test(value) || "Phone No must be a valid 10-digit";
+  }
+}}
+
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1">
-                      <Label className="py-3" htmlFor="adminCharges">
-                        Other Charges
-                      </Label>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="buyerPhoneNo">Reference Contact No</Label>
                       <Input
-                        required
-                        id="otherCharges"
-                        type="number"
-                        placeholder="Enter a value"
+                        id="contactNo"
+                        placeholder="Reference Phone No"
+                        maxLength={10}
                         {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          field.onChange(val === "" ? "" : Number(val));
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          field.onChange(val);
                         }}
                       />
                     </div>
                   )}
                 />
-              </>
-            )}
-          </div>
+                </div>
         </CardContent>
       </Card>
       <Button style={{ cursor: "pointer" }} type="submit">Submit Case</Button>

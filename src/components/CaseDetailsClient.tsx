@@ -199,51 +199,7 @@ export default function CaseDescription() {
                     value={formatDate(ed?.permitExpiry)}
                 />
             </Section> */}
-
-            <Section title="Transaction Details">
-                <RenderField
-                    label="To RTO"
-                    value={td?.to}
-                />
-                <RenderField
-                    label="Fitness"
-                    value={getBoolStatus(td?.fitness)}
-                />
-                <RenderField
-                    label="RRF"
-                    value={getBoolStatus(td?.rrf)}
-                />
-                <RenderField
-                    label="RMA"
-                    value={getBoolStatus(td?.rma)}
-                />
-                <RenderField
-                    label="Alteration"
-                    value={getBoolStatus(td?.alteration)}
-                />
-                <RenderField
-                    label="Conversion"
-                    value={getBoolStatus(td?.conversion)}
-                />
-                <RenderField
-                    label="Number Plate Type"
-                    value={td?.numberPlate}
-                />
-                <RenderField
-                    label="Address Change"
-                    value={getBoolStatus(td?.addressChange)}
-                />
-                <RenderField
-                    label="DRC"
-                    value={getBoolStatus(td?.drc)}
-                />
-                <RenderField
-                    label="Remarks"
-                    value={td?.remarks}
-                />
-            </Section>
-
-            {owd && (
+                        {(
                 <>
                     <Section title="Registered Owner Details">
                         <RenderField
@@ -294,6 +250,51 @@ export default function CaseDescription() {
                     </Section>
                 </>
             )}
+
+            <Section title="Transaction Details">
+                <RenderField
+                    label="To RTO"
+                    value={td?.to}
+                />
+                <RenderField
+                    label="Fitness"
+                    value={getBoolStatus(td?.fitness)}
+                />
+                <RenderField
+                    label="RRF"
+                    value={getBoolStatus(td?.rrf)}
+                />
+                <RenderField
+                    label="RMA"
+                    value={getBoolStatus(td?.rma)}
+                />
+                <RenderField
+                    label="Alteration"
+                    value={getBoolStatus(td?.alteration)}
+                />
+                <RenderField
+                    label="Conversion"
+                    value={getBoolStatus(td?.conversion)}
+                />
+                <RenderField
+                    label="Number Plate Type"
+                    value={td?.numberPlate}
+                />
+                <RenderField
+                    label="Address Change"
+                    value={getBoolStatus(td?.addressChange)}
+                />
+                <RenderField
+                    label="DRC"
+                    value={getBoolStatus(td?.drc)}
+                />
+                <RenderField
+                    label="Remarks"
+                    value={td?.remarks}
+                />
+            </Section>
+
+
         </div>
     );
 }

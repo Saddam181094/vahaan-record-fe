@@ -238,7 +238,7 @@ const filteredCases = cases.filter((c) => {
                   )}
 
                   <div>
-                    <h2 className="font-semibold text-lg">Case #{caseData.CaseNo}</h2>
+                    <h2 className="font-semibold text-lg">Case #{caseData.CaseNo}: <span className="font-normal text-sm text-gray-500 ">  Vehicle No. {caseData.vehicleDetail.vehicleNo} </span></h2>
                     {payment && payment.status ? (
                       payment.status.toLowerCase() === "failed" ? (
                         <p className="text-sm text-red-600 font-semibold flex items-center">

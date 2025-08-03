@@ -24,36 +24,32 @@ import { useAuth } from "@/context/AuthContext";
 import type { Task } from "./AdminDash";
 import { DateInput } from "@/components/ui/date-input";
 
+type CurrExpiry = {
+  id: string;
+  CaseNo: number;
+  status: string;
+  createdAt: string;
+
+  // Direct vehicle info
+  vehicleNo?: string;
+
+  // Direct expiry fields
+  pucExpiry?: string;
+  insuranceExpiry?: string;
+  fitnessExpiry?: string;
+  taxExpiry?: string;
+  permitExpiry?: string;
+
+  // Direct owner info
+  buyerName?: string;
+  buyerPhoneNo?: string;
+};
+
 type ExpiryData = {
   expiryType: string;
   count: number;
   cases: CurrExpiry[];
 };
-
-type CurrExpiry = {
-  id: string,
-  CaseNo: number,
-  status: string,
-  createdAt: string,
-  vehicleDetail: vehicleDetail,
-  expireDetail: expireDetail
-  ownerDetails: ownerDetails
-}
-type expireDetail = {
-  pucExpiry?: string
-  insuranceExpiry?: string,
-  fitnessExpiry?: string,
-  taxExpiry?: string,
-  permitExpiry?: string
-}
-type vehicleDetail = {
-  vehicleNo: string
-}
-
-type ownerDetails = {
-  buyerName: string;
-  buyerPhoneNo: string;
-}
 
 const AdminDashboard = () => {
   const [expiryStats, setExpiryStats] = useState<ExpiryData[]>([]);
@@ -397,12 +393,12 @@ const AdminDashboard = () => {
                                     {currExpiries?.cases?.map((c, idx) => (
                                       <TableRow key={idx}>
                                         <TableCell>{c.CaseNo}</TableCell>
-                                        <TableCell>{c.vehicleDetail?.vehicleNo || <span className="text-red-500">N/A</span>}</TableCell>
+                                        <TableCell>{c?.vehicleNo || <span className="text-red-500">N/A</span>}</TableCell>
                                         <TableCell>
-                                          {new Date(c.expireDetail?.pucExpiry || c.expireDetail?.insuranceExpiry || c.expireDetail?.fitnessExpiry || c.expireDetail?.taxExpiry || c.expireDetail?.permitExpiry || '').toLocaleDateString()}
+                                           {new Date(c?.pucExpiry || c?.insuranceExpiry || c?.fitnessExpiry || c?.taxExpiry || c?.permitExpiry || '').toLocaleDateString()}
                                         </TableCell>
-                                        <TableCell>{c.ownerDetails?.buyerName || <span className="text-red-500">N/A</span>}</TableCell>
-                                        <TableCell>{c.ownerDetails?.buyerPhoneNo || <span className="text-red-500">N/A</span>}</TableCell>
+                                        <TableCell>{c?.buyerName || <span className="text-red-500">N/A</span>}</TableCell>
+                                        <TableCell>{c?.buyerPhoneNo || <span className="text-red-500">N/A</span>}</TableCell>
                                         <TableCell>
                                           <Button variant={'outline'}
                                             className=" cursor-pointer"

@@ -22,6 +22,7 @@ export type CaseData = {
     mode: string;
     paymentDate: string;
     status: string;
+    remark: string;
   };
 
 export interface Payment {

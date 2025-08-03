@@ -631,31 +631,42 @@ export default function ClientDetails() {
                 Filter
               </Button>
             </form>
-            <DataTable
-              data={filteredCases?.transactions ?? []}
-              columns={[...clientTransactioncolumns,
-              {
-                header: "Actions",
-                id: "actions",
-                cell: ({ row }) => (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="cursor-pointer"
-                    onClick={() => {
-                      setSelectedTransaction(row.original); // Set modal data
-                      setShowModal(true); // Open modal
-                    }}
-                  >
-                    View Details
-                  </Button>
-                ),
-              }
+<DataTable
+  data={filteredCases?.transactions ?? []}
+  columns={[
+    ...clientTransactioncolumns,
+    {
+      header: "Actions",
+      id: "actions",
+      cell: ({ row }) => {
+        const paymentRemark = row.original?.remark;
 
+        if (paymentRemark === "CREDIT_BILL") {
+          return (
+            <span className="text-sm text-muted-foreground font-semibold">
+              Not applicable for credit bill!
+            </span>
+          );
+        }
 
-              ]
-              }
-            />
+        return (
+          <Button
+            variant="outline"
+            size="sm"
+            className="cursor-pointer"
+            onClick={() => {
+              setSelectedTransaction(row.original);
+              setShowModal(true);
+            }}
+          >
+            View Details
+          </Button>
+        );
+      },
+    },
+  ]}
+/>
+
             {showModal && selectedTransaction && (
               <Dialog open={showModal} onOpenChange={setShowModal}>
                 <DialogContent >
