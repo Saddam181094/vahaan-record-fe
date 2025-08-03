@@ -11,7 +11,10 @@ import {
   IndianRupee,
   BriefcaseConveyorBelt,
   ReceiptIndianRupee,
-  LogOut
+  LogOut,
+  BanknoteX,
+  BookOpenCheck,
+  MapPinPlusInside
 } from "lucide-react";
 import {
   Sidebar,
@@ -53,14 +56,16 @@ const items1: Record<string, SidebarItem[]> = {
       submenu: [
         { title: "HPT/HPA", url: "/superadmin/AddFirm", icon: Building2 },
         { title: "Branch", url: "/superadmin/AddBranch", icon: Building },
+        { title: "RTO's", url: "/superadmin/AddRTO", icon: MapPinPlusInside },
       ],
     },
     { title: "Employees", url: "/superadmin/AddEmployee", icon: CircleUser },
     { title: "Clients", url: "/superadmin/clients", icon: UserRoundPen },
     { title: "My-Cases", url: "/superadmin/cases/Mycases", icon: PcCase },
     { title: "Verified-Cases", url: "/superadmin/cases/all", icon: BriefcaseConveyorBelt },
+    { title: "Rejected-Cases", url: "/superadmin/cases/rejected", icon: BanknoteX },
     { title: "Payments", url: "/superadmin/VerifyPayments", icon: IndianRupee },
-    { title: "Documents", url: "/superadmin/documents", icon: PcCase },
+    { title: "Documents", url: "/superadmin/documents", icon: BookOpenCheck },
     // { title: "Tasks", url: "/superadmin/Tasks", icon: ClipboardList},
     { title: "My Profile", url: "/superadmin/Profile", icon: User },
   ],

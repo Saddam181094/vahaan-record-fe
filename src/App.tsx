@@ -30,6 +30,8 @@ import Bills from "@/components/ClientBills"
 import ClientDash from "@/pages/ClientDash"
 import Documents from "@/pages/documents"
 import CaseEditForm from "@/components/CaseEditForm";
+import RejectedCases from "@/components/RejectedCases";
+import AddRTO from "./pages/AdRto";
 // import { Loader } from "lucide-react";
 export default function App() {
   const { isAuthenticated, user, isHydrated } = useAuth();
@@ -72,6 +74,12 @@ export default function App() {
       <Route path="/superadmin/AddFirm" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <AddFirm />
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/superadmin/AddRTO" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <AddRTO/>
         </ProtectedRoute>
       } />
 
@@ -117,6 +125,12 @@ export default function App() {
       <Route path="/superadmin/VerifyPayments" element={
         <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
           <VerifyPayments />
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/superadmin/cases/rejected" element={
+        <ProtectedRoute allowedRoles={[UserRole.SUPERADMIN]}>
+          <RejectedCases />
         </ProtectedRoute>
       } />
       <Route path="/superadmin/cases/new" element={

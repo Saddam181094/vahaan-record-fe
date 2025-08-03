@@ -5,6 +5,7 @@ import { type Branch } from "@/components/Branchform";
 import { type CaseDetails } from "@/components/CaseDesAdmin";
 import type { Employee } from "@/components/EmployeeForm";
 import type { Firm } from "@/components/FirmForm";
+import type { RTO } from "@/components/RTOComp";
 
 export type CaseData = {
   id: string;
@@ -72,6 +73,16 @@ export const branchTableColumns: ColumnDef<Branch>[] = [
       const branch = row.original;
       return `${branch.address1}, ${branch.address2}, ${branch.city}, ${branch.state}, ${branch.pincode}`;
     },
+  },
+];
+export const rtoTableColumns: ColumnDef<RTO>[] = [
+  {
+    accessorKey: "rtoCode",
+    header: "Code",
+  },
+  {
+    accessorKey: "city",
+    header: "City",
   },
 ];
 

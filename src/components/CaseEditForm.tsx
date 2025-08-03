@@ -22,6 +22,8 @@ import { getActiveFirm } from "@/service/firm.service";
 import { getFirmsD } from "@/service/client.service";
 import { Switch } from "./ui/switch";
 import { Textarea } from "./ui/textarea";
+import { getActiveRto } from "@/service/rto.service";
+import type { RTO } from "./RTOComp";
 
 export default function EditCaseForm() {
   const { state } = useLocation();
@@ -49,6 +51,7 @@ export default function EditCaseForm() {
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
   const [firmsD, setfirmsD] = useState<string[]>([]);
+  const [rtos, setRtos] = useState<RTO[]>([]);
   const [searchfirm, setSearchfirm] = useState("");
   const [search, setSearch] = useState("");
   // const [done,setDone] = useState("");
@@ -158,6 +161,25 @@ export default function EditCaseForm() {
   }, [refreshFlag]);
 
   useEffect(() => {
+    setLoading(true);
+
+    getActiveRto()
+      .then((resp) => {
+        const f = resp?.data.map((f: string) => f.toUpperCase());
+        setRtos(f);
+      })
+      .catch((err: any) => {
+        if (err?.status == 401 || err?.response?.status == 401) {
+          toast.showToast('Error', 'Session Expired', 'error');
+          logout();
+        } else {
+          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [refreshFlag]);
+
+  useEffect(() => {
     if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
       setValue("generalDetail.branchCodeId", user.branchCode);
       setValue("generalDetail.employeeCodeId", user.id);
@@ -174,7 +196,7 @@ export default function EditCaseForm() {
   const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
 
 
-  const filteredCode2 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOto).toLowerCase()));
+  // const filteredCode2 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOto).toLowerCase()));
 
   // const filteredCode1WithSelected = useMemo(() => {
   //   const currentValue = getValues("vehicleDetail.fromRTO");
@@ -203,11 +225,11 @@ export default function EditCaseForm() {
   //   }
   // }, [getValues, setValue]);
 
-  const filteredCode1 = useMemo(() => {
-    return RTOOptions.filter((opt) =>
-      opt.label.toLowerCase().includes(searchRTOfrom.toLowerCase())
-    );
-  }, [searchRTOfrom]);
+  // const filteredCode1 = useMemo(() => {
+  //   return RTOOptions.filter((opt) =>
+  //     opt.label.toLowerCase().includes(searchRTOfrom.toLowerCase())
+  //   );
+  // }, [searchRTOfrom]);
 
   useEffect(() => {
     if (!defaultValues) {
@@ -664,9 +686,9 @@ export default function EditCaseForm() {
                             onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                           />
                         </div>
-                        {filteredCode1.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
+                        {rtos.map((opt) => (
+                          <SelectItem key={opt.id} value={opt.rtoCode}>
+                            {opt.city}{opt.rtoCode}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -705,9 +727,9 @@ export default function EditCaseForm() {
                           onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
                           onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                         />
-                        {filteredCode2.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
+                        {rtos.map((opt) => (
+                          <SelectItem key={opt.id} value={opt.rtoCode}>
+                            {opt.city}{opt.rtoCode}
                           </SelectItem>
                         ))}
                       </SelectContent>

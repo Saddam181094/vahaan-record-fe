@@ -39,6 +39,23 @@ export const getAllCases = async ( filterType: string,
       throw error;
     });
 };
+
+export const getAllRejectedCases = async ( filterType: string,
+  fromDate: string,
+  toDate: string,) => {
+  const config = getConfig();
+  const data = {filterType,fromDate,toDate}
+
+  return axios
+    .post(url + "/case/rejected", data,config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
 export const getEmployeeV = async ( filterType: string,
   fromDate: string,
   toDate: string,) => {
@@ -216,6 +233,20 @@ export const assignCase = async (caseId: string, clientId: string) => {
     clientId
   };
   return axios.post(`${url}/case/assign`, data, config)
+    .then((resp) => {
+      return resp.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during post:", error);
+      throw error;
+    });
+}
+export const rejectCase = async (caseId: string, rejectionRemarks: string) => {
+  const config = getConfig();
+  const data = {
+    rejectionRemarks
+  };
+  return axios.post(`${url}/case/reject/${caseId}`, data, config)
     .then((resp) => {
       return resp.data;
     })
