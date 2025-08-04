@@ -16,7 +16,7 @@ export const getAllRto = async () => {
 export const getActiveRto = async () => {
   const config = getConfig();
   return axios
-    .get(url + "/utils/rto/all", config)
+    .get(url + "/utils/rto/active", config)
     .then((response) => {
       return response.data;
     })

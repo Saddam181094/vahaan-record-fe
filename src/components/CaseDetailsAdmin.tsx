@@ -101,21 +101,10 @@ export default function CaseDetailsAdmin() {
     transactionDetail,
     ownerDetails,
     expenseDetail,
+    referenceDetail,
   }: any) => {
     const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : "-");
     const getBool = (val?: boolean) => (val ? "Yes" : "No");
-
-    //   useEffect(() => {
-    //   // Listen to all input events, force uppercase
-    //   const handler = (e:any) => {
-    //     if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
-    //       e.target.value = e.target.value.toUpperCase();
-    //     }
-    //   };
-    //   document.addEventListener('input', handler, true);
-    //   return () => document.removeEventListener('input', handler, true);
-    // }, []);
-
 
     return (
       <div
@@ -234,6 +223,11 @@ export default function CaseDetailsAdmin() {
               </div>
             )}
           </div>
+        </Section2>
+
+        <Section2 title="Reference Details" className="pt-8">
+          <PrintField label="Name" value={referenceDetail?.name} />
+          <PrintField label="Contact" value={referenceDetail?.contact} />
         </Section2>
 
         {/* Summary Section */}
@@ -589,6 +583,7 @@ export default function CaseDetailsAdmin() {
           }}
           ownerDetails={ownerDetails}
           expenseDetail={expenseDetail}
+          referenceDetail={referenceDetail}
         />
       </div>
     </>

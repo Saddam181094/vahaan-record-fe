@@ -1,5 +1,5 @@
 // src/pages/EditCaseForm.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect,useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { useToast } from "@/context/ToastContext";
 import { updateCaseID } from "@/service/case.service";
 import type { Case, ExpenseDetail, ExpireDetail, FinalDetails, GeneralDetails, ownerDetails, VehicleDetail } from "./CaseForm";
-import { NumberPlate, RTOOptions, TransactionTo, type TransactionDetail } from "@/components/CaseForm";
+import { NumberPlate,TransactionTo, type TransactionDetail } from "@/components/CaseForm";
 import { useAuth } from "@/context/AuthContext";
 import { indianStates, type Branch } from "./Branchform";
 import { useLoading } from "./LoadingContext";
@@ -23,7 +23,6 @@ import { getFirmsD } from "@/service/client.service";
 import { Switch } from "./ui/switch";
 import { Textarea } from "./ui/textarea";
 import { getActiveRto } from "@/service/rto.service";
-import type { RTO } from "./RTOComp";
 
 export default function EditCaseForm() {
   const { state } = useLocation();
@@ -51,7 +50,7 @@ export default function EditCaseForm() {
   const [branchEmp, setbranchEmp] = useState<BranchEmployee[]>([]);
   const [firms, setfirms] = useState<Firm[]>([]);
   const [firmsD, setfirmsD] = useState<string[]>([]);
-  const [rtos, setRtos] = useState<RTO[]>([]);
+  const [rtos, setRtos] = useState<string[]>([]);
   const [searchfirm, setSearchfirm] = useState("");
   const [search, setSearch] = useState("");
   // const [done,setDone] = useState("");
@@ -134,6 +133,7 @@ export default function EditCaseForm() {
   }, [refreshFlag]);
 
 
+
   function parseCamelCase(str: string) {
     return str
       // Insert space before uppercase letters that follow lowercase letters
@@ -160,24 +160,24 @@ export default function EditCaseForm() {
       .finally(() => setLoading(false));
   }, [refreshFlag]);
 
-  useEffect(() => {
-    setLoading(true);
-
-    getActiveRto()
-      .then((resp) => {
-        const f = resp?.data.map((f: string) => f.toUpperCase());
-        setRtos(f);
-      })
-      .catch((err: any) => {
-        if (err?.status == 401 || err?.response?.status == 401) {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        } else {
-          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [refreshFlag]);
+    useEffect(() => {
+      setLoading(true);
+  
+      getActiveRto()
+        .then((resp) => {
+          const displayNames = resp?.data.map((item: any) => item.displayName.toUpperCase());
+          setRtos(displayNames);
+        })
+        .catch((err: any) => {
+          if (err?.status == 401 || err?.response?.status == 401) {
+            toast.showToast('Error', 'Session Expired', 'error');
+            logout();
+          } else {
+            toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+          }
+        })
+        .finally(() => setLoading(false));
+    }, [refreshFlag]);
 
   useEffect(() => {
     if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
@@ -196,7 +196,8 @@ export default function EditCaseForm() {
   const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
 
 
-  // const filteredCode2 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOto).toLowerCase()));
+  const filteredCode1 = rtos.filter(f => f.toLowerCase().includes((searchRTOfrom).toLowerCase()));
+  const filteredCode2 = rtos.filter(f => f.toLowerCase().includes((searchRTOto).toLowerCase()));
 
   // const filteredCode1WithSelected = useMemo(() => {
   //   const currentValue = getValues("vehicleDetail.fromRTO");
@@ -258,6 +259,8 @@ export default function EditCaseForm() {
     }
   });
 
+  const fromRtoval = watch("vehicleDetail.fromRTO");
+  const toRtoval = watch("vehicleDetail.toRTO");
   //   const getFirmNameById = (id: string | undefined) => {
   //   if (!id) return "—";
   //   const firm = firms.find(f => f.id === id);
@@ -268,6 +271,7 @@ export default function EditCaseForm() {
     if (defaultValues) {
       reset(getFormattedCaseData(defaultValues));
     }
+    console.log(toRtoval, fromRtoval);
     setLoading(true);
     toast.showToast("Info", "Changes have been discarded", "info");
     navigate(-1);
@@ -340,22 +344,21 @@ export default function EditCaseForm() {
     }
   };
 
-  const fromRTOValue = watch("vehicleDetail.fromRTO");
-  const toRtoValue = watch("vehicleDetail.toRTO");
 
-  const fromRTOOption = useMemo(() => {
-    return RTOOptions.find(
-      (opt) =>
-        opt.value.replace(/\s/g, "") === fromRTOValue?.replace(/\s/g, "")
-    );
-  }, [fromRTOValue]);
 
-  const toRTOOption = useMemo(() => {
-    return RTOOptions.find(
-      (opt) =>
-        opt.value.replace(/\s/g, "") === toRtoValue?.replace(/\s/g, "")
-    );
-  }, [toRtoValue]);
+  // const fromRTOOption = useMemo(() => {
+  //   return rtos.find(
+  //     (opt) =>
+  //       opt.replace(/\s/g, "") === fromRtoval?.replace(/\s/g, "")
+  //   );
+  // }, [fromRtoval]);
+
+  // const toRTOOption = useMemo(() => {
+  //   return rtos.find(
+  //     (opt) =>
+  //       opt.replace(/\s/g, "") === toRtoval?.replace(/\s/g, "")
+  //   );
+  // }, [toRtoval]);
 
 
   return (
@@ -669,7 +672,7 @@ export default function EditCaseForm() {
                       From RTO<span className="text-red-500">*</span>
                     </Label>
                     <Select
-                      value={fromRTOOption?.label}
+                      value={fromRtoval}
                       onValueChange={field.onChange}
                     >
                       <SelectTrigger className="w-full">
@@ -686,9 +689,9 @@ export default function EditCaseForm() {
                             onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                           />
                         </div>
-                        {rtos.map((opt) => (
-                          <SelectItem key={opt.id} value={opt.rtoCode}>
-                            {opt.city}{opt.rtoCode}
+                        {filteredCode1.map((opt) => (
+                          <SelectItem key={opt} value={opt}>
+                            {opt}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -712,10 +715,10 @@ export default function EditCaseForm() {
                       To RTO<span className="text-red-500">*</span>
                     </Label>
                     <Select
-                      value={toRTOOption?.label}
+                      value={toRtoval}
                       onValueChange={field.onChange}
                     >
-                      <SelectTrigger id="toRTO" className="w-full">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select To RTO..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -727,9 +730,9 @@ export default function EditCaseForm() {
                           onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
                           onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                         />
-                        {rtos.map((opt) => (
-                          <SelectItem key={opt.id} value={opt.rtoCode}>
-                            {opt.city}{opt.rtoCode}
+                        {filteredCode2.map((opt) => (
+                          <SelectItem key={opt} value={opt}>
+                            {opt}
                           </SelectItem>
                         ))}
                       </SelectContent>

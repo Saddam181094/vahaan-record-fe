@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { DateInput } from "@/components/ui/date-input";
 import { getFirmsD } from "@/service/client.service";
 import type { Employee } from "./EmployeeForm";
+import { getActiveRto } from "@/service/rto.service";
 
 // Interfaces
 export interface FinalDetails {
@@ -146,47 +147,47 @@ export const NumberPlate = {
   NA: "NA",
 } as const;
 export type NumberPlate = (typeof NumberPlate)[keyof typeof NumberPlate];
-export const RTOOptions = [
-  { value: "N/A", label: "N/A" },
-  { value: "GJ01 (AHMEDABAD)", label: "GJ01 (AHMEDABAD)" },
-  { value: "GJ02 (MEHSANA)", label: "GJ02 (MEHSANA)" },
-  { value: "GJ03 (RAJKOT)", label: "GJ03 (RAJKOT)" },
-  { value: "GJ04 (BHAVNAGAR)", label: "GJ04 (BHAVNAGAR)" },
-  { value: "GJ05 (SURAT)", label: "GJ05 (SURAT)" },
-  { value: "GJ06 (VADODARA)", label: "GJ06 (VADODARA)" },
-  { value: "GJ07 (KHEDA)", label: "GJ07 (KHEDA)" },
-  { value: "GJ08 (BANASKANTHA)", label: "GJ08 (BANASKANTHA)" },
-  { value: "GJ09 (SABARKANTHA)", label: "GJ09 (SABARKANTHA)" },
-  { value: "GJ10 (JAMNAGAR)", label: "GJ10 (JAMNAGAR)" },
-  { value: "GJ11 (JUNAGADH)", label: "GJ11 (JUNAGADH)" },
-  { value: "GJ12 (KACHCHH)", label: "GJ12 (KACHCHH)" },
-  { value: "GJ13 (SURENDRANAGAR)", label: "GJ13 (SURENDRANAGAR)" },
-  { value: "GJ14 (AMRELI)", label: "GJ14 (AMRELI)" },
-  { value: "GJ15 (VALSAD)", label: "GJ15 (VALSAD)" },
-  { value: "GJ16 (BHARUCH)", label: "GJ16 (BHARUCH)" },
-  { value: "GJ17 (PANCHMAHAL)", label: "GJ17 (PANCHMAHAL)" },
-  { value: "GJ18 (GANDHINAGAR)", label: "GJ18 (GANDHINAGAR)" },
-  { value: "GJ19 (BARDOLI)", label: "GJ19 (BARDOLI)" },
-  { value: "GJ20 (DAHOD)", label: "GJ20 (DAHOD)" },
-  { value: "GJ21 (NAVSARI)", label: "GJ21 (NAVSARI)" },
-  { value: "GJ22 (NARMADA)", label: "GJ22 (NARMADA)" },
-  { value: "GJ23 (ANAND)", label: "GJ23 (ANAND)" },
-  { value: "GJ24 (PATAN)", label: "GJ24 (PATAN)" },
-  { value: "GJ25 (PORBANDAR)", label: "GJ25 (PORBANDAR)" },
-  { value: "GJ26 (TAPI)", label: "GJ26 (TAPI)" },
-  { value: "GJ27 (AHMEDABAD EAST)", label: "GJ27 (AHMEDABAD EAST)" },
-  { value: "GJ30 (AAHWA)", label: "GJ30 (AAHWA)" },
-  { value: "GJ31 (MODASA)", label: "GJ31 (MODASA)" },
-  { value: "GJ32 (VERAVAL)", label: "GJ32 (VERAVAL)" },
-  { value: "GJ33 (BOTAD)", label: "GJ33 (BOTAD)" },
-  { value: "GJ34 (CHHOTAUDAIPUR)", label: "GJ34 (CHHOTAUDAIPUR)" },
-  { value: "GJ35 (LUNAVADA)", label: "GJ35 (LUNAVADA)" },
-  { value: "GJ36 (MORBI)", label: "GJ36 (MORBI)" },
-  { value: "GJ37 (KHAMBHALIYA)", label: "GJ37 (KHAMBHALIYA)" },
-  { value: "GJ38 (AHMEDABAD  BAWLA ARTO)", label: "GJ38 (AHMEDABAD  BAWLA ARTO)" },
-  { value: "GJ39 (KACHCHH EAST)", label: "GJ39 (KACHCHH EAST)" },
-  { value: "GJ40 (THARAD-VAV)", label: "GJ40 (THARAD-VAV)" },
-] as const;
+// export const RTOOptions = [
+//   { value: "N/A", label: "N/A" },
+//   { value: "GJ01 (AHMEDABAD)", label: "GJ01 (AHMEDABAD)" },
+//   { value: "GJ02 (MEHSANA)", label: "GJ02 (MEHSANA)" },
+//   { value: "GJ03 (RAJKOT)", label: "GJ03 (RAJKOT)" },
+//   { value: "GJ04 (BHAVNAGAR)", label: "GJ04 (BHAVNAGAR)" },
+//   { value: "GJ05 (SURAT)", label: "GJ05 (SURAT)" },
+//   { value: "GJ06 (VADODARA)", label: "GJ06 (VADODARA)" },
+//   { value: "GJ07 (KHEDA)", label: "GJ07 (KHEDA)" },
+//   { value: "GJ08 (BANASKANTHA)", label: "GJ08 (BANASKANTHA)" },
+//   { value: "GJ09 (SABARKANTHA)", label: "GJ09 (SABARKANTHA)" },
+//   { value: "GJ10 (JAMNAGAR)", label: "GJ10 (JAMNAGAR)" },
+//   { value: "GJ11 (JUNAGADH)", label: "GJ11 (JUNAGADH)" },
+//   { value: "GJ12 (KACHCHH)", label: "GJ12 (KACHCHH)" },
+//   { value: "GJ13 (SURENDRANAGAR)", label: "GJ13 (SURENDRANAGAR)" },
+//   { value: "GJ14 (AMRELI)", label: "GJ14 (AMRELI)" },
+//   { value: "GJ15 (VALSAD)", label: "GJ15 (VALSAD)" },
+//   { value: "GJ16 (BHARUCH)", label: "GJ16 (BHARUCH)" },
+//   { value: "GJ17 (PANCHMAHAL)", label: "GJ17 (PANCHMAHAL)" },
+//   { value: "GJ18 (GANDHINAGAR)", label: "GJ18 (GANDHINAGAR)" },
+//   { value: "GJ19 (BARDOLI)", label: "GJ19 (BARDOLI)" },
+//   { value: "GJ20 (DAHOD)", label: "GJ20 (DAHOD)" },
+//   { value: "GJ21 (NAVSARI)", label: "GJ21 (NAVSARI)" },
+//   { value: "GJ22 (NARMADA)", label: "GJ22 (NARMADA)" },
+//   { value: "GJ23 (ANAND)", label: "GJ23 (ANAND)" },
+//   { value: "GJ24 (PATAN)", label: "GJ24 (PATAN)" },
+//   { value: "GJ25 (PORBANDAR)", label: "GJ25 (PORBANDAR)" },
+//   { value: "GJ26 (TAPI)", label: "GJ26 (TAPI)" },
+//   { value: "GJ27 (AHMEDABAD EAST)", label: "GJ27 (AHMEDABAD EAST)" },
+//   { value: "GJ30 (AAHWA)", label: "GJ30 (AAHWA)" },
+//   { value: "GJ31 (MODASA)", label: "GJ31 (MODASA)" },
+//   { value: "GJ32 (VERAVAL)", label: "GJ32 (VERAVAL)" },
+//   { value: "GJ33 (BOTAD)", label: "GJ33 (BOTAD)" },
+//   { value: "GJ34 (CHHOTAUDAIPUR)", label: "GJ34 (CHHOTAUDAIPUR)" },
+//   { value: "GJ35 (LUNAVADA)", label: "GJ35 (LUNAVADA)" },
+//   { value: "GJ36 (MORBI)", label: "GJ36 (MORBI)" },
+//   { value: "GJ37 (KHAMBHALIYA)", label: "GJ37 (KHAMBHALIYA)" },
+//   { value: "GJ38 (AHMEDABAD  BAWLA ARTO)", label: "GJ38 (AHMEDABAD  BAWLA ARTO)" },
+//   { value: "GJ39 (KACHCHH EAST)", label: "GJ39 (KACHCHH EAST)" },
+//   { value: "GJ40 (THARAD-VAV)", label: "GJ40 (THARAD-VAV)" },
+// ] as const;
 
 
 
@@ -292,7 +293,7 @@ export default function CaseForm() {
 
   const [searchSellerState, setSearchSellerState] = useState("");
   const [searchBuyerState, setSearchBuyerState] = useState("");
-
+  const [rtos, setRtos] = useState<string[]>([]);
 
 
   const ind2 = indianStates.filter((hostel) =>
@@ -383,6 +384,25 @@ export default function CaseForm() {
       })
       .finally(() => setLoading(false));
   }, [refreshFlag]);
+  
+    useEffect(() => {
+      setLoading(true);
+  
+      getActiveRto()
+        .then((resp) => {
+          const displayNames = resp?.data.map((item: any) => item.displayName);
+          setRtos(displayNames);
+        })
+        .catch((err: any) => {
+          if (err?.status == 401 || err?.response?.status == 401) {
+            toast.showToast('Error', 'Session Expired', 'error');
+            logout();
+          } else {
+            toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+          }
+        })
+        .finally(() => setLoading(false));
+    }, [refreshFlag]);
 
   useEffect(() => {
     if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
@@ -400,8 +420,8 @@ export default function CaseForm() {
 
   const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
 
-  const filteredCode1 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOfrom).toLowerCase()));
-  const filteredCode2 = RTOOptions.filter(f => f.label.toLowerCase().includes((searchRTOto).toLowerCase()));
+  const filteredCode1 = rtos.filter(f => f.toLowerCase().includes((searchRTOfrom).toLowerCase()));
+  const filteredCode2 = rtos.filter(f => f.toLowerCase().includes((searchRTOto).toLowerCase()));
   // Add a submit handler function
   const onSubmit = (data: any) => {
     setLoading(true);
@@ -778,9 +798,9 @@ export default function CaseForm() {
                         />
                       </div>
                       {filteredCode1.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
+                          <SelectItem key={opt} value={opt}>
+                            {opt}
+                          </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -819,9 +839,9 @@ export default function CaseForm() {
                         onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
                       />
                       {filteredCode2.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
+                          <SelectItem key={opt} value={opt}>
+                            {opt}
+                          </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
