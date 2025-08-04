@@ -3,7 +3,6 @@ import { useLoading } from "./LoadingContext";
 import { getEmployeeV } from "@/service/case.service";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Label } from "@radix-ui/react-label";
-import { FaEye } from "react-icons/fa";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 // import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -385,18 +384,17 @@ const applyFilter = async (data: FilterFormValues) => {
               const caseData = row.original;
               return (
                 <div className="flex gap-4">
-                  <button
-                  style={{cursor:"pointer"}}
+                  <Button
                     onClick={() =>
                       navigate(`/employee/cases/${caseData.CaseNo}`, {
                         state: { id: caseData.id, status: caseData.status },
                       })
                     }
                     title="View Details"
-                    className="text-black hover:text-blue-600 text-xl"
+                    className="text-white cursor-pointer"
                   >
-                    <FaEye />
-                  </button>
+                    View Details
+                  </Button>
                   {/* {caseData.status?.toLowerCase() !== "assigned" &&
                     caseData.status?.toLowerCase() !== "created" && (
                       <AssignDialog

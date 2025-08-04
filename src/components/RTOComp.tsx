@@ -16,6 +16,7 @@ import { DataTable } from "./DataTable";
 import { rtoTableColumns } from "@/lib/tables.data";
 import { useAuth } from "@/context/AuthContext";
 import { createRto, getAllRto, toggleRto, updateRto } from "@/service/rto.service";
+import { PenIcon } from "lucide-react";
 
 export interface RTO {
   id:string;
@@ -199,9 +200,11 @@ const onSubmit: SubmitHandler<RTO> = async (data: RTO) => {
 {
   header: 'Actions',
   cell: ({ row }) => (
+    <>
     <div className="flex gap-2 items-center">
       <Button
-        variant="outline"
+        variant="default"
+        className="cursor-pointer"
         size="sm"
         onClick={() => {
           setEditRto(row.original);
@@ -212,21 +215,17 @@ const onSubmit: SubmitHandler<RTO> = async (data: RTO) => {
           setDialogOpen(true);
         }}
       >
-        Update
+        <PenIcon/>
       </Button>
-      </div>
-  )
-  },
-  {
-     header: 'Actions',
-      cell: ({ row }) => (
-      <Switch
+            <Switch
         className="cursor-pointer"
         checked={!!row.original.isActive}
         onCheckedChange={() => handleToggle(row.original?.id ?? "")}
       />
-  ),
-}
+      </div>
+      </>
+  )
+  },
 
       ]} data={rtos} />
     </div>

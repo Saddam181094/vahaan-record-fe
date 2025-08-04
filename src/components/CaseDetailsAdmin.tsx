@@ -321,7 +321,7 @@ export default function CaseDetailsAdmin() {
               🖨️ Print PDF
             </Button>
           </div>
-          {(caseData.status.toLowerCase() !== "assigned" && caseData.status.toLowerCase() !== "paid") 
+          {(caseData.status.toLowerCase() !== "assigned" && caseData.status.toLowerCase() !== "paid" && caseData.status.toLowerCase()!== "rejected") 
           &&
           (
           <Button className="cursor-pointer" onClick={() => navigate(`/${user?.role}/cases/${CaseNo}/edit`, { state: { caseData: caseData, id: caseId } })}>

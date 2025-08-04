@@ -89,7 +89,7 @@ export default function CaseDes() {
 
     setValue("fromDate", defaultFrom);
     setValue("toDate", defaultTo);
-  }, [setValue]);
+  }, []);
 
   const location = useLocation();
   const selectedFilterType = watch("filterType");

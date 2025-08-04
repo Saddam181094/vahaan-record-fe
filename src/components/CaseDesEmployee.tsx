@@ -4,7 +4,6 @@ import { getAllCasesE, verifyCase } from "@/service/case.service";
 import { useNavigate } from "react-router-dom";
 import { type CaseDetails } from "@/components/CaseDesAdmin"
 import { useForm } from "react-hook-form";
-import { FaEye } from "react-icons/fa";
 import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
 import { employeeCaseTableColumns } from "@/lib/tables.data";
@@ -76,25 +75,18 @@ export default function CaseDes() {
               const data = row.original;
 
               return (
-                <button
+                <Button
                   title="View Details"
+                  variant="default"
                   onClick={() =>
                     navigate(`/employee/cases/${data.CaseNo}`, {
                       state: { id: data.id },
                     })
                   }
-                  className="text-black hover:text-blue-600 transition-colors"
-                  style={{
-                    background: "none",
-                    border: "none",
-                    fontSize: "1.2rem",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "#007bff")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#000")}
+                  className="text-white cursor-pointer"
                 >
-                  <FaEye />
-                </button>
+                 View Details
+                </Button>
               );
             },
           },
