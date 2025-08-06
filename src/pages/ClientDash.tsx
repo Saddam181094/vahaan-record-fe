@@ -57,7 +57,12 @@ const ClientDash = () => {
                       />
                     </div>
                   </div>
-              <footer className="w-full mt-70 py-4 bg-gray-100 border-t text-center text-xs md:text-sm flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+                  <img
+                  src="/banner.jpg"
+                  alt="Banner"
+                  className="w-full h-auto object-cover lg:mt-30 mt-10 border rounded-lg shadow-md"
+                  />
+              <footer className="w-full lg:mt-5 mt-3 py-4 bg-gray-100 border-t text-center text-xs md:text-sm flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
                 <span>
                   <strong>Customer Care:</strong> 7801878800
                 </span>
