@@ -563,7 +563,7 @@ export default function CaseDetailsAdmin() {
                   <p className="font-medium">{referenceDetail?.name || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Insurance Charges</p>
+                  <p className="text-sm text-muted-foreground">Reference Number</p>
                   <p className="font-medium">{referenceDetail?.contactNo || "—"}</p>
                 </div>
               </CardContent>
