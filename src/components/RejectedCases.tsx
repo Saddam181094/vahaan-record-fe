@@ -66,7 +66,7 @@ export default function CaseDes() {
   const toast = useToast();
   const [rejectedCases, setRejectedCases] = useState<any[]>([]);
 //   const [clients, setClients] = useState<any[]>([]);
-  const [flag, setFlag] = useState(true);
+  // const [flag, setFlag] = useState(true);
   const { logout } = useAuth();
 
   const { handleSubmit, setValue, getValues, control, watch } = useForm<FilterFormValues>({
@@ -130,11 +130,10 @@ export default function CaseDes() {
         }
       })
       .finally(() =>{
-        setFlag((f) => !f);
         setLoading(false)
       }
         );
-  }, [flag]);
+  }, []);
 
   const applyFilter = async (data: FilterFormValues) => {
     const { fromDate, toDate, filterType } = data;
@@ -250,6 +249,29 @@ export default function CaseDes() {
         data={rejectedCases}
         columns={[
           ...caseTableColumns,
+            {
+            id:"Reference",
+            header:"Reference",
+            cell:(({row}) => {
+              const reference = row.original?.referenceDetail;
+          
+              return (
+                <div className="flex flex-col text-sm">
+                {reference.name}
+                <br/>
+                <span className="text-gray-600 text-xs">{reference.contactNo}</span>
+                </div>
+               )
+            })
+          },
+          {
+            id: "remarks",
+            header: "Remarks",
+            cell: ({ row }) => {
+              const remarks = row.original?.rejectionRemarks || "No remarks";
+              return <span>{remarks.replace(/_/g, " ")}</span>;
+            },
+          },
           {
             header: "Action",
             accessorKey: "action",
@@ -289,6 +311,7 @@ export default function CaseDes() {
               );
             },
           },
+
         ]}
       />
       

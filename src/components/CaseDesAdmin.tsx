@@ -11,6 +11,7 @@ import { DataTable } from "./DataTable";
 import { caseTableColumns } from "@/lib/tables.data";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useAuth } from "@/context/AuthContext";
+import type { referenceDetail } from "./CaseForm";
 
 export interface CaseDetails {
   id: string;
@@ -18,8 +19,10 @@ export interface CaseDetails {
   vehicleDetail: vehicleDetail;
   createdBy: createdBy;
   assignedTo?: AssignedTo;
+  rejectionRemarks?:string;
   status: string;
   generalDetail: GeneralDetail;
+  referenceDetail:referenceDetail
 }
 export interface createdBy {
   firstName: string;

@@ -127,7 +127,8 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
       ? `${assignedTo.firstName} ${assignedTo.lastName}`
       : "-";
   },
-}
+},
+
 
 ];
 
