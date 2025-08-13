@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { getSummary } from "@/service/case.service";
+import { getSummary, updateExpiryDate } from "@/service/case.service";
 import { useToast } from "@/context/ToastContext";
 import { useLoading } from "@/components/LoadingContext";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +23,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import type { Task } from "./AdminDash";
 import { DateInput } from "@/components/ui/date-input";
+import { Label } from "@/components/ui/label";
+import { Pencil } from "lucide-react";
 
 type CurrExpiry = {
   id: string;
@@ -61,12 +63,29 @@ const AdminDashboard = () => {
   const { setLoading } = useLoading();
   const navigate = useNavigate();
   const {
-    handleSubmit,
-    reset,
+    control: summaryControl,
+    handleSubmit: handleSummarySubmit,
+    setValue: setValue2,
+  } = useForm({
+    defaultValues: { fromDate: "", toDate: "" }
+  });
+
+  // Task form
+  const {
+    control: taskControl,
+    handleSubmit: handleTaskSubmit,
+    reset: resetTaskForm,
     setValue,
-    control,
-    formState: { errors },
-  } = useForm<Task>({ defaultValues: {} as Task });
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      id: "",
+      task_title: "",
+      task_text: "",
+      priorityDate: "",
+      priorityTime: ""
+    }
+  });
 
   const [task, setTask] = useState<Task[]>([])
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -98,7 +117,7 @@ const AdminDashboard = () => {
       });
   }, [refreshFlag]);
 
-  const onSubmit: SubmitHandler<Task> = async (data: Task) => {
+  const onSubmit: SubmitHandler<any> = async (data: any) => {
     setLoading(true);
     // Combine date and time into ISO string
     const { priorityDate, priorityTime, ...rest } = data;
@@ -115,14 +134,15 @@ const AdminDashboard = () => {
         toast.showToast("Success", "Task updated successfully", "success");
         setDialogOpen(false);
         setRefreshFlag((prev) => !prev); // Trigger a refresh
-        reset();
+        resetTaskForm();
       } catch (err: any) {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }else
-{        toast.showToast('Error:', err?.message || 'Error updating the Task', 'error');
-}      } finally {
+        } else {
+          toast.showToast('Error:', err?.message || 'Error updating the Task', 'error');
+        }
+      } finally {
         setEditTask(null);
         setLoading(false);
       }
@@ -134,14 +154,15 @@ const AdminDashboard = () => {
         setDialogOpen(false);
         setRefreshFlag((prev) => !prev); // Trigger a refresh
         toast.showToast('Success', 'Created a New Task', 'success');
-        reset(); // Reset the form after successful submission
+        resetTaskForm(); // Reset the form after successful submission
       } catch (err: any) {
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }else
-{        toast.showToast('Error:', err?.message || 'Error occured while making a new Task', 'error');
-}      } finally {
+        } else {
+          toast.showToast('Error:', err?.message || 'Error occured while making a new Task', 'error');
+        }
+      } finally {
         setLoading(false);
       }
     }
@@ -155,9 +176,10 @@ const AdminDashboard = () => {
       if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
-      }else
-{      toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
-}    }).finally(() => {
+      } else {
+        toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
+      }
+    }).finally(() => {
       setLoading(false);
     })
   };
@@ -181,9 +203,11 @@ const AdminDashboard = () => {
 
   const handleDiagClick = () => {
     setDialogOpen(false);
-    reset(); // Reset the form when dialog is closed
+    resetTaskForm(); // Reset the form when dialog is closed
   };
 
+  const [editingCaseId, setEditingCaseId] = useState<string | null>(null);
+  const [tempExpiryDate, setTempExpiryDate] = useState<string>("");
 
 
   // const handleClick = (data: any) => {
@@ -191,33 +215,97 @@ const AdminDashboard = () => {
   //   navigate(`/employee/vcases`, { state: { type } });
   // }
 
-    const handleClick = (data: any) => {
+  const handleClick = (data: any) => {
     // const type = data;
     // console.log(data);
     setDialogOpen2(true)
     setcurrExpiries(data)
   }
 
-  // Simulate API fetch (replace this with actual API call)
-  useEffect(() => {
-    setSummaryLoading(true);
-
-    getSummary()
-      .then((resp) => {
-        setExpiryStats(resp?.data?.data);
+  const saveExpiryDate = (caseId: string) => {
+    if (!tempExpiryDate) {
+      toast.showToast("Error", "Please select a date", "error");
+      return;
+    }
+    setLoading(true);
+    updateExpiryDate(caseId, currExpiries?.expiryType || "", tempExpiryDate)
+      .then(() => {
+        toast.showToast("Success", "Expiry date updated successfully!", "success");
+        setEditingCaseId(null);
+        setRefreshFlag((prev) => !prev);
       })
-      .catch((err) => {
-        if (err?.status === '401' || err?.response?.status === 401) {
-          toast.showToast('Error', 'Session Expired', 'error');
+      .catch((err: any) => {
+        if (err?.status === 401 || err?.response?.status === 401) {
+          toast.showToast("Error", "Session Expired", "error");
           logout();
         } else {
-          toast.showToast('Error:', err?.message || 'Summary was not fetched due to some error', 'error');
+          toast.showToast(
+            "Error",
+            err?.message || "Error occurred while updating expiry date",
+            "error"
+          );
+        }
+      })
+      .finally(() => setLoading(false));
+  };
+
+  // Simulate API fetch (replace this with actual API call)
+  useEffect(() => {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+
+    const defaultFrom = `${yyyy}-${mm}-01`;
+    const defaultTo = `${yyyy}-${mm}-${dd}`;
+
+    setValue2("fromDate", defaultFrom);
+    setValue2("toDate", defaultTo);
+
+
+    if (!defaultFrom || !defaultTo) return;
+
+    setSummaryLoading(true);
+    getSummary(defaultFrom, defaultTo)
+      .then((resp) => {
+        setExpiryStats(resp?.data?.data || []);
+      })
+      .catch((err: any) => {
+        if (err?.status === 401 || err?.response?.status === 401) {
+          toast.showToast("Error", "Session Expired", "error");
+          logout();
+        } else {
+          toast.showToast("Error", "Failed to fetch summary data", "error");
         }
       })
       .finally(() => {
         setSummaryLoading(false);
       });
-  }, []);
+
+  },
+    [refreshFlag]);
+
+  const applyFilter2 = async (data: any) => {
+    const { fromDate, toDate } = data;
+    if (!fromDate || !toDate) return;
+
+    setSummaryLoading(true);
+    try {
+      const resp = await getSummary(fromDate, toDate);
+      setExpiryStats(resp?.data?.data);
+    } catch (err: any) {
+      if (err?.status == 401 || err?.response?.status == 401) {
+        toast.showToast('Error', 'Session Expired', 'error');
+        logout();
+      } else
+      //   console.error("Error fetching filtered cases:", err);
+      {
+        toast.showToast("Error", "Failed to apply filter", "error");
+      }
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
 
   return (
     <SidebarProvider>
@@ -231,6 +319,54 @@ const AdminDashboard = () => {
         <div className="grid md:grid-cols-2 py-5 lg:mr-5 border rounded-lg bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 mb-8 grid-cols-1 w-full h-full min-h-screen overflow-y-auto">
           <div>
             <span className="col-span-full text-4xl font-bold mb-10 block px-3">Summary of the Cases</span>
+            <form
+              onSubmit={handleSummarySubmit(applyFilter2)}
+              className="flex flex-wrap gap-4 mx-5 items-end md:flex-nowrap"
+            >
+              {/* From Date */}
+              <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
+                <Label htmlFor="fromDate" className="text-sm font-medium capitalize">
+                  From Date<span className="text-red-500">*</span>
+                </Label>
+                <Controller
+                  name="fromDate"
+                  control={summaryControl}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <DateInput
+                      id="fromDate"
+                      className="cursor-pointer"
+                      value={field.value}
+                      onChange={(e: any) => field.onChange(e.target.value)}
+                    />
+                  )}
+                />
+              </div>
+
+              {/* To Date */}
+              <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
+                <Label htmlFor="toDate" className="text-sm font-medium capitalize">
+                  To Date<span className="text-red-500">*</span>
+                </Label>
+                <Controller
+                  name="toDate"
+                  control={summaryControl}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <DateInput
+                      id="toDate"
+                      className="cursor-pointer"
+                      value={field.value}
+                      onChange={(e: any) => field.onChange(e.target.value)}
+                    />
+                  )}
+                />
+              </div>
+
+              <Button type="submit" style={{ cursor: "pointer" }} className="mt-2 w-full md:w-auto cursor-pointer">
+                Filter
+              </Button>
+            </form>
             <div className="grid grid-cols-2 gap-3 p-3">
               {expiryStats.map((item, index) => {
                 const isEven = index % 2 === 0;
@@ -274,12 +410,12 @@ const AdminDashboard = () => {
                       {editTask ? "Update Task" : "Add New Task"}
                     </DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
+                  <form onSubmit={handleTaskSubmit(onSubmit)} className="space-y-4 mb-6">
                     {/* Hidden input for Task ID (for update mode) */}
                     {editTask && (
                       <Controller
                         name="id"
-                        control={control}
+                        control={taskControl}
                         render={({ field }) => (
                           <Input type="hidden" {...field} />
                         )}
@@ -289,7 +425,7 @@ const AdminDashboard = () => {
                       <label className="block mb-1 font-medium">Task Title</label>
                       <Controller
                         name="task_title"
-                        control={control}
+                        control={taskControl}
                         rules={{ required: "Task title is required" }}
                         render={({ field }) => (
                           <input
@@ -307,7 +443,7 @@ const AdminDashboard = () => {
                       <label className="block mb-1 font-medium">Task Description</label>
                       <Controller
                         name="task_text"
-                        control={control}
+                        control={taskControl}
                         rules={{ required: "Task description is required" }}
                         render={({ field }) => (
                           <textarea
@@ -326,7 +462,7 @@ const AdminDashboard = () => {
                       <label className="block mb-1 font-medium">Priority Date</label>
                       <Controller
                         name="priorityDate"
-                        control={control}
+                        control={taskControl}
                         rules={{ required: "Date is required" }}
                         render={({ field }) => (
                           <DateInput
@@ -345,7 +481,7 @@ const AdminDashboard = () => {
                       <label className="block mb-1 font-medium">Priority Time</label>
                       <Controller
                         name="priorityTime"
-                        control={control}
+                        control={taskControl}
                         rules={{ required: "Time is required" }}
                         render={({ field }) => (
                           <input
@@ -372,47 +508,100 @@ const AdminDashboard = () => {
                 </DialogContent>
               </Dialog>
 
-                            <Dialog open={DialogOpen2} onOpenChange={setDialogOpen2}>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>{currExpiries?.expiryType} EXPIRIES IN THIS MONTH</DialogTitle>
-                                </DialogHeader>
-              
-                                <Table>
-                                  <TableHeader>
-                                    <TableRow>
-                                      <TableHead>Case No</TableHead>
-                                      <TableHead>Vehicle No</TableHead>
-                                      <TableHead>Expiry date</TableHead>
-                                      <TableHead>Owner Name</TableHead>
-                                      <TableHead>Owner Contact</TableHead>
-                                      <TableHead>Action</TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    {currExpiries?.cases?.map((c, idx) => (
-                                      <TableRow key={idx}>
-                                        <TableCell>{c.CaseNo}</TableCell>
-                                        <TableCell>{c?.vehicleNo || <span className="text-red-500">N/A</span>}</TableCell>
-                                        <TableCell>
-                                           {new Date(c?.pucExpiry || c?.insuranceExpiry || c?.fitnessExpiry || c?.taxExpiry || c?.permitExpiry || '').toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell>{c?.buyerName || <span className="text-red-500">N/A</span>}</TableCell>
-                                        <TableCell>{c?.buyerPhoneNo || <span className="text-red-500">N/A</span>}</TableCell>
-                                        <TableCell>
-                                          <Button variant={'outline'}
-                                            className=" cursor-pointer"
-                                            onClick={() => navigate(`/employee/cases/${c.CaseNo}`, { state: { id: c.id } })}
-                                          >
-                                            View Details
-                                          </Button>
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </DialogContent>
-                            </Dialog>
+              <Dialog open={DialogOpen2} onOpenChange={setDialogOpen2}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{currExpiries?.expiryType} EXPIRIES IN THIS MONTH</DialogTitle>
+                  </DialogHeader>
+
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Case No</TableHead>
+                        <TableHead>Vehicle No</TableHead>
+                        <TableHead>Expiry date</TableHead>
+                        <TableHead>Owner Name</TableHead>
+                        <TableHead>Owner Contact</TableHead>
+                        <TableHead>Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {currExpiries?.cases?.map((c, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell>{c.CaseNo}</TableCell>
+                          <TableCell>{c?.vehicleNo || <span className="text-red-500">N/A</span>}</TableCell>
+                          <TableCell>
+                            {new Date(c?.pucExpiry || c?.insuranceExpiry || c?.fitnessExpiry || c?.taxExpiry || c?.permitExpiry || '').toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>{c?.buyerName || <span className="text-red-500">N/A</span>}</TableCell>
+                          <TableCell>{c?.buyerPhoneNo || <span className="text-red-500">N/A</span>}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2 items-center">
+                              {editingCaseId === c.id ? (
+                                <>
+                                  <DateInput
+                                    id="tempExpiryDate"
+                                    className="cursor-pointer"
+                                    value={tempExpiryDate}
+                                    onChange={(e) => setTempExpiryDate(e.target.value)}
+                                  />
+                                  <Button
+                                    variant="default"
+                                    className="cursor-pointer"
+                                    size="sm"
+                                    onClick={() => saveExpiryDate(c.id)}
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    className="cursor-pointer"
+                                    size="sm"
+                                    onClick={() => setEditingCaseId(null)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    className="cursor-pointer"
+                                    onClick={() =>
+                                      navigate(`/superadmin/cases/${c.CaseNo}`, { state: { id: c.id } })
+                                    }
+                                  >
+                                    View Details
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      setEditingCaseId(c.id);
+                                      setTempExpiryDate(
+                                        (c?.pucExpiry ||
+                                          c?.insuranceExpiry ||
+                                          c?.fitnessExpiry ||
+                                          c?.taxExpiry ||
+                                          c?.permitExpiry ||
+                                          ""
+                                        ).slice(0, 10)
+                                      );
+                                    }}
+                                  >
+                                    <Pencil className="h-4 w-4 cursor-pointer" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </DialogContent>
+              </Dialog>
 
               {task.length > 0 ? (
                 <Accordion
@@ -426,12 +615,12 @@ const AdminDashboard = () => {
                           <div className="font-semibold text-base">{t.task_title}</div>
                           <div
                             className={`text-xs mt-2 ${(() => {
-                                const priority = t.priority;
-                                if (!priority) return "";
-                                const dateObj = new Date(priority);
-                                const now = new Date();
-                                return dateObj < now ? "text-red-600" : "text-green-600";
-                              })()
+                              const priority = t.priority;
+                              if (!priority) return "";
+                              const dateObj = new Date(priority);
+                              const now = new Date();
+                              return dateObj < now ? "text-red-600" : "text-green-600";
+                            })()
                               }`}
                           >
                             <strong>Deadline:</strong>{" "}

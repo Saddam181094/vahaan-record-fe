@@ -76,29 +76,29 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   const {
-  control: summaryControl,
-  handleSubmit: handleSummarySubmit,
-  setValue: setValue2,
+    control: summaryControl,
+    handleSubmit: handleSummarySubmit,
+    setValue: setValue2,
   } = useForm({
-  defaultValues: { fromDate: "", toDate: "" }
-});
+    defaultValues: { fromDate: "", toDate: "" }
+  });
 
-// Task form
-const {
-  control: taskControl,
-  handleSubmit: handleTaskSubmit,
-  reset: resetTaskForm,
-  setValue,
-  formState: { errors }
-} = useForm({
-  defaultValues: {
-    id: "",
-    task_title: "",
-    task_text: "",
-    priorityDate: "",
-    priorityTime: ""
-  }
-});
+  // Task form
+  const {
+    control: taskControl,
+    handleSubmit: handleTaskSubmit,
+    reset: resetTaskForm,
+    setValue,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      id: "",
+      task_title: "",
+      task_text: "",
+      priorityDate: "",
+      priorityTime: ""
+    }
+  });
 
   const [task, setTask] = useState<Task[]>([])
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -133,8 +133,8 @@ const {
       });
   }, [refreshFlag]);
 
-const [editingCaseId, setEditingCaseId] = useState<string | null>(null);
-const [tempExpiryDate, setTempExpiryDate] = useState<string>("");
+  const [editingCaseId, setEditingCaseId] = useState<string | null>(null);
+  const [tempExpiryDate, setTempExpiryDate] = useState<string>("");
 
 
   const onSubmit: SubmitHandler<any> = async (data: any) => {
@@ -159,9 +159,10 @@ const [tempExpiryDate, setTempExpiryDate] = useState<string>("");
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }else
-{        toast.showToast('Error:', err?.message || 'Error updating the Task', 'error');
-}      } finally {
+        } else {
+          toast.showToast('Error:', err?.message || 'Error updating the Task', 'error');
+        }
+      } finally {
         setEditTask(null);
         setLoading(false);
       }
@@ -178,9 +179,10 @@ const [tempExpiryDate, setTempExpiryDate] = useState<string>("");
         if (err?.status == 401 || err?.response?.status == 401) {
           toast.showToast('Error', 'Session Expired', 'error');
           logout();
-        }else
-{        toast.showToast('Error:', err?.message || 'Error occured while making a new Task', 'error');
-}      } finally {
+        } else {
+          toast.showToast('Error:', err?.message || 'Error occured while making a new Task', 'error');
+        }
+      } finally {
         setLoading(false);
       }
     }
@@ -190,14 +192,15 @@ const [tempExpiryDate, setTempExpiryDate] = useState<string>("");
     markDone(taskId).then(() => {
       toast.showToast('Success', 'Task Completed Successfully!', 'success');
       setLoading(false);
-      setRefreshFlag((prev)=> !prev);
+      setRefreshFlag((prev) => !prev);
     }).catch((err: any) => {
       if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
-      }else
-{      toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
-}    }).finally(() => {
+      } else {
+        toast.showToast('Error:', err?.message || 'Error occured while marking complete Task', 'error');
+      }
+    }).finally(() => {
       setLoading(false);
     })
   };
@@ -238,52 +241,32 @@ const [tempExpiryDate, setTempExpiryDate] = useState<string>("");
     // navigate(`/superadmin/cases/all`, { state: { type } });
   }
 
-  // Simulate API fetch (replace this with actual API call)
-//   useEffect(() => {
-//     setSummaryLoading(true);
-
-//     getSummary()
-//       .then((resp) => {
-//         setExpiryStats(resp?.data?.data);
-//       })
-//       .catch((err) => {
-//         if (err?.status === '401' || err?.response?.status === 401) {
-//           toast.showToast('Error', 'Session Expired', 'error');
-//           logout();
-//         }else
-// {        toast.showToast('Error', err?.message || 'Summary was not fetched due to some error', 'error');
-// }      })
-//       .finally(() => {
-//         setSummaryLoading(false);
-//       });
-//   }, []);
-
-const saveExpiryDate = (caseId: string) => {
-  if (!tempExpiryDate) {
-    toast.showToast("Error", "Please select a date", "error");
-    return;
-  }
-  setLoading(true);
-  updateExpiryDate(caseId, currExpiries?.expiryType || "", tempExpiryDate)
-    .then(() => {
-      toast.showToast("Success", "Expiry date updated successfully!", "success");
-      setEditingCaseId(null);
-      setRefreshFlag((prev) => !prev);
-    })
-    .catch((err: any) => {
-      if (err?.status === 401 || err?.response?.status === 401) {
-        toast.showToast("Error", "Session Expired", "error");
-        logout();
-      } else {
-        toast.showToast(
-          "Error",
-          err?.message || "Error occurred while updating expiry date",
-          "error"
-        );
-      }
-    })
-    .finally(() => setLoading(false));
-};
+  const saveExpiryDate = (caseId: string) => {
+    if (!tempExpiryDate) {
+      toast.showToast("Error", "Please select a date", "error");
+      return;
+    }
+    setLoading(true);
+    updateExpiryDate(caseId, currExpiries?.expiryType || "", tempExpiryDate)
+      .then(() => {
+        toast.showToast("Success", "Expiry date updated successfully!", "success");
+        setEditingCaseId(null);
+        setRefreshFlag((prev) => !prev);
+      })
+      .catch((err: any) => {
+        if (err?.status === 401 || err?.response?.status === 401) {
+          toast.showToast("Error", "Session Expired", "error");
+          logout();
+        } else {
+          toast.showToast(
+            "Error",
+            err?.message || "Error occurred while updating expiry date",
+            "error"
+          );
+        }
+      })
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     const now = new Date();
@@ -300,42 +283,44 @@ const saveExpiryDate = (caseId: string) => {
 
     if (!defaultFrom || !defaultTo) return;
 
-setSummaryLoading(true);
+    setSummaryLoading(true);
     getSummary(defaultFrom, defaultTo)
       .then((resp) => {
         setExpiryStats(resp?.data?.data || []);
       })
-      .catch((err: any) => {  
+      .catch((err: any) => {
         if (err?.status === 401 || err?.response?.status === 401) {
           toast.showToast("Error", "Session Expired", "error");
           logout();
         } else {
           toast.showToast("Error", "Failed to fetch summary data", "error");
         }
-      } )
-      .finally(() => { 
+      })
+      .finally(() => {
         setSummaryLoading(false);
-      } );
+      });
 
   },
     [refreshFlag]);
 
-  const applyFilter2 = async (data:any) => {
+  const applyFilter2 = async (data: any) => {
     const { fromDate, toDate } = data;
     if (!fromDate || !toDate) return;
 
     setSummaryLoading(true);
     try {
-      const resp= await getSummary(fromDate, toDate);
-     setExpiryStats(resp?.data?.data);
+      const resp = await getSummary(fromDate, toDate);
+      setExpiryStats(resp?.data?.data);
     } catch (err: any) {
       if (err?.status == 401 || err?.response?.status == 401) {
         toast.showToast('Error', 'Session Expired', 'error');
         logout();
-      }else
+      } else
       //   console.error("Error fetching filtered cases:", err);
-{      toast.showToast("Error", "Failed to apply filter", "error");
-}    } finally {
+      {
+        toast.showToast("Error", "Failed to apply filter", "error");
+      }
+    } finally {
       setSummaryLoading(false);
     }
   };
@@ -354,54 +339,54 @@ setSummaryLoading(true);
         <div className="grid md:grid-cols-2 py-5 border rounded-lg bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 mb-8 grid-cols-1 w-full h-full min-h-screen overflow-y-auto">
           <div>
             <span className="col-span-full text-4xl text-gray-800 font-bold mb-10 block px-3">Summary of the Cases</span>
-                        <form
-                          onSubmit={handleSummarySubmit(applyFilter2)}
-                          className="flex flex-wrap gap-4 mx-5 items-end md:flex-nowrap"
-                        >
-                          {/* From Date */}
-                          <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
-                            <Label htmlFor="fromDate" className="text-sm font-medium capitalize">
-                              From Date<span className="text-red-500">*</span>
-                            </Label>
-                            <Controller
-                              name="fromDate"
-                              control={summaryControl}
-                              rules={{ required: true }}
-                              render={({ field }) => (
-                                <DateInput
-                                  id="fromDate"
-                                  className="cursor-pointer"
-                                  value={field.value}
-                                  onChange={(e: any) => field.onChange(e.target.value)}
-                                />
-                              )}
-                            />
-                          </div>
-            
-                          {/* To Date */}
-                          <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
-                            <Label htmlFor="toDate" className="text-sm font-medium capitalize">
-                              To Date<span className="text-red-500">*</span>
-                            </Label>
-                            <Controller
-                              name="toDate"
-                              control={summaryControl}
-                              rules={{ required: true }}
-                              render={({ field }) => (
-                                <DateInput
-                                  id="toDate"
-                                  className="cursor-pointer"
-                                  value={field.value}
-                                  onChange={(e: any) => field.onChange(e.target.value)}
-                                />
-                              )}
-                            />
-                          </div>
-            
-                          <Button type="submit"  style={{ cursor: "pointer" }} className="mt-2 w-full md:w-auto cursor-pointer">
-                            Filter
-                          </Button>
-                        </form>
+            <form
+              onSubmit={handleSummarySubmit(applyFilter2)}
+              className="flex flex-wrap gap-4 mx-5 items-end md:flex-nowrap"
+            >
+              {/* From Date */}
+              <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
+                <Label htmlFor="fromDate" className="text-sm font-medium capitalize">
+                  From Date<span className="text-red-500">*</span>
+                </Label>
+                <Controller
+                  name="fromDate"
+                  control={summaryControl}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <DateInput
+                      id="fromDate"
+                      className="cursor-pointer"
+                      value={field.value}
+                      onChange={(e: any) => field.onChange(e.target.value)}
+                    />
+                  )}
+                />
+              </div>
+
+              {/* To Date */}
+              <div className="flex flex-col space-y-1 flex-1 min-w-[140px]">
+                <Label htmlFor="toDate" className="text-sm font-medium capitalize">
+                  To Date<span className="text-red-500">*</span>
+                </Label>
+                <Controller
+                  name="toDate"
+                  control={summaryControl}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <DateInput
+                      id="toDate"
+                      className="cursor-pointer"
+                      value={field.value}
+                      onChange={(e: any) => field.onChange(e.target.value)}
+                    />
+                  )}
+                />
+              </div>
+
+              <Button type="submit" style={{ cursor: "pointer" }} className="mt-2 w-full md:w-auto cursor-pointer">
+                Filter
+              </Button>
+            </form>
             <div className="grid grid-cols-2 gap-3 p-3">
               {expiryStats.map((item, index) => {
                 const isEven = index % 2 === 0;
@@ -570,67 +555,67 @@ setSummaryLoading(true);
                           </TableCell>
                           <TableCell>{c?.buyerName || <span className="text-red-500">N/A</span>}</TableCell>
                           <TableCell>{c?.buyerPhoneNo || <span className="text-red-500">N/A</span>}</TableCell>
-<TableCell>
-  <div className="flex gap-2 items-center">
-    {editingCaseId === c.id ? (
-      <>
-        <DateInput
-          id="tempExpiryDate"
-          className="cursor-pointer"
-          value={tempExpiryDate}
-          onChange={(e) => setTempExpiryDate(e.target.value)}
-        />
-        <Button
-          variant="default"
-          className="cursor-pointer"
-          size="sm"
-          onClick={() => saveExpiryDate(c.id)}
-        >
-          Save
-        </Button>
-        <Button
-          variant="outline"
-          className="cursor-pointer"
-          size="sm"
-          onClick={() => setEditingCaseId(null)}
-        >
-          Cancel
-        </Button>
-      </>
-    ) : (
-      <>
-        <Button
-          variant="outline"
-          className="cursor-pointer"
-          onClick={() =>
-            navigate(`/superadmin/cases/${c.CaseNo}`, { state: { id: c.id } })
-          }
-        >
-          View Details
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="cursor-pointer"
-          onClick={() => {
-            setEditingCaseId(c.id);
-            setTempExpiryDate(
-              (c?.pucExpiry ||
-                c?.insuranceExpiry ||
-                c?.fitnessExpiry ||
-                c?.taxExpiry ||
-                c?.permitExpiry ||
-                ""
-              ).slice(0, 10)
-            );
-          }}
-        >
-          <Pencil className="h-4 w-4 cursor-pointer" />
-        </Button>
-      </>
-    )}
-  </div>
-</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2 items-center">
+                              {editingCaseId === c.id ? (
+                                <>
+                                  <DateInput
+                                    id="tempExpiryDate"
+                                    className="cursor-pointer"
+                                    value={tempExpiryDate}
+                                    onChange={(e) => setTempExpiryDate(e.target.value)}
+                                  />
+                                  <Button
+                                    variant="default"
+                                    className="cursor-pointer"
+                                    size="sm"
+                                    onClick={() => saveExpiryDate(c.id)}
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    className="cursor-pointer"
+                                    size="sm"
+                                    onClick={() => setEditingCaseId(null)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    className="cursor-pointer"
+                                    onClick={() =>
+                                      navigate(`/superadmin/cases/${c.CaseNo}`, { state: { id: c.id } })
+                                    }
+                                  >
+                                    View Details
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      setEditingCaseId(c.id);
+                                      setTempExpiryDate(
+                                        (c?.pucExpiry ||
+                                          c?.insuranceExpiry ||
+                                          c?.fitnessExpiry ||
+                                          c?.taxExpiry ||
+                                          c?.permitExpiry ||
+                                          ""
+                                        ).slice(0, 10)
+                                      );
+                                    }}
+                                  >
+                                    <Pencil className="h-4 w-4 cursor-pointer" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </TableCell>
 
 
 
@@ -653,12 +638,12 @@ setSummaryLoading(true);
                           <div className="font-semibold text-base">{t.task_title}</div>
                           <div
                             className={`text-xs mt-2 ${(() => {
-                                const priority = t.priority;
-                                if (!priority) return "";
-                                const dateObj = new Date(priority);
-                                const now = new Date();
-                                return dateObj < now ? "text-red-600" : "text-green-600";
-                              })()
+                              const priority = t.priority;
+                              if (!priority) return "";
+                              const dateObj = new Date(priority);
+                              const now = new Date();
+                              return dateObj < now ? "text-red-600" : "text-green-600";
+                            })()
                               }`}
                           >
                             <strong>Deadline:</strong>{" "}
