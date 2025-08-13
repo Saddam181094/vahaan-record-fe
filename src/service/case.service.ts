@@ -128,18 +128,21 @@ export const getAdminCases = async () => {
     });
 };
 
-export const getSummary = async () => {
+export const getSummary = async (fromDate: string, toDate: string) => {
   const config = getConfig();
+  const data = { fromDate, toDate };
+
   return axios
-    .get(url + "/case/summary", config)
+    .post(url + "/case/summary", data, config)
     .then((response) => {
       return response.data;
     })
     .catch((error) => {
-      console.error("Error occurred during login:", error);
+      console.error("Error occurred while fetching summary:", error);
       throw error;
     });
 };
+
 
 
 export const getCaseID = async (Id: any) => {
@@ -168,6 +171,24 @@ export const getCasebyClient = async (Id: any , filterType: string,
     })
     .catch((error) => {
       console.error("Error occurred during login:", error);
+      throw error;
+    });
+};
+
+export const updateExpiryDate = async (
+  caseId: string,
+  expiryType: string,
+  newExpiryDate: string
+) => {
+  const config = getConfig();
+  const data = { expiryType, newExpiryDate };
+
+  return axios
+    .patch(`${url}/case/update-expiry/${caseId}`, data, config)
+    .then((response) => 
+    {return response.data})
+    .catch((error) => {
+      console.error("Error occurred while updating expiry date:", error);
       throw error;
     });
 };
