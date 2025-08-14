@@ -477,6 +477,29 @@ export default function CaseDes() {
         data={filteredCases}
         columns={[
           ...caseTableColumns,
+                    {
+            id:"Reference",
+            header:"Reference",
+            cell:(({row}) => {
+              const reference = row.original?.referenceDetail;
+          
+              return (
+                <div className="flex flex-col text-sm">
+                {reference?.name? reference?.name : "N/A"}
+                <br/>
+                <span className="text-gray-600 text-xs">{reference?.contactNo? reference?.contactNo : "N/A"}</span>
+                </div>
+               )
+            })
+          },
+          {
+            id: "remarks",
+            header: "Remarks",
+            cell: ({ row }) => {
+              const remarks = row.original?.rejectionRemarks || "No remarks";
+              return <span>{remarks.replace(/_/g, " ")}</span>;
+            },
+          },
           {
             header: "Action",
             accessorKey: "action",
@@ -517,7 +540,8 @@ export default function CaseDes() {
                 </div>
               );
             },
-          },
+          },                        
+
         ]}
       />
     </div>
