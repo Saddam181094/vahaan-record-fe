@@ -108,20 +108,28 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
       return employeeCode
         ? `${firstName} ${lastName} | ${employeeCode}`
         : `${firstName} ${lastName}`;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-  },
-{
-  id: "assignedTo",
-  header: "Assigned To",
-  accessorFn: (row) =>
-    row.assignedTo
+        },
+      },
+      {
+        id: "createdAt",
+        header: "Created At",
+        cell: ({ row }) => {
+      const date = new Date(row.original.createdAt);
+      return date.toLocaleDateString();
+        },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+      },
+    {
+      id: "assignedTo",
+      header: "Assigned To",
+      accessorFn: (row) =>
+        row.assignedTo
       ? `${row.assignedTo.firstName} ${row.assignedTo.lastName}`
       : "-",
-  cell: ({ row }) => {
+      cell: ({ row }) => {
     const assignedTo = row.original?.assignedTo;
     return assignedTo
       ? `${assignedTo.firstName} ${assignedTo.lastName}`
@@ -144,7 +152,7 @@ export const caseColumns: ColumnDef<any>[] = [
     header: "Created At",
     cell: ({ row }) => {
       const date = new Date(row.original.createdAt);
-      return date.toLocaleString();
+      return date.toLocaleDateString();
     },
   },
   {
@@ -238,6 +246,11 @@ export const employeeCaseTableColumns: ColumnDef<CaseDetails>[] = [
     header: "Vehicle No.",
     accessorFn: (row) => row.vehicleDetail?.vehicleNo ?? "-",
     cell: ({ row }) => row.original.vehicleDetail?.vehicleNo ?? "-",
+  },
+    {
+    // accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
   },
   {
     accessorKey: "status",

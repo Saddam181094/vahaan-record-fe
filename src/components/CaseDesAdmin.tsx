@@ -18,6 +18,7 @@ export interface CaseDetails {
   CaseNo: string;
   vehicleDetail: vehicleDetail;
   createdBy: createdBy;
+  createdAt: string;
   assignedTo?: AssignedTo;
   rejectionRemarks?:string;
   status: string;
@@ -141,14 +142,6 @@ export default function CaseDes() {
                 </div>
                )
             })
-          },
-          {
-            id: "remarks",
-            header: "Remarks",
-            cell: ({ row }) => {
-              const remarks = row.original?.rejectionRemarks || "No remarks";
-              return <span>{remarks.replace(/_/g, " ")}</span>;
-            },
           },
             {
               id: "verify",

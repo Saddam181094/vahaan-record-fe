@@ -266,6 +266,7 @@ export default function CaseDes() {
           },
           {
             id: "remarks",
+            accessorFn: (row) => row.rejectionRemarks || "No remarks",
             header: "Remarks",
             cell: ({ row }) => {
               const remarks = row.original?.rejectionRemarks || "No remarks";

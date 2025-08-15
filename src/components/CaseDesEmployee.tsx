@@ -84,14 +84,6 @@ export default function CaseDes() {
             })
           },
           {
-            id: "remarks",
-            header: "Remarks",
-            cell: ({ row }) => {
-              const remarks = row.original?.rejectionRemarks || "No remarks";
-              return <span>{remarks.replace(/_/g, " ")}</span>;
-            },
-          },
-          {
             id: "action",
             header: "Action",
             cell: ({ row }) => {
