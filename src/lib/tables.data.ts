@@ -140,6 +140,44 @@ export const caseTableColumns: ColumnDef<CaseDetails>[] = [
 
 ];
 
+export const rejectedcaseTableColumns: ColumnDef<CaseDetails>[] = [
+  {
+    // accessorKey: "CaseNo",
+    header: "Case No.",
+    accessorFn: (row) => `#${row?.CaseNo}`,
+    cell: ({ row }) => "#" + `${row.original.CaseNo}`,
+  },
+  {
+    id: "vehicleNo",
+    header: "Vehicle No.",
+    accessorFn: (row) =>`${row.vehicleDetail.vehicleNo}`,
+    cell: ({ row }) => row.original.vehicleDetail?.vehicleNo ?? "-",
+  },
+  {
+    id: "createdBy",
+    header: "Created By",
+    accessorFn: (row)=>`${row.createdBy.firstName} ${row.createdBy.lastName}`,
+    cell: ({ row }) => {
+      const { firstName, lastName, employeeCode } = row.original.createdBy;
+      return employeeCode
+        ? `${firstName} ${lastName} | ${employeeCode}`
+        : `${firstName} ${lastName}`;
+        },
+      },
+      {
+        id: "createdAt",
+        header: "Created At",
+        cell: ({ row }) => {
+      const date = new Date(row.original.createdAt);
+      return date.toLocaleDateString();
+        },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+      },
+
+];
 
 export const caseColumns: ColumnDef<any>[] = [
   {

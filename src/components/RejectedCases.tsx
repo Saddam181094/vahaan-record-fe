@@ -9,7 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 import CaseDetails from "./CaseDetailsAdmin";
 import { useToast } from "@/context/ToastContext";
 import { DataTable } from "./DataTable";
-import { caseTableColumns } from "@/lib/tables.data";
+import { rejectedcaseTableColumns } from "@/lib/tables.data";
 import { DateInput } from "./ui/date-input";
 import { useAuth } from "@/context/AuthContext";
 import { SidebarProvider, SidebarTrigger } from "./ui/sidebar";
@@ -248,21 +248,24 @@ export default function CaseDes() {
     <DataTable
         data={rejectedCases}
         columns={[
-          ...caseTableColumns,
-            {
-            id:"Reference",
-            header:"Reference",
+          ...rejectedcaseTableColumns,
+              {
+            id:"Reference Name",
+            header:"Reference Name",
+            accessorFn: (row) => row?.referenceDetail?.name || "N/A",
             cell:(({row}) => {
               const reference = row.original?.referenceDetail;
-          
-              return (
-                <div className="flex flex-col text-sm">
-                {reference.name}
-                <br/>
-                <span className="text-gray-600 text-xs">{reference.contactNo}</span>
-                </div>
-               )
-            })
+              return reference ? reference.name : "N/A";
+            }),
+          },
+            {
+            id:"Reference Contact",
+            header:"Reference Contact",
+            accessorFn: (row) => row?.referenceDetail?.contactNo || "N/A",
+            cell:(({row}) => {
+              const reference = row.original?.referenceDetail;
+              return reference ? reference.contactNo : "N/A";
+            }),
           },
           {
             id: "remarks",

@@ -68,20 +68,23 @@ export default function CaseDes() {
      <DataTable
         columns={[
           ...employeeCaseTableColumns,
-                                  {
-            id:"Reference",
-            header:"Reference",
+             {
+            id:"Reference Name",
+            header:"Reference Name",
+            accessorFn: (row) => row?.referenceDetail?.name || "N/A",
             cell:(({row}) => {
               const reference = row.original?.referenceDetail;
-          
-              return (
-                <div className="flex flex-col text-sm">
-                {reference?.name? reference?.name : "N/A"}
-                <br/>
-                <span className="text-gray-600 text-xs">{reference?.contactNo? reference?.contactNo : "N/A"}</span>
-                </div>
-               )
-            })
+              return reference ? reference.name : "N/A";
+            }),
+          },
+            {
+            id:"Reference Contact",
+            header:"Reference Contact",
+            accessorFn: (row) => row?.referenceDetail?.contactNo || "N/A",
+            cell:(({row}) => {
+              const reference = row.original?.referenceDetail;
+              return reference ? reference.contactNo : "N/A";
+            }),
           },
           {
             id: "action",
