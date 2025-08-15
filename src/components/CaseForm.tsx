@@ -52,6 +52,7 @@ export interface Logs {
 export interface referenceDetail {
   name: string,
   contactNo: string,
+  documentLink?: string, 
 }
 
 export interface user {
@@ -108,6 +109,7 @@ export interface TransactionDetail {
   conversion: boolean;
   numberPlate: NumberPlate;
   addressChange: boolean;
+  insuranceType: InsuranceType;
   drc: boolean;
   remarks: string;
 }
@@ -140,6 +142,13 @@ export const TransactionTo = {
   NA: "NA",
 } as const;
 export type TransactionTo = (typeof TransactionTo)[keyof typeof TransactionTo];
+
+export const InsuranceType = {
+  NA : "NA",
+  THIRD_PARTY : "ThirdParty",
+  COMPREHENSIVE : "Comprehensive",
+} as const;
+export type InsuranceType = (typeof InsuranceType)[keyof typeof InsuranceType];
 
 export const NumberPlate = {
   HSRP: "HSRP",
@@ -228,6 +237,7 @@ export default function CaseForm() {
       conversion: false,
       numberPlate: "" as unknown as NumberPlate,
       addressChange: false,
+      insuranceType:"" as unknown as InsuranceType,
       drc: false,
       remarks: "",
     },
@@ -252,6 +262,7 @@ export default function CaseForm() {
     referenceDetail: {
       name: "",
       contactNo: "",
+      documentLink: "",
     },
   }), []); // dependency array empty → stable reference
 
@@ -1180,6 +1191,37 @@ export default function CaseForm() {
                 </div>
               )}
             />
+            <Controller
+              name="transactionDetail.insuranceType"
+              control={control}
+              rules={{ required: "Insurance Type is required" }}
+              render={({ field, fieldState }) => (
+              <div className="flex flex-col gap-1">
+                <Label className="py-2">Insurance Type<span className="text-red-500">*</span></Label>
+                <Select
+                {...field}
+                value={field.value}
+                onValueChange={(val) => field.onChange(val as InsuranceType)}
+                >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(InsuranceType).map((val) => (
+                  <SelectItem key={val} value={val}>
+                    {val}
+                  </SelectItem>
+                  ))}
+                </SelectContent>
+                </Select>
+                {fieldState.error && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldState.error.message}
+                </p>
+                )}
+              </div>
+              )}
+            />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {(
@@ -1685,6 +1727,32 @@ rules={{
                     </div>
                   )}
                 />
+                    <Controller
+                      name="referenceDetail.documentLink"
+                      control={control}
+                      rules={{
+                      pattern: {
+                        value: /^(https?:\/\/[^\s]+)$/i,
+                        message: "Only valid links are allowed",
+                      },
+                      }}
+                      render={({ field, fieldState }) => (
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="documentLink">Document Link</Label>
+                        <Input
+                        id="documentLink"
+                        placeholder="Paste document URL"
+                        {...field}
+                        type="url"
+                        />
+                        {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                        )}
+                      </div>
+                      )}
+                    />
                 </div>
         </CardContent>
       </Card>

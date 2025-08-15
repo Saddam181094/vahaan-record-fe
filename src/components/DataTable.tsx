@@ -258,6 +258,7 @@ export function DataTable<TData>({
       <Button
         variant="outline"
         size="sm"
+        className="cursor-pointer"
         onClick={() =>
           setPagination((prev) => ({
             ...prev,
@@ -271,6 +272,7 @@ export function DataTable<TData>({
       <Button
         variant="outline"
         size="sm"
+        className="cursor-pointer"
         onClick={() =>
           setPagination((prev) => ({
             ...prev,

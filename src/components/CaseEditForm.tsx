@@ -1,7 +1,7 @@
 // src/pages/EditCaseForm.tsx
 import { useEffect,useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller} from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { useToast } from "@/context/ToastContext";
 import { updateCaseID } from "@/service/case.service";
 import type { Case, ExpenseDetail, ExpireDetail, FinalDetails, GeneralDetails, ownerDetails, VehicleDetail } from "./CaseForm";
+import { InsuranceType} from "./CaseForm";
 import { NumberPlate,TransactionTo, type TransactionDetail } from "@/components/CaseForm";
 import { useAuth } from "@/context/AuthContext";
 import { indianStates, type Branch } from "./Branchform";
@@ -29,12 +30,8 @@ export default function EditCaseForm() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const defaultValues = state?.caseData as FinalDetails;
-  const id = state?.id as string;
 
-  const { control, handleSubmit, setValue, watch, reset, getValues } = useForm<FinalDetails>({
-    defaultValues,
-  });
+
 
   type BranchEmployee = {
     id: string;
@@ -73,7 +70,8 @@ export default function EditCaseForm() {
 
   useEffect(() => {
     setLoading(true);
-    console.log(defaultValues);
+    // console.log(defaultValues);
+    // console.log(fromRtoval, toRtoval);
     getActiveBranch()
       .then((resp) => {
         setBranches(resp?.data);
@@ -141,51 +139,88 @@ export default function EditCaseForm() {
       // Convert entire string to uppercase
       .toUpperCase();
   }
-  useEffect(() => {
-    setLoading(true);
 
-    getFirmsD()
-      .then((resp) => {
-        const f = resp?.data.map((f: string) => f.toUpperCase());
-        setfirmsD(f);
-      })
-      .catch((err: any) => {
-        if (err?.status == 401 || err?.response?.status == 401) {
-          toast.showToast('Error', 'Session Expired', 'error');
-          logout();
-        } else {
-          toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+    const defaultValues = state?.caseData as FinalDetails;
+  const id = state?.id as string;
+    const { control, handleSubmit, setValue, watch, reset, getValues } = useForm<FinalDetails>({
+    defaultValues,
+  });
+
+useEffect(() => {
+  setLoading(true);
+
+  getFirmsD()
+    .then((resp) => {
+      const f = resp?.data.map((f: string) => f.toUpperCase());
+      setfirmsD(f);
+    })
+    .catch((err: any) => {
+      if (err?.status == 401 || err?.response?.status == 401) {
+        toast.showToast('Error', 'Session Expired', 'error');
+        logout();
+      } else {
+        toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+      }
+    })
+    .finally(() => setLoading(false));
+
+  getActiveRto()
+    .then((resp) => {
+      const displayNames = resp?.data.map((item: any) => item.displayName.toUpperCase());
+      setRtos(displayNames);
+      
+      // 🎯 SET RTO VALUES IMMEDIATELY AFTER DATA LOADS
+      if (defaultValues?.vehicleDetail && displayNames.length > 0) {
+        const { fromRTO: defaultFromRTO, toRTO: defaultToRTO } = defaultValues.vehicleDetail;
+        
+        if (defaultFromRTO) {
+          const matchingFromRTO = displayNames.find((rto: string) => 
+            rto.toUpperCase().trim() === defaultFromRTO.toUpperCase().trim() ||
+            rto.replace(/\s+/g, '') === defaultFromRTO.replace(/\s+/g, '')
+          );
+          setValue("vehicleDetail.fromRTO", matchingFromRTO || defaultFromRTO);
         }
-      })
-      .finally(() => setLoading(false));
-  }, [refreshFlag]);
+        
+        if (defaultToRTO) {
+          const matchingToRTO = displayNames.find((rto: string) => 
+            rto.toUpperCase().trim() === defaultToRTO.toUpperCase().trim() ||
+            rto.replace(/\s+/g, '') === defaultToRTO.replace(/\s+/g, '')
+          );
+          setValue("vehicleDetail.toRTO", matchingToRTO || defaultToRTO);
+        }
+      }
+    })
+    .catch((err: any) => {
+      if (err?.status == 401 || err?.response?.status == 401) {
+        toast.showToast('Error', 'Session Expired', 'error');
+        logout();
+      } else {
+        toast.showToast('Error:', err?.message || 'Error during fetch of RTOs', 'error');
+      }
+    })
+    .finally(() => setLoading(false));
 
-    useEffect(() => {
-      setLoading(true);
+}, [refreshFlag, defaultValues, setValue]);
+    // useEffect(() => {
+    //   setLoading(true);
   
-      getActiveRto()
-        .then((resp) => {
-          const displayNames = resp?.data.map((item: any) => item.displayName.toUpperCase());
-          setRtos(displayNames);
-        })
-        .catch((err: any) => {
-          if (err?.status == 401 || err?.response?.status == 401) {
-            toast.showToast('Error', 'Session Expired', 'error');
-            logout();
-          } else {
-            toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
-          }
-        })
-        .finally(() => setLoading(false));
-    }, [refreshFlag]);
+    //   getActiveRto()
+    //     .then((resp) => {
+    //       const displayNames = resp?.data.map((item: any) => item.displayName.toUpperCase());
+    //       setRtos(displayNames);
+    //     })
+    //     .catch((err: any) => {
+    //       if (err?.status == 401 || err?.response?.status == 401) {
+    //         toast.showToast('Error', 'Session Expired', 'error');
+    //         logout();
+    //       } else {
+    //         toast.showToast('Error:', err?.message || 'Error during fetch of Firms', 'error');
+    //       }
+    //     })
+    //     .finally(() => setLoading(false));
+    // }, [refreshFlag]);
 
-  useEffect(() => {
-    if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
-      setValue("generalDetail.branchCodeId", user.branchCode);
-      setValue("generalDetail.employeeCodeId", user.id);
-      setB(user.branchCode); // ✅ only this triggers the next effect
-    }
-  }, [user, setValue]);
+
 
   const [searchHPT, setSearchHPT] = useState("");
   const [searchHPA, setSearchHPA] = useState("");
@@ -193,11 +228,12 @@ export default function EditCaseForm() {
   const [searchRTOfrom, setSearchRTOfrom] = useState("");
   const mainFirms = firmsD.filter(f => f.toLowerCase().includes(searchfirm.toLowerCase()));
 
+  const filteredCode1 = rtos.filter(f => f.toLowerCase().includes((searchRTOfrom).toLowerCase()));
+  const filteredCode2 = rtos.filter(f => f.toLowerCase().includes((searchRTOto).toLowerCase()));
+
   const filteredfirms = firms.filter(f => f.name.toLowerCase().includes((searchHPA || searchHPT).toLowerCase()));
 
 
-  const filteredCode1 = rtos.filter(f => f.toLowerCase().includes((searchRTOfrom).toLowerCase()));
-  const filteredCode2 = rtos.filter(f => f.toLowerCase().includes((searchRTOto).toLowerCase()));
 
   // const filteredCode1WithSelected = useMemo(() => {
   //   const currentValue = getValues("vehicleDetail.fromRTO");
@@ -232,6 +268,19 @@ export default function EditCaseForm() {
   //   );
   // }, [searchRTOfrom]);
 
+  
+
+
+
+
+    useEffect(() => {
+    if (user?.role === "employee" && user?.branchCode && user?.employeeCode) {
+      setValue("generalDetail.branchCodeId", user.branchCode);
+      setValue("generalDetail.employeeCodeId", user.id);
+      setB(user.branchCode);
+    }
+  }, [user, setValue]);
+
   useEffect(() => {
     if (!defaultValues) {
       toast.showToast("Error", "No case data provided", "error");
@@ -242,6 +291,20 @@ export default function EditCaseForm() {
   const formatDate = (dateStr: string | undefined): string | undefined =>
     dateStr?.split("T")[0] ?? undefined;
 
+    const [fromEx, setFromEx] = useState<string | null>(null);
+    const [toEx, setToEx] = useState<string | null>(null);
+
+useEffect(() => {
+  // Check if the values exist in rtos array
+  const fromRTO = watch("vehicleDetail.fromRTO");
+  const toRTO = watch("vehicleDetail.toRTO");
+  const fromExists = rtos.includes(fromRTO);
+  setFromEx(fromExists ? fromRTO : null);
+
+  const toExists = rtos.includes(toRTO);
+  setToEx(toExists ? toRTO : null);
+
+}, [defaultValues, rtos]);
 
   const getFormattedCaseData = (data: FinalDetails): FinalDetails => ({
     ...data,
@@ -259,19 +322,24 @@ export default function EditCaseForm() {
     }
   });
 
-  const fromRtoval = watch("vehicleDetail.fromRTO");
-  const toRtoval = watch("vehicleDetail.toRTO");
-  //   const getFirmNameById = (id: string | undefined) => {
-  //   if (!id) return "—";
-  //   const firm = firms.find(f => f.id === id);
-  //   return firm ? firm.name : id;
-  // };
+  // const fromRtoval = watch("vehicleDetail.fromRTO");
+  // const toRtoval = watch("vehicleDetail.toRTO");
+  // useEffect(() => {
+  //   if (fromRtoval) {
+  //     setValue("vehicleDetail.fromRTO", fromRtoval.toUpperCase());
+  //   }
+  // }, [fromRtoval, setValue]);
+  // useEffect(() => {
+  //   if (toRtoval) {
+  //     setValue("vehicleDetail.toRTO", toRtoval.toUpperCase());
+  //   }
+  // }, [toRtoval, setValue]);
 
   const onCancel = () => {
     if (defaultValues) {
       reset(getFormattedCaseData(defaultValues));
     }
-    console.log(toRtoval, fromRtoval);
+    // console.log(toRtoval, fromRtoval);
     setLoading(true);
     toast.showToast("Info", "Changes have been discarded", "info");
     navigate(-1);
@@ -369,6 +437,13 @@ export default function EditCaseForm() {
           Cancel
         </Button>
       </div>
+
+      <>
+      {!fromEx && <span className="text-red-600">* FromRTO field has been turned down edit it before submitting the CaseDetails.</span>}
+      <br />
+      {!toEx && <span className="text-red-600">* ToRTO field has been turned down edit it before submitting the CaseDetails.</span>}
+      </>
+
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8 p-6">
         {/* General Details */}
         <Card>
@@ -662,89 +737,98 @@ export default function EditCaseForm() {
                   </div>
                 )}
               />
-              <Controller
-                name="vehicleDetail.fromRTO"
-                control={control}
-                rules={{ required: "From RTO is required" }}
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="fromRTO" className="pb-2">
-                      From RTO<span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      value={fromRtoval}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select From RTO..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <div className="p-2">
-                          <Input
-                            placeholder="Search a Firm"
-                            value={searchRTOfrom}
-                            onChange={(e) => setSearchRTOfrom(e.target.value)}
-                            className="mb-2"
-                            onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
-                            onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
-                          />
-                        </div>
-                        {filteredCode1.map((opt) => (
-                          <SelectItem key={opt} value={opt}>
-                            {opt}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {fieldState.error && (
-                      <p className="text-red-600 text-xs mt-1">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-
-              <Controller
-                name="vehicleDetail.toRTO"
-                control={control}
-                rules={{ required: "To RTO is required" }}
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="toRTO" className="pb-2">
-                      To RTO<span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      value={toRtoval}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select To RTO..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <Input
-                          placeholder="Search a Firm"
-                          value={searchRTOto}
-                          onChange={(e) => setSearchRTOto(e.target.value)}
-                          className="mb-2"
-                          onClick={(e) => e.stopPropagation()} // 👈 Prevent Select from closing
-                          onKeyDown={(e) => e.stopPropagation()} // 👈 Prevent bubbling to Select
-                        />
-                        {filteredCode2.map((opt) => (
-                          <SelectItem key={opt} value={opt}>
-                            {opt}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {fieldState.error && (
-                      <p className="text-red-600 text-xs mt-1">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
+<Controller
+  name="vehicleDetail.fromRTO"
+  control={control}
+  rules={{ required: "From RTO is required" }}
+  render={({ field, fieldState }) => (
+    <div className="flex flex-col gap-1">
+      <Label htmlFor="fromRTO" className="pb-2">
+        From RTO<span className="text-red-500">*</span>
+      </Label>
+      <Select
+        required
+        value={field.value || ""} // Ensure empty string fallback
+        onValueChange={(value) => {
+          // console.log("FromRTO selected:", value);
+          field.onChange(value);
+        }}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select From RTO..." />
+        </SelectTrigger>
+        <SelectContent>
+          <div className="p-2">
+            <Input
+              placeholder="Search RTO"
+              value={searchRTOfrom}
+              onChange={(e) => setSearchRTOfrom(e.target.value)}
+              className="mb-2"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+            />
+          </div>
+          {filteredCode1.map((opt) => (
+            <SelectItem key={opt} value={opt}>
+              {opt}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {fieldState.error && (
+        <p className="text-red-600 text-xs mt-1">
+          {fieldState.error.message}
+        </p>
+      )}
+    </div>
+  )}
+/>
+<Controller
+  name="vehicleDetail.toRTO"
+  control={control}
+  rules={{ required: "To RTO is required" }}
+  render={({ field, fieldState }) => (
+    <div className="flex flex-col gap-1">
+      <Label htmlFor="toRTO" className="pb-2">
+        To RTO<span className="text-red-500">*</span>
+      </Label>
+      <Select
+        required
+        value={field.value || ""} // Ensure empty string fallback
+        onValueChange={(value) => {
+          // console.log("ToRTO selected:", value);
+          field.onChange(value);
+        }}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select To RTO..." />
+        </SelectTrigger>
+        <SelectContent>
+          <div className="p-2">
+            <Input
+              placeholder="Search RTO"
+              value={searchRTOto}
+              onChange={(e) => setSearchRTOto(e.target.value)}
+              className="mb-2"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+            />
+          </div>
+          {filteredCode2.map((opt) => (
+            <SelectItem key={opt} value={opt}>
+              {opt}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {fieldState.error && (
+        <p className="text-red-600 text-xs mt-1">
+          {fieldState.error.message}
+        </p>
+      )}
+    </div>
+  )}
+/>
 
               <Controller
                 name="vehicleDetail.chassisNo"
@@ -1072,6 +1156,37 @@ export default function EditCaseForm() {
                   </div>
                 )}
               />
+                          <Controller
+                            name="transactionDetail.insuranceType"
+                            control={control}
+                            rules={{ required: "Insurance Type is required" }}
+                            render={({ field, fieldState }) => (
+                            <div className="flex flex-col gap-1">
+                              <Label className="py-2">Insurance Type<span className="text-red-500">*</span></Label>
+                              <Select
+                              {...field}
+                              value={field.value}
+                              onValueChange={(val) => field.onChange(val as InsuranceType)}
+                              >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Object.values(InsuranceType).map((val) => (
+                                <SelectItem key={val} value={val}>
+                                  {val}
+                                </SelectItem>
+                                ))}
+                              </SelectContent>
+                              </Select>
+                              {fieldState.error && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {fieldState.error.message}
+                              </p>
+                              )}
+                            </div>
+                            )}
+                          />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {(
@@ -1511,48 +1626,75 @@ export default function EditCaseForm() {
               <Card>
                 <CardContent className="grid gap-4 p-6">
                   <div className="text-xl font-semibold border-b-2">Reference Details</div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                     <Controller
                       name="referenceDetail.name"
                       control={control}
                       render={({ field }) => (
-                        <div className="flex flex-col">
-                          <Label htmlFor="applicationNo" className="pb-2">
-                            Reference Name
-                          </Label>
-                          <Input
-                            placeholder="No."
-                            {...field}
-                          />
-                        </div>
+                      <div className="flex flex-col">
+                        <Label htmlFor="referenceName" className="pb-2">
+                        Reference Name
+                        </Label>
+                        <Input
+                        id="referenceName"
+                        placeholder="Reference Name"
+                        {...field}
+                        />
+                      </div>
                       )}
                     />
-                        <Controller
-                          name="referenceDetail.contactNo"
-                          control={control}
-rules={{
-  validate: value => {
-    if (!value) return true;
-    return /^[6-9]\d{9}$/.test(value) || "Phone No must be a valid 10-digit";
-  }
-}}
-                          render={({ field }) => (
-                            <div className="flex flex-col gap-2">
-                              <Label htmlFor="buyerPhoneNo">Reference Contact No</Label>
-                              <Input
-                                id="contactNo"
-                                placeholder="Reference Phone No"
-                                maxLength={10}
-                                {...field}
-                                onChange={e => {
-                                  const val = e.target.value.replace(/\D/g, "");
-                                  field.onChange(val);
-                                }}
-                              />
-                            </div>
-                          )}
+                    <Controller
+                      name="referenceDetail.contactNo"
+                      control={control}
+                      rules={{
+                      validate: value => {
+                        if (!value) return true;
+                        return /^[6-9]\d{9}$/.test(value) || "Phone No must be a valid 10-digit";
+                      }
+                      }}
+                      render={({ field }) => (
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="contactNo">Reference Contact No</Label>
+                        <Input
+                        id="contactNo"
+                        placeholder="Reference Phone No"
+                        maxLength={10}
+                        {...field}
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          field.onChange(val);
+                        }}
                         />
-                        </div>
+                      </div>
+                      )}
+                    />
+                    <Controller
+                      name="referenceDetail.documentLink"
+                      control={control}
+                      rules={{
+                      pattern: {
+                        value: /^(https?:\/\/[^\s]+)$/i,
+                        message: "Only valid links are allowed",
+                      },
+                      }}
+                      render={({ field, fieldState }) => (
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="documentLink">Document Link</Label>
+                        <Input
+                        id="documentLink"
+                        placeholder="Paste document URL"
+                        {...field}
+                        type="url"
+                        />
+                        {fieldState.error && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldState.error.message}
+                        </p>
+                        )}
+                      </div>
+                      )}
+                    />
+                    </div>
                 </CardContent>
               </Card>
         <Button style={{ cursor: "pointer" }} type="submit">Submit Case</Button>

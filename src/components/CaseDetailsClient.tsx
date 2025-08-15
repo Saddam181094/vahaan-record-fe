@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useLoading } from "./LoadingContext";
 import { useToast } from "@/context/ToastContext";
 import { useAuth } from "@/context/AuthContext";
-import { type ownerDetails } from "./CaseForm";
+import { InsuranceType, type ownerDetails } from "./CaseForm";
 
 interface DetailedCase {
     id: string;
@@ -38,6 +38,7 @@ interface DetailedCase {
         conversion: boolean;
         numberPlate: string;
         addressChange: boolean;
+        insuranceType: InsuranceType;
         drc: boolean;
         remarks: string;
     };
@@ -255,6 +256,10 @@ export default function CaseDescription() {
                 <RenderField
                     label="To RTO"
                     value={td?.to}
+                />
+                <RenderField
+                label="Insurance Type"
+                value={td?.insuranceType}
                 />
                 <RenderField
                     label="Fitness"

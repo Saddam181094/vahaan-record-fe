@@ -426,6 +426,10 @@ export default function CaseDetailsAdmin() {
               <p className="font-medium">{getFirmNameById(transactionDetail?.hpaId) || "—"}</p>
             </div>
             <div>
+              <p className="text-sm text-muted-foreground">Insurance Type</p>
+              <p className="font-medium">{getFirmNameById(transactionDetail?.insuranceType) || "—"}</p>
+            </div>
+            <div>
               <p className="text-sm text-muted-foreground">Fitness</p>
               <p className="font-medium">{getBoolStatus(transactionDetail?.fitness)}</p>
             </div>
@@ -565,6 +569,23 @@ export default function CaseDetailsAdmin() {
                 <div>
                   <p className="text-sm text-muted-foreground">Reference Number</p>
                   <p className="font-medium">{referenceDetail?.contactNo || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Document Link</p>
+                  <p className="font-medium">
+                  {referenceDetail?.documentLink
+                    ? (
+                    <a
+                      href={referenceDetail.documentLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      {referenceDetail.documentLink}
+                    </a>
+                    )
+                    : "—"}
+                  </p>
                 </div>
               </CardContent>
             </Card>
