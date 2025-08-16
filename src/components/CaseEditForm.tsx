@@ -35,7 +35,8 @@ export default function EditCaseForm() {
 
   type BranchEmployee = {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     employeeCode: string;
   };
 
@@ -49,7 +50,7 @@ export default function EditCaseForm() {
   const [firmsD, setfirmsD] = useState<string[]>([]);
   const [rtos, setRtos] = useState<string[]>([]);
   const [searchfirm, setSearchfirm] = useState("");
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
   // const [done,setDone] = useState("");
 
   const [refreshFlag] = useState(false);
@@ -97,6 +98,7 @@ export default function EditCaseForm() {
     getbranchEmployee(b)
       .then((resp) => {
         setbranchEmp(resp?.data);
+        // console.log("Branch Employees:", resp?.data);
       })
       .catch((err: any) => {
         if (err?.status == 401 || err?.response?.status == 401) {
@@ -148,7 +150,7 @@ export default function EditCaseForm() {
 
 useEffect(() => {
   setLoading(true);
-
+  console.log("defaultValues:", defaultValues);
   getFirmsD()
     .then((resp) => {
       const f = resp?.data.map((f: string) => f.toUpperCase());
@@ -300,9 +302,15 @@ useEffect(() => {
   const toRTO = watch("vehicleDetail.toRTO");
   const fromExists = rtos.includes(fromRTO);
   setFromEx(fromExists ? fromRTO : null);
+  if (!fromExists && fromRTO) {
+    setValue("vehicleDetail.fromRTO", "");
+  }
 
   const toExists = rtos.includes(toRTO);
   setToEx(toExists ? toRTO : null);
+  if (!toExists && toRTO) {
+    setValue("vehicleDetail.toRTO", "");
+  }
 
 }, [defaultValues, rtos]);
 
@@ -367,6 +375,7 @@ useEffect(() => {
   };
 
   const onSubmit = async (data: FinalDetails) => {
+    // console.log("Submitting case data:", data);
     try {
       setLoading(true);
       const casePayload: Case = {
@@ -390,6 +399,7 @@ useEffect(() => {
           contactNo: string;
         },
       };
+      
 
       await updateCaseID(id, casePayload);
       toast.showToast('Success', 'Case Successfully Updated', 'success');
@@ -495,130 +505,83 @@ useEffect(() => {
                   </div>
                 )}
               />
-              {user?.role !== "superadmin" && (
-                <Controller
-                  name="generalDetail.branchCodeId"
-                  control={control}
-                  rules={{ required: "Branch is required" }}
-                  render={({ field, fieldState }) => (
-                    <div className="flex flex-col w-full">
-                      <Label htmlFor="branchCodeId" className="pb-2">
-                        Branch Name
-                      </Label>
-                      {user?.role === "employee" ? (
-                        <div className="flex flex-col w-full">
-                          <Input
-                            readOnly
-                            value={
-                              branches.find((branch) => branch.branchCode === user.branchCode)?.name
-                            }
-                            className="bg-gray-100 cursor-not-allowed"
-                          />
-                          {/* Hidden input, but do NOT spread `field`, only needed name + value */}
-                          <input type="hidden" name={field.name} value={user.branchCode} />
-                        </div>
-                      ) : (
-                        <div className="flex flex-col w-full">
-                          <Select
-                            required
-                            value={field.value}
-                            onValueChange={(val) => {
-                              field.onChange(val);
-                              setB(val);
-                            }}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select Branch" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <div className="p-2">
-                                <Input
-                                  placeholder="Search a Branch"
-                                  value={search}
-                                  onChange={(e) => setSearch(e.target.value)}
-                                  className="mb-2"
-                                />
-                              </div>
-                              {branches.map((branch) => (
-                                <SelectItem
-                                  key={branch?.branchCode}
-                                  value={branch?.branchCode || "default"}
-                                >
-                                  {branch.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
+{/* Branch Code (only for employee) */}
+{user?.role !== "superadmin" && (
+  <Controller
+    name="generalDetail.branchCodeId"
+    control={control}
+    rules={{ required: "Branch is required" }}
+    render={({ field, fieldState }) => {
+      const branchName =
+        branches.find((branch) => branch.branchCode === user?.branchCode)?.name ?? "";
 
-                      {fieldState.error && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {fieldState.error.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                />)}
-              {user?.role !== "superadmin" && (
-                <Controller
-                  name="generalDetail.employeeCodeId"
-                  control={control}
-                  rules={{ required: "Employee is required" }}
-                  render={({ field, fieldState }) => (
-                    <div className="flex flex-col w-full">
-                      <Label htmlFor="employeeCodeId" className="pb-2">
-                        Employee Name
-                      </Label>
-                      {user?.role === "employee" ? (
-                        <>
-                          <Input
-                            readOnly
-                            value={
-                              branchEmp.find((emp) => emp.employeeCode === user.employeeCode)?.name
-                            }
-                            className="bg-gray-100 cursor-not-allowed"
-                          />
-                          {/* Hidden input to preserve value for submission */}
-                          <input type="hidden" name={field.name} value={user.employeeCode} />
-                        </>
-                      ) : (
-                        <>
-                          <Select
-                            required
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select Employee" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <div className="p-2">
-                                <Input
-                                  placeholder="Search an Employee"
-                                  value={search}
-                                  onChange={(e) => setSearch(e.target.value)}
-                                  className="mb-2"
-                                />
-                              </div>
-                              {branchEmp.map((emp) => (
-                                <SelectItem key={emp?.id ?? ""} value={emp?.id ?? ""}>
-                                  {emp?.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          {fieldState.error && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {fieldState.error.message}
-                            </p>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  )}
-                />
-              )}
+      return (
+        <div className="flex flex-col w-full">
+          <Label htmlFor="branchCodeId" className="pb-2">
+            Branch Name
+          </Label>
+          <Input
+            readOnly
+            value={branchName}
+            className="bg-gray-100 cursor-not-allowed"
+          />
+
+          {/* Ensure branchCode is set correctly */}
+          {field.value !== user?.branchCode && (() => { field.onChange(user?.branchCode); return null; })()}
+
+          {fieldState.error && (
+            <p className="text-red-500 text-xs mt-1">{fieldState.error.message}</p>
+          )}
+        </div>
+      );
+    }}
+  />
+)}
+
+{/* Employee Code (only for employee) */}
+{user?.role !== "superadmin" && (
+  <Controller
+    name="generalDetail.employeeCodeId"
+    control={control}
+    rules={{ required: "Employee is required" }}
+    render={({ field, fieldState }) => {
+      // Find employee by employeeCode from logged-in user
+      const emp = branchEmp.find(
+        (e) => e.employeeCode === user?.employeeCode
+      );
+
+      // Sync UUID into RHF value if not already set
+      if (emp?.id && field.value !== emp.id) {
+        field.onChange(emp.id);
+      }
+
+      return (
+        <div className="flex flex-col w-full">
+          <Label htmlFor="employeeCodeId" className="pb-2">
+            Employee Name
+          </Label>
+          <Input
+            readOnly
+            value={
+              emp
+                ? `${emp.firstName} ${emp.lastName} (${emp.employeeCode})`
+                : ""
+            }
+            className="bg-gray-100 cursor-not-allowed"
+          />
+          {fieldState.error && (
+            <p className="text-red-500 text-xs mt-1">
+              {fieldState.error.message}
+            </p>
+          )}
+        </div>
+      );
+    }}
+  />
+)}
+
+
+
 
 
               {/* Incentive Type - Only show for superadmin */}
@@ -1697,7 +1660,12 @@ useEffect(() => {
                     </div>
                 </CardContent>
               </Card>
-        <Button style={{ cursor: "pointer" }} type="submit">Submit Case</Button>
+        <Button
+          style={{ cursor: "pointer" }}
+          type="submit"
+        >
+          Submit Case
+        </Button>
       </form>
     </div>
   );

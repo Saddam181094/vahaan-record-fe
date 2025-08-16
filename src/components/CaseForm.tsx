@@ -145,7 +145,7 @@ export type TransactionTo = (typeof TransactionTo)[keyof typeof TransactionTo];
 
 export const InsuranceType = {
   NA : "NA",
-  THIRD_PARTY : "ThirdParty",
+  THIRD_PARTY : "Third Party",
   COMPREHENSIVE : "Comprehensive",
 } as const;
 export type InsuranceType = (typeof InsuranceType)[keyof typeof InsuranceType];
