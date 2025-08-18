@@ -1695,7 +1695,7 @@ export default function CaseForm() {
                     Reference Name
                   </Label>
                   <Input
-                    placeholder="No."
+                    placeholder="Name"
                     {...field}
                   />
                 </div>
