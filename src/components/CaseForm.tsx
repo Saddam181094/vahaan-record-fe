@@ -402,6 +402,7 @@ export default function CaseForm() {
       getActiveRto()
         .then((resp) => {
           const displayNames = resp?.data.map((item: any) => item.displayName);
+          displayNames.unshift("NA");
           setRtos(displayNames);
         })
         .catch((err: any) => {

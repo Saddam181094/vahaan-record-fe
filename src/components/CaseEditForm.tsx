@@ -169,6 +169,7 @@ useEffect(() => {
   getActiveRto()
     .then((resp) => {
       const displayNames = resp?.data.map((item: any) => item.displayName.toUpperCase());
+      displayNames.unshift("NA");
       setRtos(displayNames);
       
       // 🎯 SET RTO VALUES IMMEDIATELY AFTER DATA LOADS
