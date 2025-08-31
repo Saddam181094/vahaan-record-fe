@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type {ReactNode} from "react";
 import * as auth from "@/service/auth.service";
+import { useLoading } from "@/components/LoadingContext";
 
 export const UserRole = {
   SUPERADMIN: "superadmin",
@@ -41,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const navigate = useNavigate();
+  const { setLoading } = useLoading();
 
   useEffect(() => {
   const storedUser = auth.getStoredUser();
@@ -73,6 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setToken(null);
     auth.clearUserAndToken();
+    setLoading(false);
     navigate("/");
   };
 

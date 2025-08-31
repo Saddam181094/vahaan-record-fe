@@ -209,11 +209,6 @@ export const caseColumns: ColumnDef<any>[] = [
     cell: ({ row }) => row.original.generalDetail?.appointmentDate ?? "N/A",
   },
   {
-    accessorKey: "generalDetail.incentiveAmount",
-    header: "Incentive Amount",
-    cell: ({ row }) => `₹ ${row.original.generalDetail?.incentiveAmount ?? "0.00"}`,
-  },
-  {
     accessorKey: "vehicleDetail.vehicleNo",
     header: "Vehicle No.",
     cell: ({ row }) => row.original.vehicleDetail?.vehicleNo ?? "N/A",

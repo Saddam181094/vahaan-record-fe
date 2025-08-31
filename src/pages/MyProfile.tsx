@@ -218,7 +218,7 @@ const MyProfile: React.FC = () => {
 
             {user?.role === "client" && (
               <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded mb-4 mt-2 text-sm text-yellow-800">
-                <strong>NOTE:</strong> Billing date is the last date of the month and the due date of the bill is the 15th of the following month.
+                <strong>NOTE:</strong> Billing date is the last date of the month and the due date of the bill is the 14th of the following month.
               </div>
             )}
 

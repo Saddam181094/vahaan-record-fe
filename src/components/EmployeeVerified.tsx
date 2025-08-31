@@ -377,6 +377,24 @@ const applyFilter = async (data: FilterFormValues) => {
         data={filteredCases}
         columns={[
           ...caseColumns,
+           {
+            id:"Reference Name",
+            header:"Reference Name",
+            accessorFn: (row) => row?.referenceDetail?.name || "N/A",
+            cell:(({row}) => {
+              const reference = row.original?.referenceDetail;
+              return reference ? reference.name : "N/A";
+            }),
+          },
+            {
+            id:"Reference Contact",
+            header:"Reference Contact",
+            accessorFn: (row) => row?.referenceDetail?.contactNo || "N/A",
+            cell:(({row}) => {
+              const reference = row.original?.referenceDetail;
+              return reference ? reference.contactNo : "N/A";
+            }),
+          },
           {
             header: "Action",
             accessorKey: "action",
