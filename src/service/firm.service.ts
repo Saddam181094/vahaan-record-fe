@@ -27,6 +27,20 @@ export const getActiveFirm = async () => {
     });
 };
 
+export const updateFirm = async (firmData: Firm): Promise<Firm> => {
+    const config = getConfig();
+    const { id, isActive,...ifirmData } = firmData;
+    return axios
+     .patch(url + `/utils/update-firm/${id}`, ifirmData, config)
+     .then((response) => {
+       return response.data.data;
+     })
+     .catch((error) => {
+       console.error("Error occurred during update:", error);
+       throw error;
+     });
+}
+
 
 export async function createFirm(firmData: any): Promise<Firm> {
     const token = localStorage.getItem("token"); // Assuming user is logged in

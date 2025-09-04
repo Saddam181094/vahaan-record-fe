@@ -106,3 +106,16 @@ export const getActiveBranch = async () => {
       throw error;
     });
 };
+
+export const updateBranch = async (branchId:string, branchData: any) => {
+  const config = getConfig();
+  return axios
+    .patch(url+`/utils/update-branch/${branchId}`, branchData, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error occurred during login:", error);
+      throw error;
+    });
+};

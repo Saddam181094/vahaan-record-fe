@@ -278,7 +278,7 @@ export default function CaseDetailsAdmin() {
         }
       })
       .finally(() => setLoading(false));
-  }, [caseId, logout, navigate, setLoading, toast]);
+  }, []);
 
 
 
@@ -581,7 +581,7 @@ export default function CaseDetailsAdmin() {
                       rel="noopener noreferrer"
                       className="text-blue-600 underline"
                     >
-                      {referenceDetail.documentLink}
+                      View Document
                     </a>
                     )
                     : "—"}
